@@ -13,7 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-public class MySQLRepository {
+public class MySQLRepository implements RelationalDBRepository{
 
 
     private static final String SCHEMA = "TABLE_SCHEMA";
@@ -167,6 +167,14 @@ public class MySQLRepository {
 
     }
 
+    public List<TableConstraint> loadUniqueConstraints(String schema){
+        return this.loadPKFKUniqueConstraints(schema);
+    }
+
+    public List<TableConstraint> loadReferentialConstraints(String schema){
+        return null;
+    }
+
     public List<TableConstraint> loadPKFKUniqueConstraints(String schema){
 
         String sql = "SELECT TC.CONSTRAINT_TYPE, TC.ENFORCED, CC.* " +
@@ -303,7 +311,7 @@ public class MySQLRepository {
         return constraints;
     }
 
-    public List<Trigger> listTriggers(String schema){
+    public List<Trigger> loadTriggers(String schema){
         String sql = "SELECT * FROM information_schema.TRIGGERS T ";
 
         if(schema !=null && !schema.isEmpty()) {
@@ -493,7 +501,7 @@ public class MySQLRepository {
         return param;
     }
 
-    public List<Index> listIndexes(String schema){
+    public List<Index> loadIndexes(String schema){
         String sql = "SELECT * FROM information_schema.STATISTICS I ";
 
         if(schema !=null && !schema.isEmpty()) {

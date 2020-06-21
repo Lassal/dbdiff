@@ -16,14 +16,14 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
 
     @Override
     protected void compute() {
-        List<RecursiveAction> loadAction = new ArrayList<>();
+        List<RecursiveAction> loadActions = new ArrayList<>();
 
         List<LoadCommand> loadSteps = this.serializer.getLoadSteps();
 
         for(LoadCommand loadStep : loadSteps)
-            loadAction.add(this.convertToRecursiveAction(loadStep));
+            loadActions.add(this.convertToRecursiveAction(loadStep));
 
-        this.invokeAll(loadAction);
+        this.invokeAll(loadActions);
 
         List<DatabaseModelEntity> dbEntities = this.serializer.assemble();
 

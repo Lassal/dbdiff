@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class OracleRepository {
+public class OracleRepository implements RelationalDBRepository{
     private static Logger logger = LoggerFactory.getLogger(OracleRepository.class);
 
     private static HikariDataSource ds;
@@ -340,7 +340,7 @@ public class OracleRepository {
     }
 
 
-    public List<Index> listIndexes(String schema) {
+    public List<Index> loadIndexes(String schema) {
         String sql = "SELECT IC.INDEX_OWNER, IC.INDEX_NAME, IC.TABLE_OWNER, IC.TABLE_NAME " +
                 "     , I.INDEX_TYPE, I.UNIQUENESS " +
                 "     , IC.COLUMN_NAME, IC.COLUMN_POSITION, IC.DESCEND " +
@@ -603,7 +603,7 @@ public class OracleRepository {
 
     }
 
-    public List<Trigger> listTriggers(String schema) {
+    public List<Trigger> loadTriggers(String schema) {
         String sql =
                 "SELECT TABLE_OWNER, TABLE_NAME, BASE_OBJECT_TYPE, OWNER, TRIGGER_NAME " +
                 "      ,TRIGGERING_EVENT, TRIGGER_TYPE, TRIGGER_BODY " +

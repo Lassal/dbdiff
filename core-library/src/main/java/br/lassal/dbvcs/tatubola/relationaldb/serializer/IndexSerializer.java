@@ -29,7 +29,7 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
         return new LoadCommand() {
             @Override
             public void execute() {
-                serializer.indexes = serializer.getRepository().listIndexes(serializer.getSchema());
+                serializer.indexes = serializer.getRepository().loadIndexes(serializer.getSchema());
             }
         };
     }

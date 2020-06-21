@@ -26,7 +26,7 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
     private LoadCommand getLoadTriggersStep(){
         TriggerSerializer serializer = this;
 
-        return () -> serializer.triggers = serializer.getRepository().listTriggers(serializer.getSchema());
+        return () -> serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
     }
 
 }
