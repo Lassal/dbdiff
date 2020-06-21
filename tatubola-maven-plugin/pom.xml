@@ -5,7 +5,7 @@
   <parent>
     <artifactId>db-vcs-tatubola</artifactId>
     <groupId>br.lassal.dbvcs.tatubola</groupId>
-    <version>${mainVersion}</version>
+    <version>0.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>tatubola-maven-plugin</artifactId>

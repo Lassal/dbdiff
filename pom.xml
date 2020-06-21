@@ -4,14 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <mainVersion>0.2-SNAPSHOT</mainVersion>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <groupId>br.lassal.dbvcs.tatubola</groupId>
     <artifactId>db-vcs-tatubola</artifactId>
-    <version>${mainVersion}</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
