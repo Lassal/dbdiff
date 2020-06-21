@@ -1,8 +1,8 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
-import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
 
 import java.util.ArrayList;
@@ -10,12 +10,12 @@ import java.util.List;
 
 public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
 
-    private MySQLRepository repository;
+    private RelationalDBRepository repository;
     private String schema;
     private DBModelFS output;
     private List<LoadCommand> loadSteps;
 
-    public DBModelSerializer(MySQLRepository repository, String targetSchema, String outputPath){
+    public DBModelSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
         this.repository = repository;
         this.output = new DBModelFS(outputPath, new JacksonYamlSerializer());
         this.schema = targetSchema;
@@ -24,7 +24,7 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
         this.defineLoadSteps();
     }
 
-    protected MySQLRepository getRepository() {
+    protected RelationalDBRepository getRepository() {
         return repository;
     }
 

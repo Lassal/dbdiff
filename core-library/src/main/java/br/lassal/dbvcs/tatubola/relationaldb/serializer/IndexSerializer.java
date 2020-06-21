@@ -1,7 +1,7 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.Index;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
 
     private List<Index> indexes;
 
-    public IndexSerializer(MySQLRepository repository, String targetSchema, String outputPath){
+    public IndexSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
         super(repository, targetSchema, outputPath);
     }
 

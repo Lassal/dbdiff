@@ -3,7 +3,7 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Table;
 import br.lassal.dbvcs.tatubola.relationaldb.model.TableColumn;
 import br.lassal.dbvcs.tatubola.relationaldb.model.View;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class ViewSerializer extends DBModelSerializer<View> {
     private Map<String, List<Table>> referencedTables;
     private Map<String, List<TableColumn>> viewsColumns;
 
-    public ViewSerializer(MySQLRepository repository, String targetSchema, String outputPath) {
+    public ViewSerializer(RelationalDBRepository repository, String targetSchema, String outputPath) {
         super(repository, targetSchema, outputPath);
 
     }

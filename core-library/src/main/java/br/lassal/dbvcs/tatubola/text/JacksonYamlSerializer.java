@@ -1,7 +1,6 @@
 package br.lassal.dbvcs.tatubola.text;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -10,7 +9,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.file.Path;
 
 
 public class JacksonYamlSerializer implements TextSerializer {

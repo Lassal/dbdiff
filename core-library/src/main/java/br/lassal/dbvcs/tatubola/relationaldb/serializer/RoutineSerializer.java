@@ -2,7 +2,7 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.Routine;
 import br.lassal.dbvcs.tatubola.relationaldb.model.RoutineParameter;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
     private List<Routine> routines;
     private List<RoutineParameter> routinesParameters;
 
-    public RoutineSerializer(MySQLRepository repository, String targetSchema, String outputPath){
+    public RoutineSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
         super(repository, targetSchema, outputPath);
     }
 

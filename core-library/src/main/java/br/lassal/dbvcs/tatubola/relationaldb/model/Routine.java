@@ -1,6 +1,5 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;

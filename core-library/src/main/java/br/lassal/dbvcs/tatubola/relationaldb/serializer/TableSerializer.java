@@ -2,7 +2,7 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.Table;
 import br.lassal.dbvcs.tatubola.relationaldb.model.TableConstraint;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +14,7 @@ public class TableSerializer extends DBModelSerializer<Table>{
     private Map<String, Table> tables;
     private List<TableConstraint> tableConstraints;
 
-    public TableSerializer(MySQLRepository repository, String targetSchema, String outputPath){
+    public TableSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
         super(repository, targetSchema, outputPath);
     }
 
@@ -57,8 +57,19 @@ public class TableSerializer extends DBModelSerializer<Table>{
         return new LoadCommand() {
             @Override
             public void execute() {
-                serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(serializer.getSchema());
-                serializer.tableConstraints.addAll( serializer.getRepository().loadPKFKUniqueConstraints(serializer.getSchema()));
+                String schema = serializer.getSchema();
+
+                serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(schema);
+
+                List<TableConstraint> uniqueConstraints = serializer.getRepository().loadUniqueConstraints(schema);
+                if(uniqueConstraints != null){
+                    serializer.tableConstraints.addAll(uniqueConstraints);
+                }
+
+                List<TableConstraint> refConstraints = serializer.getRepository().loadReferentialConstraints(schema);
+                if(refConstraints != null){
+                    serializer.tableConstraints.addAll(refConstraints);
+                }
             }
         };
     }
