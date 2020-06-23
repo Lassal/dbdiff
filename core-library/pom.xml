@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -11,7 +12,7 @@
 
     <artifactId>core-library</artifactId>
 
- <dependencies>
+    <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -36,9 +37,9 @@
         </dependency>
 
 
-         <!-- SQL Formater
-            https://github.com/vertical-blank/sql-formatter
-        -->
+        <!-- SQL Formater
+           https://github.com/vertical-blank/sql-formatter
+       -->
         <dependency>
             <groupId>com.github.vertical-blank</groupId>
             <artifactId>sql-formatter</artifactId>
@@ -68,7 +69,24 @@
             <version>3.4.5</version>
         </dependency>
 
- </dependencies>
+    <!-- Test dependencies -->
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.19</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.oracle.jdbc/ojdbc8 -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc10</artifactId>
+            <version>19.3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
 
 
 </project>

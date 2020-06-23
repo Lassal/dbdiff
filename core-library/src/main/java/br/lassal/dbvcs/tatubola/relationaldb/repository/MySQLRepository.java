@@ -7,13 +7,14 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-public class MySQLRepository implements RelationalDBRepository{
+public class MySQLRepository extends BaseRepository{
 
 
     private static final String SCHEMA = "TABLE_SCHEMA";
@@ -22,50 +23,10 @@ public class MySQLRepository implements RelationalDBRepository{
 
     private static Logger logger = LoggerFactory.getLogger(MySQLRepository.class);
 
-    private static HikariDataSource ds;
-
-    static {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl( "jdbc:mysql://localhost:9501/classicmodels" );
-        config.setUsername( "local-admin" );
-        config.setPassword( "db12345");
-        config.setMinimumIdle(4);
-        config.setMaximumPoolSize(16);
-      //  config.addDataSourceProperty( "cachePrepStmts" , "true" );
-      //  config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
-      //  config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
-        ds = new HikariDataSource( config );
+    public MySQLRepository(DataSource dataSource) {
+        super(dataSource);
     }
 
-    private boolean useLocalConnection;
-
-    public MySQLRepository(boolean useLocalConnection){
-        this.useLocalConnection = useLocalConnection;
-    }
-
-    public MySQLRepository(){
-        this(false);
-    }
-
-    private Connection getConnection() throws SQLException {
-        long start = System.nanoTime();
-        Connection conn = this.useLocalConnection ? this.getConnectionLocal() : this.getConnectionConnectionPool();
-        System.out.println(String.format("---GET CONNECTION: [%s] mic %f | %d %n", Thread.currentThread().getName(), ((System.nanoTime()-start)/1000.00), System.nanoTime()));
-
-        return conn;
-    }
-
-    private Connection getConnectionConnectionPool() throws SQLException{
-        return ds.getConnection();
-    }
-
-    private Connection getConnectionLocal() throws SQLException {
-        String url       = "jdbc:mysql://localhost:9501/classicmodels";
-        String username = "local-admin";
-        String password = "db12345";
-
-        return DriverManager.getConnection(url,username,password);
-    }
 
     public List<Table> listTables(String schema){
         Map<String, Table> tableMap = this.loadTableColumns(schema);

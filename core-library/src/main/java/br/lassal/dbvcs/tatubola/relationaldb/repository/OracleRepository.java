@@ -8,62 +8,23 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class OracleRepository implements RelationalDBRepository{
+public class OracleRepository extends BaseRepository{
+
     private static Logger logger = LoggerFactory.getLogger(OracleRepository.class);
-
-    private static HikariDataSource ds;
-
-    private static final String JDBC_URL = "jdbc:oracle:thin:@//192.168.15.8:1521/orcl";
-    private static final String DB_USER = "app_data";
-    private static final String DB_PWD = "oracle";
 
     public static final String RETURN_PARAMETER_NAME = "(--return--)";
 
-
-    static {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(OracleRepository.JDBC_URL);
-        config.setUsername(OracleRepository.DB_USER);
-        config.setPassword(OracleRepository.DB_PWD);
-        config.setMinimumIdle(4);
-        config.setMaximumPoolSize(16);
-        //  config.addDataSourceProperty( "cachePrepStmts" , "true" );
-        //  config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
-        //  config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
-        ds = new HikariDataSource(config);
+    public OracleRepository(DataSource dataSource) {
+        super(dataSource);
     }
 
-    private boolean useLocalConnection;
-
-    public OracleRepository(boolean useLocalConnection) {
-        this.useLocalConnection = useLocalConnection;
-    }
-
-    public OracleRepository() {
-        this(false);
-    }
-
-    private Connection getConnection() throws SQLException {
-        long start = System.nanoTime();
-        Connection conn = this.useLocalConnection ? this.getConnectionLocal() : this.getConnectionConnectionPool();
-        System.out.println(String.format("---GET CONNECTION: [%s] mic %f | %d %n", Thread.currentThread().getName(), ((System.nanoTime() - start) / 1000.00), System.nanoTime()));
-
-        return conn;
-    }
-
-    private Connection getConnectionConnectionPool() throws SQLException {
-        return ds.getConnection();
-    }
-
-    private Connection getConnectionLocal() throws SQLException {
-        return DriverManager.getConnection(OracleRepository.JDBC_URL, OracleRepository.DB_USER, OracleRepository.DB_PWD);
-    }
 
     public List<Table> listTables(String schema) {
         Map<String, Table> tableMap = this.loadTableColumns(schema);
