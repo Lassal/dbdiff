@@ -18,14 +18,14 @@ public class RelationalDBVersionFactoryTest {
 
         RelationalDBVersionFactory factory = new RelationalDBVersionFactory();
 
-        RelationalDBRepository mySqlRepo = factory.getRDBRepository(mySqlUrl, "username", "password", initializeConnPool);
+        RelationalDBRepository mySqlRepo = factory.createRDBRepository(mySqlUrl, "username", "password", initializeConnPool);
 
         assertEquals(MySQLRepository.class, mySqlRepo.getClass());
 
-        RelationalDBRepository oracleRepo = factory.getRDBRepository(oracleUrl, "username", "password", initializeConnPool);
+        RelationalDBRepository oracleRepo = factory.createRDBRepository(oracleUrl, "username", "password", initializeConnPool);
         assertEquals(OracleRepository.class, oracleRepo.getClass());
 
-        RelationalDBRepository nonExistingRepo = factory.getRDBRepository(postreSQLUrl, "username", "password", initializeConnPool);
+        RelationalDBRepository nonExistingRepo = factory.createRDBRepository(postreSQLUrl, "username", "password", initializeConnPool);
         assertNull(nonExistingRepo);
     }
 

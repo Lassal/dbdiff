@@ -12,12 +12,12 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
 
     private RelationalDBRepository repository;
     private String schema;
-    private DBModelFS output;
+    private DBModelFS modelFS;
     private List<LoadCommand> loadSteps;
 
-    public DBModelSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
+    public DBModelSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
         this.repository = repository;
-        this.output = new DBModelFS(outputPath, new JacksonYamlSerializer());
+        this.modelFS = dbModelFS;
         this.schema = targetSchema;
         this.loadSteps = new ArrayList<>();
 
@@ -32,15 +32,15 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
         return schema;
     }
 
-    protected DBModelFS getOutput() {
-        return output;
+    protected DBModelFS getModelFS() {
+        return modelFS;
     }
 
     abstract List<M> assemble();
 
     void serialize(List<M> entities) throws Exception {
         for(M model : entities){
-            this.getOutput().save(model);
+            this.getModelFS().save(model);
         }
     }
 

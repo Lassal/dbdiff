@@ -8,19 +8,19 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
-public enum DatabaseVendor {
+public enum DatabaseRepositoryVendor {
     MYSQL,
     ORACLE;
 
-    private static Logger logger = LoggerFactory.getLogger(DatabaseVendor.class);
+    private static Logger logger = LoggerFactory.getLogger(DatabaseRepositoryVendor.class);
 
 
     public static RelationalDBRepository createRelationalDBRepository(String dbVendor, DataSource datasource){
 
-        DatabaseVendor database = null;
+        DatabaseRepositoryVendor database = null;
 
         try{
-            database = DatabaseVendor.valueOf(dbVendor.toUpperCase());
+            database = DatabaseRepositoryVendor.valueOf(dbVendor.toUpperCase());
         }
         catch (IllegalArgumentException ex){
             logger.warn("Could not identify database : " + dbVendor, ex);

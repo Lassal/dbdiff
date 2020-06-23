@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
+import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Routine;
 import br.lassal.dbvcs.tatubola.relationaldb.model.RoutineParameter;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
@@ -14,8 +15,8 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
     private List<Routine> routines;
     private List<RoutineParameter> routinesParameters;
 
-    public RoutineSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
-        super(repository, targetSchema, outputPath);
+    public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
+        super(repository, dbModelFS, targetSchema );
     }
 
 

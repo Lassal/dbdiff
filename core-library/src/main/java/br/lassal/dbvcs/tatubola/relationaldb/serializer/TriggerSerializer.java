@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
+import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Trigger;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 
@@ -9,8 +10,8 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
 
     private List<Trigger> triggers;
 
-    public TriggerSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
-        super(repository, targetSchema, outputPath);
+    public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
+        super(repository, dbModelFS, targetSchema );
     }
 
 

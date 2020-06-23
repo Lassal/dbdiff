@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
+import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Index;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 
@@ -9,8 +10,8 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
 
     private List<Index> indexes;
 
-    public IndexSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
-        super(repository, targetSchema, outputPath);
+    public IndexSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
+        super(repository, dbModelFS, targetSchema );
     }
 
 

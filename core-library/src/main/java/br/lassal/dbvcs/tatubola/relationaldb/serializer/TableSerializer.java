@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
+import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Table;
 import br.lassal.dbvcs.tatubola.relationaldb.model.TableConstraint;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
@@ -14,8 +15,8 @@ public class TableSerializer extends DBModelSerializer<Table>{
     private Map<String, Table> tables;
     private List<TableConstraint> tableConstraints;
 
-    public TableSerializer(RelationalDBRepository repository, String targetSchema, String outputPath){
-        super(repository, targetSchema, outputPath);
+    public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
+        super(repository, dbModelFS, targetSchema );
     }
 
     List<Table> assemble(){
