@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 import javax.sql.DataSource;
 
 public enum DatabaseVendor {
-    mysql,
-    oracle;
+    MYSQL,
+    ORACLE;
 
     private static Logger logger = LoggerFactory.getLogger(DatabaseVendor.class);
 
@@ -20,7 +20,7 @@ public enum DatabaseVendor {
         DatabaseVendor database = null;
 
         try{
-            database = DatabaseVendor.valueOf(dbVendor);
+            database = DatabaseVendor.valueOf(dbVendor.toUpperCase());
         }
         catch (IllegalArgumentException ex){
             logger.warn("Could not identify database : " + dbVendor, ex);
@@ -32,8 +32,8 @@ public enum DatabaseVendor {
         }
 
         switch (database){
-            case mysql: return new MySQLRepository(datasource);
-            case oracle: return new OracleRepository(datasource);
+            case MYSQL: return new MySQLRepository(datasource);
+            case ORACLE: return new OracleRepository(datasource);
             default: return null;
         }
     }
