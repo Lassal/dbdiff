@@ -25,6 +25,28 @@ public class OracleRepository extends BaseRepository{
         super(dataSource);
     }
 
+    public List<String> listSchemas(){
+        String sql = "SELECT USERNAME FROM SYS.ALL_USERS;";
+
+
+        List<String> schemas = new ArrayList<>();
+
+        try (Connection conn = this.getConnection();
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)) {
+
+            while(rs.next()){
+                schemas.add(rs.getString("USERNAME"));
+            }
+
+        } catch (Exception ex) {
+            logger.error("Error listing schemas",ex);
+        }
+
+        return schemas;
+
+    }
+
 
     public List<Table> listTables(String schema) {
         Map<String, Table> tableMap = this.loadTableColumns(schema);

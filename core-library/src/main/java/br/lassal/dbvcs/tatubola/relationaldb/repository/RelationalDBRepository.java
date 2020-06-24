@@ -8,7 +8,6 @@ import java.util.Map;
 public interface RelationalDBRepository {
 
     // Table
-
     Map<String, Table> loadTableColumns(String schema);
     List<TableConstraint> loadUniqueConstraints(String schema);
     List<TableConstraint> loadReferentialConstraints(String schema);
@@ -28,4 +27,7 @@ public interface RelationalDBRepository {
     // Routines
     List<Routine> loadRoutineDefinition(String schema);
     List<RoutineParameter> loadRoutineParameters(String schema);
+
+    // General - Database
+    List<String> listSchemas();
 }
