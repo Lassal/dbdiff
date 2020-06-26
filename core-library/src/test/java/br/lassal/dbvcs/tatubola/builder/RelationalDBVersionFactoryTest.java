@@ -16,7 +16,7 @@ public class RelationalDBVersionFactoryTest {
         String postreSQLUrl = "jdbc:postgresql://localhost:5432/testdb";
         boolean initializeConnPool = false;
 
-        RelationalDBVersionFactory factory = new RelationalDBVersionFactory();
+        RelationalDBVersionFactory factory = RelationalDBVersionFactory.getInstance();
 
         RelationalDBRepository mySqlRepo = factory.createRDBRepository(mySqlUrl, "username", "password", initializeConnPool);
 
@@ -29,4 +29,19 @@ public class RelationalDBVersionFactoryTest {
         assertNull(nonExistingRepo);
     }
 
+    @Test
+    public void testNormalizeNames(){
+        String envName = "Meu nome ambiente ++";
+
+        String normalizedName = envName
+                .replaceAll("[^a-zA-Z\\d\\s:]*","").trim()
+                .replaceAll("\\s","_")
+                .toUpperCase();
+
+        String expected = "MEU_NOME_AMBIENTE";
+
+        System.out.println("Teste: !@#$%+".replace("@$","#"));
+
+        assertEquals(expected, normalizedName);
+    }
 }

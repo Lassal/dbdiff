@@ -16,6 +16,16 @@ import java.util.concurrent.RecursiveAction;
 
 public class RelationalDBVersionFactory {
 
+    private static RelationalDBVersionFactory instance = new RelationalDBVersionFactory();
+
+    public static RelationalDBVersionFactory getInstance(){
+        return instance;
+    }
+
+    private RelationalDBVersionFactory(){
+
+    }
+
     public DataSource createConnectionPool(String jdbcUrl, String username, String password
             , int minPoolSize, int maxPoolSize, boolean openConnectionsOnInitialization) {
         HikariConfig config = new HikariConfig();
