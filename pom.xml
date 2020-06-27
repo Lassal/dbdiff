@@ -16,5 +16,6 @@
     <modules>
         <module>core-library</module>
         <module>tatubola-maven-plugin</module>
+        <module>integrated-tests</module>
     </modules>
 </project>
