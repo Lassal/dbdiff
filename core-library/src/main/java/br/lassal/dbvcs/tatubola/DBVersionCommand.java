@@ -18,6 +18,7 @@ public class DBVersionCommand {
 
 
     public DBVersionCommand(List<String> schemas, String rootPathLocalVCRepository, VersionControlSystem vcsController) {
+        this.schemas = schemas;
         this.rootPathLocalVCRepository = rootPathLocalVCRepository;
         this.environments = new ArrayList<>();
         this.vcsController = vcsController;

@@ -31,9 +31,9 @@ public class RelationalDBVersionFactory {
     public DataSource createConnectionPool(String jdbcUrl, String username, String password
             , int minPoolSize, int maxPoolSize, boolean openConnectionsOnInitialization) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:9501/classicmodels");
-        config.setUsername("local-admin");
-        config.setPassword("db12345");
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(username);
+        config.setPassword(password);
         config.setMinimumIdle(minPoolSize);
         config.setMaximumPoolSize(maxPoolSize);
         config.setInitializationFailTimeout(openConnectionsOnInitialization ? 1 : -1);
@@ -124,4 +124,5 @@ public class RelationalDBVersionFactory {
     public VersionControlSystem createVCSController(String repositoryUrl, String username, String password){
         return new GitController();
     }
+
 }

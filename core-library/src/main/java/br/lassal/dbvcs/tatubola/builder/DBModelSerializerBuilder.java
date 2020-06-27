@@ -12,24 +12,16 @@ import java.util.List;
 public class DBModelSerializerBuilder {
 
     private String environmentName;
-    private List<String> schemas;
     private DBModelFS outputFS;
     private RelationalDBRepository repository;
 
-    public DBModelSerializerBuilder(String environmentName, List<String> schemas){
+    public DBModelSerializerBuilder(String environmentName, String jdbcUrl, String username, String password){
         this.environmentName = environmentName;
-        this.schemas = schemas;
-
+        this.repository = RelationalDBVersionFactory.getInstance().createRDBRepository(jdbcUrl, username, password);
     }
 
     public String getEnvironmentName(){
         return this.environmentName;
-    }
-
-    public DBModelSerializerBuilder setDBConnection(String jdbcUrl, String username, String password){
-        this.repository = RelationalDBVersionFactory.getInstance().createRDBRepository(jdbcUrl, username, password);
-
-        return this;
     }
 
     /**

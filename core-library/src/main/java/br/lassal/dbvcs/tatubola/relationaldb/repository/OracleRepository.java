@@ -26,7 +26,7 @@ public class OracleRepository extends BaseRepository{
     }
 
     public List<String> listSchemas(){
-        String sql = "SELECT USERNAME FROM SYS.ALL_USERS;";
+        String sql = "SELECT USERNAME FROM SYS.ALL_USERS";
 
 
         List<String> schemas = new ArrayList<>();
