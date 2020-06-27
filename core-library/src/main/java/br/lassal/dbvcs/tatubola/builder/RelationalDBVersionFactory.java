@@ -6,6 +6,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.*;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
 import br.lassal.dbvcs.tatubola.text.TextSerializer;
+import br.lassal.dbvcs.tatubola.versioncontrol.GitController;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -121,6 +122,6 @@ public class RelationalDBVersionFactory {
     }
 
     public VersionControlSystem createVCSController(String repositoryUrl, String username, String password){
-        return null;
+        return new GitController();
     }
 }
