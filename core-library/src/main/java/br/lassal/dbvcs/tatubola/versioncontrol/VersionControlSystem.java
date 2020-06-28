@@ -6,6 +6,7 @@ import java.io.IOException;
 public interface VersionControlSystem {
 
     void setWorkspacePath(File absolutePath);
+    File getWorkspacePath();
 
     void setupRepositoryInitialState() throws Exception;
 

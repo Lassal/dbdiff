@@ -5,8 +5,12 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.dircache.DirCache;
+import org.eclipse.jgit.lib.AnyObjectId;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -26,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+//TODO: add documentation
 public class GitController implements VersionControlSystem, Closeable {
 
     private static Logger logger = LoggerFactory.getLogger(GitController.class);
@@ -38,6 +43,7 @@ public class GitController implements VersionControlSystem, Closeable {
     private boolean commitEmptyChanges;
     private String currentBranch;
     private Set<RefSpec> branchesAltered;
+    private String baseBranch;
 
     public GitController(URL gitRemoteURL, String username, String password, boolean commitEmptyChanges){
         this.gitRemoteURL = gitRemoteURL;
@@ -54,6 +60,18 @@ public class GitController implements VersionControlSystem, Closeable {
 
     public void setWorkspacePath(File workspacePath){
         this.workspace = workspacePath;
+    }
+
+    public File getWorkspacePath(){
+        return this.workspace;
+    }
+
+    /***
+     * Set the base branch to be used as initial state for the new branches
+     * @param branchName
+     */
+    public void setBaseBranch(String branchName){
+        this.baseBranch = branchName;
     }
 
     private boolean isGitFolder(Path localFolder){
@@ -123,10 +141,14 @@ public class GitController implements VersionControlSystem, Closeable {
                     .call();
         }
         else{
+
+            RevCommit baseCommitBranch = this.getBaseCommitNewBranch();
+
             // this create a new branch that will be sent to the remote
             gitRef = this.git.checkout()
                     .setName(this.currentBranch)
                     .setCreateBranch(true)
+                    .setStartPoint(baseCommitBranch)
                     .setUpstreamMode(CreateBranchCommand.SetupUpstreamMode.TRACK)
                     .call();
 
@@ -174,5 +196,37 @@ public class GitController implements VersionControlSystem, Closeable {
     private boolean registerCurrentBranchAltered(){
         RefSpec branchRef = new RefSpec(this.currentBranch + ":" + this.currentBranch);
         return this.branchesAltered.add(branchRef);
+    }
+
+    private Repository getJGitRepository(){
+        if(this.git != null){
+            return this.git.getRepository();
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the HEAD commit of the base branch informed or the current branch in case
+     * it is not informed
+     * @return Revision commit to the head of the informed branch
+     * @throws IOException
+     * @throws GitAPIException
+     */
+    private RevCommit getBaseCommitNewBranch() throws IOException, GitAPIException {
+        RevWalk revWalk = new RevWalk(this.getJGitRepository());
+
+        if(this.baseBranch == null){
+            ObjectId head = this.getJGitRepository().resolve("HEAD");
+            Iterable<RevCommit> revs = this.git.log().setMaxCount(3).add(head).call();
+
+            return revs.iterator().next();
+        }
+        else{
+            ObjectId baseBranch = this.getJGitRepository().resolve("refs/heads/" + this.baseBranch);
+            Iterable<RevCommit> revs = this.git.log().setMaxCount(3).add(baseBranch).call();
+
+            return revs.iterator().next();
+        }
     }
 }
