@@ -37,9 +37,11 @@ public class DBModelSerializerBuilder {
      * @return builder
      */
     public DBModelSerializerBuilder setOutputPath(String outputPath, boolean segregateByEnvironment){
-        String outputEnvPath = this.generateEnvOutputPath(outputPath, environmentName).toString();
-        this.outputFS = RelationalDBVersionFactory.getInstance().createDBModelFS(outputEnvPath);
+        String outputEnvPath = segregateByEnvironment
+                                 ? this.generateEnvOutputPath(outputPath, environmentName).toString()
+                                 : outputPath;
 
+        this.outputFS = RelationalDBVersionFactory.getInstance().createDBModelFS(outputEnvPath);
         return this;
     }
 

@@ -123,11 +123,13 @@ public class RelationalDBVersionFactory {
         return parallelSerializer;
     }
 
-    public VersionControlSystem createVCSController(String repositoryUrl, String username, String password)
+    public VersionControlSystem createVCSController(String repositoryUrl, String username, String password, String baseBranch)
             throws MalformedURLException {
         URL remoteRepositoryURL = new URL(repositoryUrl);
+        GitController vcs = new GitController(remoteRepositoryURL, username, password);
+        vcs.setBaseBranch(baseBranch);
 
-        return new GitController(remoteRepositoryURL, username, password);
+        return vcs;
     }
 
 }

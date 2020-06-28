@@ -1,0 +1,12 @@
+Configuration:
+  Appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      Pattern: "%m%n"
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        ref: STDOUT

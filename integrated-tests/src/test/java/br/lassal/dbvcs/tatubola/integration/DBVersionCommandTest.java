@@ -41,20 +41,23 @@ public class DBVersionCommandTest {
 
     }
 
-    private String getAbsolutePathRepository(String localRepositoryName){
-        File repoPath = new File("test-repo/" + localRepositoryName);
-
-        return repoPath.getAbsolutePath();
+    private File getAbsolutePathRepository(String localRepositoryName){
+        return new File("test-repo/" + localRepositoryName);
     }
 
     @Test
     public void versionSingleOracleDBSerial() throws Exception {
         List<String> schemas = this.getOracleTargetSchemas();
 
-        VersionControlSystem vcsController = RelationalDBVersionFactory.getInstance()
-                .createVCSController("dummy-git-url", "user", "pwd");
+        String gitRemoteUrl = IntegrationTestInfo.REMOTE_REPO;
+        String baseBranch = IntegrationTestInfo.REPO_BASE_BRANCH;
+        String repo_username = IntegrationTestInfo.getVCSRepositoryUsername();
+        String repo_pwd = IntegrationTestInfo.getVCSRepositoryPassword();
 
-        String repoOutputPath = this.getAbsolutePathRepository("singleDBOracle");
+        VersionControlSystem vcsController = RelationalDBVersionFactory.getInstance()
+                .createVCSController(gitRemoteUrl, repo_username, repo_pwd, baseBranch);
+
+        File repoOutputPath = this.getAbsolutePathRepository("singleDBOracle");
         String oraJdbcUrl = "jdbc:oracle:thin:@//192.168.15.8:1521/orcl";
         String dbUser = "app_data";
         String dbPwd = "oracle";
@@ -62,8 +65,12 @@ public class DBVersionCommandTest {
         logger.info("Output path: " + repoOutputPath);
         DBModelSerializerBuilder oraDB = new DBModelSerializerBuilder("DEV", oraJdbcUrl, dbUser, dbPwd);
 
-        DBVersionCommand cmd = new DBVersionCommand(schemas, repoOutputPath, vcsController)
+        DBVersionCommand cmd = new DBVersionCommand(schemas, repoOutputPath.getAbsolutePath(), vcsController)
                 .addDBEnvironment(oraDB);
+
+        //clean up local files
+        boolean removeLocalRepositoryStatus = repoOutputPath.delete();
+        logger.info(String.format("Remove local repository [%s] - SUCCESS: %s", repoOutputPath.getAbsolutePath(), removeLocalRepositoryStatus));
 
         cmd.takeDatabaseSchemaSnapshotVersion();
 

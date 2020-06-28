@@ -13,16 +13,8 @@ import java.util.Date;
 
 public class GitControllerTest {
 
-    private static final String INTEGRATION_TESTS_REPO = "https://github.com/Lassal/dbdiff-integration-tests-vcs.git";
     private static final String INTEGRATION_TESTS_REPO_DEFAULT_BRANCH = "common";
 
-    private String getVCSRepositoryUsername(){
-        return System.getenv("GITREPO_USER");
-    }
-
-    private String getVCSRepositoryPassword(){
-        return System.getenv("GITREPO_PWD");
-    }
 
     private File getDefaultTestFile(File parentPath) throws Exception {
         File testFile = new File(parentPath, "unique.txt");
@@ -47,10 +39,10 @@ public class GitControllerTest {
     @Test
     public void setupNewEnviront_plus_changesMultipleBranchesTest() throws Exception {
         File testWorkspace = new File("gitController/testA");
-        URL githubRepo = new URL(GitControllerTest.INTEGRATION_TESTS_REPO);
-        String username = this.getVCSRepositoryUsername();
-        String password = this.getVCSRepositoryPassword();
-        String baseBranch = "master";
+        URL githubRepo = new URL(IntegrationTestInfo.REMOTE_REPO);
+        String username = IntegrationTestInfo.getVCSRepositoryUsername();
+        String password = IntegrationTestInfo.getVCSRepositoryPassword();
+        String baseBranch = IntegrationTestInfo.REPO_BASE_BRANCH;
 
 
         GitController vcs = new GitController(githubRepo, username, password);
