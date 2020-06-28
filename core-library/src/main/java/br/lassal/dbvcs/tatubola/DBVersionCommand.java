@@ -5,6 +5,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.serializer.DBModelSerializer;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ public class DBVersionCommand {
         this.rootPathLocalVCRepository = rootPathLocalVCRepository;
         this.environments = new ArrayList<>();
         this.vcsController = vcsController;
+
+        this.vcsController.setWorkspacePath(new File(rootPathLocalVCRepository));
     }
 
     public DBVersionCommand addDBEnvironment(DBModelSerializerBuilder serializerBuilder){

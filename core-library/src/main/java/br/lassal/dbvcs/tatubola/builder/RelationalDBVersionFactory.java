@@ -12,6 +12,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.RecursiveAction;
@@ -121,8 +123,11 @@ public class RelationalDBVersionFactory {
         return parallelSerializer;
     }
 
-    public VersionControlSystem createVCSController(String repositoryUrl, String username, String password){
-        return new GitController();
+    public VersionControlSystem createVCSController(String repositoryUrl, String username, String password)
+            throws MalformedURLException {
+        URL remoteRepositoryURL = new URL(repositoryUrl);
+
+        return new GitController(remoteRepositoryURL, username, password);
     }
 
 }

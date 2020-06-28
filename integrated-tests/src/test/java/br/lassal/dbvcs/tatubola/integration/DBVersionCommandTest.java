@@ -3,8 +3,10 @@ package br.lassal.dbvcs.tatubola.integration;
 
 import br.lassal.dbvcs.tatubola.DBVersionCommand;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
+import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
 import br.lassal.dbvcs.tatubola.versioncontrol.GitController;
+import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,10 @@ public class DBVersionCommandTest {
     @Test
     public void versionSingleOracleDBSerial() throws Exception {
         List<String> schemas = this.getOracleTargetSchemas();
-        GitController vcsController = new GitController();
+
+        VersionControlSystem vcsController = RelationalDBVersionFactory.getInstance()
+                .createVCSController("dummy-git-url", "user", "pwd");
+
         String repoOutputPath = this.getAbsolutePathRepository("singleDBOracle");
         String oraJdbcUrl = "jdbc:oracle:thin:@//192.168.15.8:1521/orcl";
         String dbUser = "app_data";
