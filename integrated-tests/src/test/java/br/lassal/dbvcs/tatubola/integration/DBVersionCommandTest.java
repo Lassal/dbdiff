@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.integration;
 
 
 import br.lassal.dbvcs.tatubola.DBVersionCommand;
+import br.lassal.dbvcs.tatubola.ParallelDBVersionCommand;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
 import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
@@ -45,6 +46,17 @@ public class DBVersionCommandTest {
         return new File("test-repo/" + localRepositoryName);
     }
 
+    private List<String> getOracleTargetSchemas(){
+        List<String> schemas = new ArrayList<>();
+
+        schemas.add("APEX_050000");
+        schemas.add("APP_DATA");
+        schemas.add("HR");
+        schemas.add("XDB");
+
+        return schemas;
+    }
+
     @Test
     public void versionSingleOracleDBSerial() throws Exception {
         List<String> schemas = this.getOracleTargetSchemas();
@@ -58,15 +70,16 @@ public class DBVersionCommandTest {
                 .createVCSController(gitRemoteUrl, repo_username, repo_pwd, baseBranch);
 
         File repoOutputPath = this.getAbsolutePathRepository("singleDBOracle");
-        String oraJdbcUrl = "jdbc:oracle:thin:@//192.168.15.8:1521/orcl";
-        String dbUser = "app_data";
-        String dbPwd = "oracle";
+        String oraJdbcUrl = IntegrationTestInfo.ORACLE_JDBC_URL;
+        String dbUser =  IntegrationTestInfo.getOracleUsername();
+        String dbPwd = IntegrationTestInfo.getOraclePassword();
 
         logger.info("Output path: " + repoOutputPath);
-        DBModelSerializerBuilder oraDB = new DBModelSerializerBuilder("DEV", oraJdbcUrl, dbUser, dbPwd);
 
         DBVersionCommand cmd = new DBVersionCommand(schemas, repoOutputPath.getAbsolutePath(), vcsController)
-                .addDBEnvironment(oraDB);
+                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-DEV", oraJdbcUrl, dbUser, dbPwd))
+                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-QA", oraJdbcUrl, dbUser, dbPwd))
+                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-PROD", oraJdbcUrl, dbUser, dbPwd));
 
         //clean up local files
         boolean removeLocalRepositoryStatus = repoOutputPath.delete();
@@ -76,14 +89,39 @@ public class DBVersionCommandTest {
 
     }
 
-    private List<String> getOracleTargetSchemas(){
-        List<String> schemas = new ArrayList<>();
+    @Test
+    public void versionSingleOracleDBParallel() throws Exception {
+        List<String> schemas = this.getOracleTargetSchemas();
 
-        schemas.add("APEX_050000");
-        schemas.add("APP_DATA");
-        schemas.add("HR");
-        schemas.add("XDB");
+        String gitRemoteUrl = IntegrationTestInfo.REMOTE_REPO;
+        String baseBranch = IntegrationTestInfo.REPO_BASE_BRANCH;
+        String repo_username = IntegrationTestInfo.getVCSRepositoryUsername();
+        String repo_pwd = IntegrationTestInfo.getVCSRepositoryPassword();
 
-        return schemas;
+        VersionControlSystem vcsController = RelationalDBVersionFactory.getInstance()
+                .createVCSController(gitRemoteUrl, repo_username, repo_pwd, baseBranch);
+
+        File repoOutputPath = this.getAbsolutePathRepository("ParallelDBOracle");
+        String oraJdbcUrl = IntegrationTestInfo.ORACLE_JDBC_URL;
+        String dbUser =  IntegrationTestInfo.getOracleUsername();
+        String dbPwd = IntegrationTestInfo.getOraclePassword();
+
+        logger.info("Output path: " + repoOutputPath);
+
+        ParallelDBVersionCommand cmd = new ParallelDBVersionCommand(schemas, repoOutputPath.getAbsolutePath()
+                , "tmp/parallel", vcsController)
+                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-DEV", oraJdbcUrl, dbUser, dbPwd))
+                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-QA", oraJdbcUrl, dbUser, dbPwd))
+                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-PROD", oraJdbcUrl, dbUser, dbPwd));
+
+        //clean up local files
+        boolean removeLocalRepositoryStatus = repoOutputPath.delete();
+        logger.info(String.format("Remove local repository [%s] - SUCCESS: %s", repoOutputPath.getAbsolutePath(), removeLocalRepositoryStatus));
+
+        cmd.takeDatabaseSchemaSnapshotVersion();
+
     }
+
+
+
 }

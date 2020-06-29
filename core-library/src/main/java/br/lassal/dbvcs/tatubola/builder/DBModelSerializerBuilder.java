@@ -14,6 +14,7 @@ public class DBModelSerializerBuilder {
     private String environmentName;
     private DBModelFS outputFS;
     private RelationalDBRepository repository;
+    private String normalizedEnvironmentName = null;
 
     public DBModelSerializerBuilder(String environmentName, String jdbcUrl, String username, String password){
         this.environmentName = environmentName;
@@ -22,6 +23,14 @@ public class DBModelSerializerBuilder {
 
     public String getEnvironmentName(){
         return this.environmentName;
+    }
+
+    public String getNormalizedEnvironmentName(){
+        if(this.normalizedEnvironmentName == null && this.environmentName != null){
+            this.normalizedEnvironmentName = this.normalizeEnvNameAsPath(this.environmentName);
+        }
+
+        return this.normalizedEnvironmentName;
     }
 
     /**
@@ -46,7 +55,7 @@ public class DBModelSerializerBuilder {
     }
 
     private Path generateEnvOutputPath(String rootPath, String environmentName){
-        return Paths.get(rootPath, this.normalizeEnvNameAsPath(environmentName));
+        return Paths.get(rootPath, this.getNormalizedEnvironmentName());
     }
 
     /**
