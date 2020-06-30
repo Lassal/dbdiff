@@ -3,6 +3,8 @@ package br.lassal.dbvcs.tatubola;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 public class ParallelDBVersionCommand {
+
+    private static Logger logger = LoggerFactory.getLogger(ParallelDBVersionCommand.class);
 
     public static final int DEFAULT_PARALLELISM = 4;
 
@@ -38,6 +42,10 @@ public class ParallelDBVersionCommand {
         this.vcsController = vcsController;
         this.environments = new ArrayList<>();
         this.threadPool = new ForkJoinPool(parallelism);
+
+        if(this.vcsController != null){
+            this.vcsController.setWorkspacePath(new File(rootPathLocalVCRepository));
+        }
 
     }
 
@@ -100,15 +108,19 @@ public class ParallelDBVersionCommand {
             lastEnvActions[i].join();
 
             //TODO: checkout branch
+            logger.info("About to check-out branch : " + envBranches[i]);
             this.vcsController.checkout(envBranches[i]);
             //TODO: move local files in TMP to repository
             File envFiles = new File(this.tmpPath, sourceFolder[i]);
+            logger.info("About to copy files from " + envFiles + " to " + repositoryFolder);
             this.copyFullFolderStructure(envFiles.toPath(), repositoryFolder.toPath());
             //TODO: commit changes
+            logger.info("About to commit changes in branch: " + envBranches[i]);
             this.vcsController.commitAllChanges("Commited parallel environment");
         }
 
         //TODO: push changes to the server
+        logger.info("About to sync changes to Server");
         this.vcsController.syncChangesToServer();
     }
 
@@ -119,10 +131,10 @@ public class ParallelDBVersionCommand {
                 .forEach(sourcePath -> {
                     try {
                         Path targetPath = destinationDir.resolve(sourceDir.relativize(sourcePath));
-                        System.out.printf("Copying %s to %s%n", sourcePath, targetPath);
+                        logger.debug(String.format("Copying %s to %s%n", sourcePath, targetPath));
                         Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException ex) {
-                        System.out.format("I/O error: %s%n", ex);
+                        logger.warn(String.format("I/O error: %s%n", ex));
                     }
                 });
     }

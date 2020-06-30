@@ -91,7 +91,7 @@ public class DBVersionCommandTest {
 
     @Test
     public void versionSingleOracleDBParallel() throws Exception {
-        List<String> schemas = this.getOracleTargetSchemas();
+        List<String> schemas = null;//this.getOracleTargetSchemas();
 
         String gitRemoteUrl = IntegrationTestInfo.REMOTE_REPO;
         String baseBranch = IntegrationTestInfo.REPO_BASE_BRANCH;
@@ -121,7 +121,5 @@ public class DBVersionCommandTest {
         cmd.takeDatabaseSchemaSnapshotVersion();
 
     }
-
-
 
 }
