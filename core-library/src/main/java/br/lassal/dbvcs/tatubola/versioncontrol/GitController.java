@@ -171,7 +171,8 @@ public class GitController implements VersionControlSystem, Closeable {
 
             this.registerCurrentBranchAltered();
         }catch (GitAPIException ex){
-            logger.warn("There are no changes to be commited. CommitEmptyChanges = " + this.commitEmptyChanges, ex);
+
+            logger.warn("There are no changes to be commited, Branch = " + this.currentBranch + ", CommitEmptyChanges = " + this.commitEmptyChanges, ex);
         }
 
     }

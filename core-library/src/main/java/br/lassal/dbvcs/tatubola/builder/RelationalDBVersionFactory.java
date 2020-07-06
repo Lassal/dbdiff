@@ -1,6 +1,7 @@
 package br.lassal.dbvcs.tatubola.builder;
 
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.fs.BaseDBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.*;
@@ -75,43 +76,43 @@ public class RelationalDBVersionFactory {
     public DBModelFS createDBModelFS(String rootPathPerEnv) {
         TextSerializer serializer = new JacksonYamlSerializer();
 
-        return new DBModelFS(rootPathPerEnv, serializer);
+        return new BaseDBModelFS(rootPathPerEnv, serializer);
     }
 
     public List<DBModelSerializer> createDBObjectsSerializers(
-            String schema, RelationalDBRepository repository, DBModelFS dbModelFS) {
+            String environmentName, String schema, RelationalDBRepository repository, DBModelFS dbModelFS) {
 
         List<DBModelSerializer> serializers = new ArrayList<>();
-        serializers.add(new TableSerializer(repository, dbModelFS, schema));
-        serializers.add(new ViewSerializer(repository, dbModelFS, schema));
-        serializers.add(new TriggerSerializer(repository, dbModelFS, schema));
-        serializers.add(new IndexSerializer(repository, dbModelFS, schema));
-        serializers.add(new RoutineSerializer(repository, dbModelFS, schema));
+        serializers.add(new TableSerializer(repository, dbModelFS, schema, environmentName));
+        serializers.add(new RoutineSerializer(repository, dbModelFS, schema, environmentName));
+        serializers.add(new ViewSerializer(repository, dbModelFS, schema, environmentName));
+        serializers.add(new TriggerSerializer(repository, dbModelFS, schema, environmentName));
+        serializers.add(new IndexSerializer(repository, dbModelFS, schema, environmentName));
 
 
         return serializers;
     }
 
-    public List<DBModelSerializer> createDBObjectsSerializers(String schema, String jdbcUrl
+    public List<DBModelSerializer> createDBObjectsSerializers(String environmentName, String schema, String jdbcUrl
             , String username, String password, String outputPath, boolean openConnectionsOnInitialization) {
 
         RelationalDBRepository repository = this.createRDBRepository(jdbcUrl, username, password, openConnectionsOnInitialization);
         DBModelFS dbModelFS = this.createDBModelFS(outputPath);
 
-        return this.createDBObjectsSerializers(schema, repository, dbModelFS);
+        return this.createDBObjectsSerializers(environmentName ,schema, repository, dbModelFS);
     }
 
-    public List<DBModelSerializer> createDBObjectsSerializers(String schema, String jdbcUrl
+    public List<DBModelSerializer> createDBObjectsSerializers(String environmentName, String schema, String jdbcUrl
             , String username, String password, String outputPath) {
 
-        return this.createDBObjectsSerializers(schema, jdbcUrl, username, password, outputPath, true);
+        return this.createDBObjectsSerializers(environmentName, schema, jdbcUrl, username, password, outputPath, true);
 
     }
 
-    public List<RecursiveAction> createParallelDBObjectsSerializers(String schema, String jdbcUrl
+    public List<RecursiveAction> createParallelDBObjectsSerializers(String environmentName, String schema, String jdbcUrl
             , String username, String password, String outputPath, boolean openConnectionsOnInitialization){
 
-        List<DBModelSerializer> serializers = this.createDBObjectsSerializers(schema, jdbcUrl, username, password,
+        List<DBModelSerializer> serializers = this.createDBObjectsSerializers(environmentName, schema, jdbcUrl, username, password,
                     outputPath );
 
         List<RecursiveAction> parallelSerializer = new ArrayList<>();

@@ -5,7 +5,12 @@ import br.lassal.dbvcs.tatubola.DBVersionCommand;
 import br.lassal.dbvcs.tatubola.ParallelDBVersionCommand;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
 import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
+import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
+import br.lassal.dbvcs.tatubola.relationaldb.serializer.ViewSerializer;
 import br.lassal.dbvcs.tatubola.versioncontrol.GitController;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 import org.junit.Test;
@@ -14,8 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 public class DBVersionCommandTest {
 
@@ -49,6 +56,8 @@ public class DBVersionCommandTest {
     private List<String> getOracleTargetSchemas(){
         List<String> schemas = new ArrayList<>();
 
+
+        schemas.add("SYS");
         schemas.add("APEX_050000");
         schemas.add("APP_DATA");
         schemas.add("HR");
@@ -91,7 +100,7 @@ public class DBVersionCommandTest {
 
     @Test
     public void versionSingleOracleDBParallel() throws Exception {
-        List<String> schemas = null;//this.getOracleTargetSchemas();
+        List<String> schemas = this.getOracleTargetSchemas();
 
         String gitRemoteUrl = IntegrationTestInfo.REMOTE_REPO;
         String baseBranch = IntegrationTestInfo.REPO_BASE_BRANCH;
@@ -109,7 +118,7 @@ public class DBVersionCommandTest {
         logger.info("Output path: " + repoOutputPath);
 
         ParallelDBVersionCommand cmd = new ParallelDBVersionCommand(schemas, repoOutputPath.getAbsolutePath()
-                , "tmp/parallel", vcsController)
+                , "tmp/parallel", vcsController, 8)
                 .addDBEnvironment(new DBModelSerializerBuilder("Oracle-DEV", oraJdbcUrl, dbUser, dbPwd))
                 .addDBEnvironment(new DBModelSerializerBuilder("Oracle-QA", oraJdbcUrl, dbUser, dbPwd))
                 .addDBEnvironment(new DBModelSerializerBuilder("Oracle-PROD", oraJdbcUrl, dbUser, dbPwd));

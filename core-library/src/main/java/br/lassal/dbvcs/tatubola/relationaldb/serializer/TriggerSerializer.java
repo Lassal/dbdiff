@@ -3,15 +3,21 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Trigger;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class TriggerSerializer extends DBModelSerializer<Trigger>{
 
+    private static Logger logger = LoggerFactory.getLogger(TriggerSerializer.class);
+
     private List<Trigger> triggers;
 
-    public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
-        super(repository, dbModelFS, targetSchema );
+    public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
+        super(repository, dbModelFS, targetSchema, environmentName );
+
+        this.setLogger(logger);
     }
 
 
@@ -27,7 +33,16 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
     private LoadCommand getLoadTriggersStep(){
         TriggerSerializer serializer = this;
 
-        return () -> serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
+        return new LoadCommand(){
+
+            @Override
+            public void execute() {
+                serializer.trace("loadTriggers", "before load");
+                serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
+                serializer.trace("loadTriggers", "after load");
+            }
+        };
+
     }
 
 }

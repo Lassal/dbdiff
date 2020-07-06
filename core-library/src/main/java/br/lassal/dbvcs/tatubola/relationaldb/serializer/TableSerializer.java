@@ -4,6 +4,8 @@ import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Table;
 import br.lassal.dbvcs.tatubola.relationaldb.model.TableConstraint;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.List;
@@ -12,11 +14,15 @@ import java.util.stream.Collectors;
 
 public class TableSerializer extends DBModelSerializer<Table>{
 
+    private static Logger logger = LoggerFactory.getLogger(TableSerializer.class);
+
     private Map<String, Table> tables;
     private List<TableConstraint> tableConstraints;
 
-    public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
-        super(repository, dbModelFS, targetSchema );
+    public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
+        super(repository, dbModelFS, targetSchema, environmentName );
+
+        this.setLogger(logger);
     }
 
     List<Table> assemble(){
@@ -47,7 +53,9 @@ public class TableSerializer extends DBModelSerializer<Table>{
         return new LoadCommand() {
             @Override
             public void execute() {
+                serializer.trace("loadTableColumns", "before load");
                 serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
+                serializer.trace("loadTableColumns", "after load");
             }
         };
     }
@@ -60,6 +68,8 @@ public class TableSerializer extends DBModelSerializer<Table>{
             public void execute() {
                 String schema = serializer.getSchema();
 
+                serializer.trace("load constraints", "before load");
+
                 serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(schema);
 
                 List<TableConstraint> uniqueConstraints = serializer.getRepository().loadUniqueConstraints(schema);
@@ -71,6 +81,8 @@ public class TableSerializer extends DBModelSerializer<Table>{
                 if(refConstraints != null){
                     serializer.tableConstraints.addAll(refConstraints);
                 }
+
+                serializer.trace("load constraints", "after load");
             }
         };
     }

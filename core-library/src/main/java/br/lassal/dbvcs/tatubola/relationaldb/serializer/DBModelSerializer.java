@@ -4,6 +4,7 @@ import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +15,21 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
     private String schema;
     private DBModelFS modelFS;
     private List<LoadCommand> loadSteps;
+    private String environmentName;
+    private Logger logger;
 
-    public DBModelSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
+    public DBModelSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
         this.repository = repository;
         this.modelFS = dbModelFS;
         this.schema = targetSchema;
         this.loadSteps = new ArrayList<>();
+        this.environmentName = environmentName;
 
         this.defineLoadSteps();
+    }
+
+    protected void setLogger(Logger logger){
+        this.logger = logger;
     }
 
     protected RelationalDBRepository getRepository() {
@@ -35,6 +43,8 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
     protected DBModelFS getModelFS() {
         return modelFS;
     }
+
+    public String getEnvironmentName(){ return this.environmentName; }
 
     abstract List<M> assemble();
 
@@ -74,6 +84,13 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
 
         lastMark = this.showEllapsedMicros(lastMark);
 
+    }
+
+    protected void trace(String action, String message){
+        if(this.logger != null && this.logger.isTraceEnabled()){
+            this.logger.trace(String.format("Env: %s|Schema: %s|Action: %s > %s"
+                    , this.getEnvironmentName(), this.getSchema(), action, message));
+        }
     }
 
 }

@@ -72,7 +72,7 @@ public class DBModelSerializerBuilder {
 
     public List<DBModelSerializer> getDBModelSerializers(String schema){
         return RelationalDBVersionFactory.getInstance()
-                .createDBObjectsSerializers(schema, this.repository, this.outputFS);
+                .createDBObjectsSerializers(this.environmentName, schema, this.repository, this.outputFS);
     }
 
     public List<DBModelSerializer> getDBModelSerializers(){

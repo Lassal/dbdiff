@@ -4,6 +4,8 @@ import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Routine;
 import br.lassal.dbvcs.tatubola.relationaldb.model.RoutineParameter;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -12,11 +14,15 @@ import java.util.stream.Collectors;
 
 public class RoutineSerializer extends DBModelSerializer<Routine>{
 
+    private static Logger logger = LoggerFactory.getLogger(RoutineSerializer.class);
+
     private List<Routine> routines;
     private List<RoutineParameter> routinesParameters;
 
-    public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema){
-        super(repository, dbModelFS, targetSchema );
+    public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
+        super(repository, dbModelFS, targetSchema, environmentName );
+
+        this.setLogger(logger);
     }
 
 
@@ -58,7 +64,9 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
         return new LoadCommand() {
             @Override
             public void execute() {
-                 serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
+                serializer.trace("loadRoutineDefinition", "before load");
+                serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
+                serializer.trace("loadRoutineDefinition", "after load");
             }
         };
     }
@@ -69,7 +77,9 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
         return new LoadCommand() {
             @Override
             public void execute() {
+                serializer.trace("loadRoutineParameters", "before load");
                 serializer.routinesParameters = serializer.getRepository().loadRoutineParameters(serializer.getSchema());
+                serializer.trace("loadRoutineParameters", "after load");
             }
         };
     }
