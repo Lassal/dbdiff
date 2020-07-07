@@ -3,7 +3,6 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
-import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;

@@ -1,8 +1,7 @@
 package br.lassal.dbvcs.tatubola.builder;
 
-import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.fs.BaseDBModelFS;
-import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
+import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.*;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;

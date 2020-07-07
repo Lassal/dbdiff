@@ -1,7 +1,6 @@
 package br.lassal.dbvcs.tatubola.versioncontrol;
 
 import java.io.File;
-import java.io.IOException;
 
 public interface VersionControlSystem {
 

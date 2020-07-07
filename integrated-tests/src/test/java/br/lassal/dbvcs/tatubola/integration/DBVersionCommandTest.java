@@ -5,24 +5,14 @@ import br.lassal.dbvcs.tatubola.DBVersionCommand;
 import br.lassal.dbvcs.tatubola.ParallelDBVersionCommand;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
 import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
-import br.lassal.dbvcs.tatubola.fs.DBModelFS;
-import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
-import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
-import br.lassal.dbvcs.tatubola.relationaldb.serializer.ViewSerializer;
-import br.lassal.dbvcs.tatubola.versioncontrol.GitController;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 
 public class DBVersionCommandTest {
 

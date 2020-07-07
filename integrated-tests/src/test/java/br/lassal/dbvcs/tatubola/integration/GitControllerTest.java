@@ -1,13 +1,11 @@
 package br.lassal.dbvcs.tatubola.integration;
 
 import br.lassal.dbvcs.tatubola.versioncontrol.GitController;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 

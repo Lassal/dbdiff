@@ -3,14 +3,15 @@ package br.lassal.dbvcs.tatubola.relationaldb.repository;
 import br.lassal.dbvcs.tatubola.relationaldb.model.*;
 import br.lassal.dbvcs.tatubola.relationaldb.model.sort.TriggerComparator;
 import com.github.vertical_blank.sqlformatter.SqlFormatter;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;

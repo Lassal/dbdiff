@@ -2,13 +2,11 @@ package br.lassal.dbvcs.tatubola;
 
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.DBModelSerializer;
-import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DBVersionCommand {
 
