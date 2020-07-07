@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RecursiveAction;
 
 public class RelationalDBVersionFactory {
@@ -110,7 +111,7 @@ public class RelationalDBVersionFactory {
     }
 
     public List<RecursiveAction> createParallelDBObjectsSerializers(String environmentName, String schema, String jdbcUrl
-            , String username, String password, String outputPath, boolean openConnectionsOnInitialization){
+            , String username, String password, String outputPath, boolean openConnectionsOnInitialization, CountDownLatch taskCounter){
 
         List<DBModelSerializer> serializers = this.createDBObjectsSerializers(environmentName, schema, jdbcUrl, username, password,
                     outputPath );
@@ -118,7 +119,7 @@ public class RelationalDBVersionFactory {
         List<RecursiveAction> parallelSerializer = new ArrayList<>();
 
         for (DBModelSerializer ser: serializers) {
-            parallelSerializer.add(new ParallelSerializer(ser));
+            parallelSerializer.add(new ParallelSerializer(ser, taskCounter));
         }
 
         return parallelSerializer;

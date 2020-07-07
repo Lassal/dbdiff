@@ -68,7 +68,7 @@ public class TableSerializer extends DBModelSerializer<Table>{
             public void execute() {
                 String schema = serializer.getSchema();
 
-                serializer.trace("load constraints", "before load");
+                serializer.trace("load table constraints", "before load");
 
                 serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(schema);
 
@@ -82,7 +82,7 @@ public class TableSerializer extends DBModelSerializer<Table>{
                     serializer.tableConstraints.addAll(refConstraints);
                 }
 
-                serializer.trace("load constraints", "after load");
+                serializer.trace("load table constraints", "after load");
             }
         };
     }

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RecursiveAction;
 
 public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAction {
@@ -13,9 +14,11 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
     private static Logger logger = LoggerFactory.getLogger(ParallelSerializer.class);
 
     private DBModelSerializer serializer;
+    private CountDownLatch allTaskCounter;
 
-    public ParallelSerializer(DBModelSerializer serializer){
+    public ParallelSerializer(DBModelSerializer serializer, CountDownLatch allTaskCounter){
         this.serializer = serializer;
+        this.allTaskCounter = allTaskCounter;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
         try {
             this.serializer.serialize(dbEntities);
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.error("Error serializing db entities", e);
         }
 
         if(logger.isDebugEnabled()){
@@ -57,6 +60,11 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
 
         }
 
+        this.allTaskCounter.countDown();
+        if(logger.isDebugEnabled()){
+            logger.debug(logPrefix + "(C2) remaining tasks #" + this.allTaskCounter.getCount());
+
+        }
     }
 
     private RecursiveAction convertToRecursiveAction(LoadCommand command){
