@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -65,11 +66,11 @@ public class ParallelDBVersionCommand {
                         Path targetPath = destinationDir.resolve(sourceDir.relativize(sourcePath));
 
                         if(logger.isTraceEnabled()){
-          //                  logger.trace(String.format("Copying %s to %s%n", sourcePath, targetPath));
+                       //     logger.trace(String.format("Copying %s to %s", sourcePath, targetPath));
                         }
                         Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException ex) {
-          //              logger.warn(String.format("I/O error: %s%n", ex));
+                       // logger.warn(String.format("I/O error: %s%n", ex));
                     }
                 });
     }
@@ -83,7 +84,7 @@ public class ParallelDBVersionCommand {
 
         this.vcsController.setupRepositoryInitialState();
 
-        boolean listAllSchemas = this.schemas == null || this.schemas.size() < 1;
+        boolean listAllSchemas = this.schemas == null || this.schemas.isEmpty();
 
         if(logger.isDebugEnabled()){
             logger.debug("(Step 1) Serialize each environment. Environment count = " + this.environments.size());
@@ -131,6 +132,8 @@ public class ParallelDBVersionCommand {
             if(logger.isDebugEnabled()){
                 logger.debug("Branch : " +envBranches[i] + " | Remaining tasks: " + allTasksEnv[i].getCount());
                 logger.debug("(Step 4|" + envBranches[i] + ") About to check-out branch : " + envBranches[i]);
+
+
             }
             this.vcsController.checkout(envBranches[i]);
 

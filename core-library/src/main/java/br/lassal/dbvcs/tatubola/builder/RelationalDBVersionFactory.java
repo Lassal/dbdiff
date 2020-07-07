@@ -40,15 +40,13 @@ public class RelationalDBVersionFactory {
         config.setMinimumIdle(minPoolSize);
         config.setMaximumPoolSize(maxPoolSize);
         config.setInitializationFailTimeout(openConnectionsOnInitialization ? 1 : -1);
-        //  config.addDataSourceProperty( "cachePrepStmts" , "true" );
-        //  config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
-        //  config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
+
         return new HikariDataSource(config);
     }
 
     public DataSource createConnectionPool(String jdbcUrl, String username, String password
             , boolean openConnectionsOnInitialization) {
-        return this.createConnectionPool(jdbcUrl, username, password, 4, 16, openConnectionsOnInitialization); //4, 16
+        return this.createConnectionPool(jdbcUrl, username, password, 8, 16, openConnectionsOnInitialization); //4, 16
     }
 
     public DataSource createConnectionPool(String jdbcUrl, String username, String password) {
@@ -113,7 +111,7 @@ public class RelationalDBVersionFactory {
             , String username, String password, String outputPath, boolean openConnectionsOnInitialization, CountDownLatch taskCounter){
 
         List<DBModelSerializer> serializers = this.createDBObjectsSerializers(environmentName, schema, jdbcUrl, username, password,
-                    outputPath );
+                    outputPath, openConnectionsOnInitialization );
 
         List<RecursiveAction> parallelSerializer = new ArrayList<>();
 

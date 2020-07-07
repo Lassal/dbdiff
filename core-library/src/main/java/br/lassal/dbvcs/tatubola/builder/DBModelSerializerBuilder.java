@@ -47,14 +47,14 @@ public class DBModelSerializerBuilder {
      */
     public DBModelSerializerBuilder setOutputPath(String outputPath, boolean segregateByEnvironment){
         String outputEnvPath = segregateByEnvironment
-                                 ? this.generateEnvOutputPath(outputPath, environmentName).toString()
+                                 ? this.generateEnvOutputPath(outputPath).toString()
                                  : outputPath;
 
         this.outputFS = RelationalDBVersionFactory.getInstance().createDBModelFS(outputEnvPath);
         return this;
     }
 
-    private Path generateEnvOutputPath(String rootPath, String environmentName){
+    private Path generateEnvOutputPath(String rootPath){
         return Paths.get(rootPath, this.getNormalizedEnvironmentName());
     }
 
@@ -80,7 +80,7 @@ public class DBModelSerializerBuilder {
 
         List<String> schemas = this.repository.listSchemas();
 
-        if(schemas != null && schemas.size() > 0){
+        if(schemas != null && !schemas.isEmpty()){
             for(String schema : schemas){
                 List<DBModelSerializer> schemaSerializers = this.getDBModelSerializers(schema);
                 allSerializers.addAll(schemaSerializers);

@@ -40,7 +40,7 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
             logger.debug(logPrefix + "(A) call load DB metadata actions");
 
         }
-        this.invokeAll(loadActions);
+        ParallelSerializer.invokeAll(loadActions);
 
         if(logger.isDebugEnabled()){
             logger.debug(logPrefix + "(B) finished load DB metadata");
@@ -75,4 +75,6 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
             }
         };
     }
+
+
 }

@@ -22,9 +22,7 @@ public class ViewSerializer extends DBModelSerializer<View> {
     private Map<String, List<TableColumn>> viewsColumns;
 
     public ViewSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
-        super(repository, dbModelFS, targetSchema, environmentName );
-
-        this.setLogger(logger);
+        super(repository, dbModelFS, targetSchema, environmentName, ViewSerializer.logger );
 
     }
 
@@ -56,48 +54,36 @@ public class ViewSerializer extends DBModelSerializer<View> {
 
     @Override
     protected void defineLoadSteps() {
-        this.addLoadStep(this.getLoadViewDefinitionsStep());
-        this.addLoadStep(this.getLoadViewsReferencedTablesStep());
-        this.addLoadStep(this.getLoadViewsColumnsStep());
+        this.addLoadStep(this.getLoadViewDefinitionsStep(), "Load ViewDefinitions");
+        this.addLoadStep(this.getLoadViewsReferencedTablesStep(), "Load Views ReferencedTables");
+        this.addLoadStep(this.getLoadViewsColumnsStep(), "Load ViewColumns");
     }
 
     private LoadCommand getLoadViewDefinitionsStep() {
         ViewSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadViewDefinitions", "before load");
-                serializer.views = serializer.getRepository().loadViewDefinitions(serializer.getSchema());
-                serializer.trace("loadViewDefinitions", "after load");
-            }
+        return () -> {
+            serializer.views = serializer.getRepository().loadViewDefinitions(serializer.getSchema());
         };
+
     }
 
     private LoadCommand getLoadViewsReferencedTablesStep() {
         ViewSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadViewTables", "before load");
-                serializer.referencedTables = serializer.getRepository().loadViewTables(serializer.getSchema());
-                serializer.trace("loadViewTables", "after load");
-            }
+        return () -> {
+            serializer.referencedTables = serializer.getRepository().loadViewTables(serializer.getSchema());
         };
+
     }
 
     private LoadCommand getLoadViewsColumnsStep() {
         ViewSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadViewColumns", "before load");
-                serializer.viewsColumns = serializer.getRepository().loadViewColumns(serializer.getSchema());
-                serializer.trace("loadViewColumns", "after load");
-            }
+        return () -> {
+            serializer.viewsColumns = serializer.getRepository().loadViewColumns(serializer.getSchema());
         };
+
     }
 
 

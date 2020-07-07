@@ -20,9 +20,7 @@ public class TableSerializer extends DBModelSerializer<Table>{
     private List<TableConstraint> tableConstraints;
 
     public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName );
-
-        this.setLogger(logger);
+        super(repository, dbModelFS, targetSchema, environmentName, logger );
     }
 
     List<Table> assemble(){
@@ -43,32 +41,34 @@ public class TableSerializer extends DBModelSerializer<Table>{
 
     @Override
     protected void defineLoadSteps() {
-         this.addLoadStep(this.getLoadTableColumnsStep());
-         this.addLoadStep(this.getLoadTableConstraintsStep());
+         this.addLoadStep(this.getLoadTableColumnsStep(), "Load TableColumns");
+         this.addLoadStep(this.getLoadTableConstraintsStep(), "Load TableConstraints");
     }
 
     private LoadCommand getLoadTableColumnsStep(){
         TableSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadTableColumns", "before load");
+        return () -> {
                 serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
-                serializer.trace("loadTableColumns", "after load");
-            }
-        };
+            };
     }
+
+    private LoadCommand getLoadTableColumnsStep2(){
+        TableSerializer serializer = this;
+
+        return () -> {
+                serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
+            };
+
+    }
+
 
     private LoadCommand getLoadTableConstraintsStep(){
         TableSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                String schema = serializer.getSchema();
+        return () -> {
 
-                serializer.trace("load table constraints", "before load");
+                String schema = serializer.getSchema();
 
                 serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(schema);
 
@@ -81,9 +81,6 @@ public class TableSerializer extends DBModelSerializer<Table>{
                 if(refConstraints != null){
                     serializer.tableConstraints.addAll(refConstraints);
                 }
-
-                serializer.trace("load table constraints", "after load");
-            }
         };
     }
 

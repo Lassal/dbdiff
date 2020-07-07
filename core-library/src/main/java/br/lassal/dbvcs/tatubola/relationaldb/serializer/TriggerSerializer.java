@@ -15,9 +15,7 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
     private List<Trigger> triggers;
 
     public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName );
-
-        this.setLogger(logger);
+        super(repository, dbModelFS, targetSchema, environmentName, TriggerSerializer.logger );
     }
 
 
@@ -27,20 +25,14 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
 
     @Override
     protected void defineLoadSteps() {
-        this.addLoadStep(this.getLoadTriggersStep());
+        this.addLoadStep(this.getLoadTriggersStep(), "Load Triggers");
     }
 
     private LoadCommand getLoadTriggersStep(){
         TriggerSerializer serializer = this;
 
-        return new LoadCommand(){
-
-            @Override
-            public void execute() {
-                serializer.trace("loadTriggers", "before load");
-                serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
-                serializer.trace("loadTriggers", "after load");
-            }
+        return () -> {
+            serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
         };
 
     }

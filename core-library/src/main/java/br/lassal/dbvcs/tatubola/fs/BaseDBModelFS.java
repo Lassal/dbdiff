@@ -39,7 +39,7 @@ public class BaseDBModelFS implements DBModelFS{
         this.existingPaths = new HashSet<>();
     }
 
-    public Path save(DatabaseModelEntity dbEntity) throws Exception {
+    public Path save(DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
 
         Path dbModelFile = null;
 
@@ -65,10 +65,10 @@ public class BaseDBModelFS implements DBModelFS{
         return dbModelFile;
     }
 
-    private void safeWrite(Path dbModelFile, DatabaseModelEntity dbEntity) throws Exception {
+    private void safeWrite(Path dbModelFile, DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
 
         if(dbModelFile == null){
-            throw new Exception("Object path NULL. Have you defined the path for this type of DB object ?");
+            throw new DBModelFSException();
         }
 
         this.verifyPath(dbModelFile.getParent());

@@ -20,9 +20,8 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
     private List<RoutineParameter> routinesParameters;
 
     public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName );
+        super(repository, dbModelFS, targetSchema, environmentName, logger );
 
-        this.setLogger(logger);
     }
 
 
@@ -54,33 +53,23 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
 
     @Override
     protected void defineLoadSteps() {
-        this.addLoadStep(this.getLoadRoutineDefinitionStep());
-        this.addLoadStep(this.getLoadRoutinesParameters());
+        this.addLoadStep(this.getLoadRoutineDefinitionStep(), "Load RoutineDefinitions");
+        this.addLoadStep(this.getLoadRoutinesParameters(), "Load RoutineParametes");
     }
 
     private LoadCommand getLoadRoutineDefinitionStep(){
         RoutineSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadRoutineDefinition", "before load");
-                serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
-                serializer.trace("loadRoutineDefinition", "after load");
-            }
+        return () -> {
+            serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
         };
     }
 
     private LoadCommand getLoadRoutinesParameters(){
         RoutineSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadRoutineParameters", "before load");
-                serializer.routinesParameters = serializer.getRepository().loadRoutineParameters(serializer.getSchema());
-                serializer.trace("loadRoutineParameters", "after load");
-            }
+        return () -> {
+            serializer.routinesParameters = serializer.getRepository().loadRoutineParameters(serializer.getSchema());
         };
     }
 

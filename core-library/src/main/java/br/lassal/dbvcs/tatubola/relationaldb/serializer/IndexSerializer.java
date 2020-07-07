@@ -15,9 +15,7 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
     private List<Index> indexes;
 
     public IndexSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName );
-
-        this.setLogger(logger);
+        super(repository, dbModelFS, targetSchema, environmentName, logger );
     }
 
 
@@ -27,19 +25,14 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
 
     @Override
     protected void defineLoadSteps() {
-        this.addLoadStep(this.getLoadIndexes());
+        this.addLoadStep(this.getLoadIndexes(), "LoadIndexes");
     }
 
     private LoadCommand getLoadIndexes(){
         IndexSerializer serializer = this;
 
-        return new LoadCommand() {
-            @Override
-            public void execute() {
-                serializer.trace("loadIndexes", "before load");
-                serializer.indexes = serializer.getRepository().loadIndexes(serializer.getSchema());
-                serializer.trace("loadIndexes", "after load");
-            }
+        return () -> {
+            serializer.indexes = serializer.getRepository().loadIndexes(serializer.getSchema());
         };
     }
 

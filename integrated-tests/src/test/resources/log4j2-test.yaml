@@ -6,13 +6,13 @@ Configuration:
       name: STDOUT
       target: SYSTEM_OUT
       PatternLayout:
-        pattern: "%d{HH:mm:ss,SSS}|%p[%t]|%C{1}| %m%n"
+        pattern: "%d{HH:mm:ss,SSS}|%p[%t]|%c{1}| %m%n"
 
   Loggers:
     logger:
       -
         name: br.lassal.dbvcs.tatubola
-        level: trace
+        level: debug
         additivity: false
         AppenderRef:
           ref: STDOUT

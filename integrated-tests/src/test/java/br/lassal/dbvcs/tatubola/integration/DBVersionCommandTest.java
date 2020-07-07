@@ -47,13 +47,13 @@ public class DBVersionCommandTest {
         List<String> schemas = new ArrayList<>();
 
 
-        schemas.add("SYS");
+        //schemas.add("SYS");
         schemas.add("APEX_050000");
         schemas.add("APP_DATA");
         schemas.add("HR");
         schemas.add("XDB");
 
-        return null;//schemas;
+        return schemas;
     }
 
     @Test
