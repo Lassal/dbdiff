@@ -1,5 +1,7 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import java.util.Objects;
+
 public class Column {
 
     private String name;
@@ -43,5 +45,10 @@ public class Column {
         }
 
         return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, ordinalPosition);
     }
 }

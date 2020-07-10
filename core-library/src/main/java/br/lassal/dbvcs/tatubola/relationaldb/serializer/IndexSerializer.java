@@ -12,7 +12,7 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
 
     private static Logger logger = LoggerFactory.getLogger(IndexSerializer.class);
 
-    private List<Index> indexes;
+    private transient List<Index> indexes;
 
     public IndexSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
         super(repository, dbModelFS, targetSchema, environmentName, logger );
@@ -31,9 +31,7 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
     private LoadCommand getLoadIndexes(){
         IndexSerializer serializer = this;
 
-        return () -> {
-            serializer.indexes = serializer.getRepository().loadIndexes(serializer.getSchema());
-        };
+        return () -> serializer.indexes = serializer.getRepository().loadIndexes(serializer.getSchema());
     }
 
 

@@ -17,9 +17,9 @@ public class ViewSerializer extends DBModelSerializer<View> {
 
     private static Logger logger = LoggerFactory.getLogger(ViewSerializer.class);
 
-    private List<View> views;
-    private Map<String, List<Table>> referencedTables;
-    private Map<String, List<TableColumn>> viewsColumns;
+    private transient List<View> views;
+    private transient Map<String, List<Table>> referencedTables;
+    private transient Map<String, List<TableColumn>> viewsColumns;
 
     public ViewSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
         super(repository, dbModelFS, targetSchema, environmentName, ViewSerializer.logger );
@@ -62,28 +62,19 @@ public class ViewSerializer extends DBModelSerializer<View> {
     private LoadCommand getLoadViewDefinitionsStep() {
         ViewSerializer serializer = this;
 
-        return () -> {
-            serializer.views = serializer.getRepository().loadViewDefinitions(serializer.getSchema());
-        };
-
+        return () -> serializer.views = serializer.getRepository().loadViewDefinitions(serializer.getSchema());
     }
 
     private LoadCommand getLoadViewsReferencedTablesStep() {
         ViewSerializer serializer = this;
 
-        return () -> {
-            serializer.referencedTables = serializer.getRepository().loadViewTables(serializer.getSchema());
-        };
-
+        return () -> serializer.referencedTables = serializer.getRepository().loadViewTables(serializer.getSchema());
     }
 
     private LoadCommand getLoadViewsColumnsStep() {
         ViewSerializer serializer = this;
 
-        return () -> {
-            serializer.viewsColumns = serializer.getRepository().loadViewColumns(serializer.getSchema());
-        };
-
+        return () -> serializer.viewsColumns = serializer.getRepository().loadViewColumns(serializer.getSchema());
     }
 
 

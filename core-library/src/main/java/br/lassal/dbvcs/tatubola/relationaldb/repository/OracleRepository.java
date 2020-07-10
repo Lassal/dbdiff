@@ -373,7 +373,7 @@ public class OracleRepository extends BaseRepository{
     private Index convertToIndex(String indexSchema, String indexName, ResultSet rs) throws SQLException {
         String indexType = rs.getString("INDEX_TYPE");
         String uniqueness = rs.getString("UNIQUENESS");
-        boolean isUnique = uniqueness != null && uniqueness.equals("UNIQUE") ? true : false;
+        boolean isUnique = uniqueness != null && uniqueness.equals("UNIQUE") ;
         String targetTableSchema = rs.getString("TABLE_OWNER");
         String targetTable = rs.getString("TABLE_NAME");
 
@@ -400,7 +400,7 @@ public class OracleRepository extends BaseRepository{
             if (referencedTables.containsKey(view.getKey())) {
                 List<Table> viewTables = referencedTables.get(view.getKey());
 
-                if (viewTables.size() > 0) {
+                if (!viewTables.isEmpty()) {
                     view.getValue().setReferencedTables(viewTables);
                 }
             }
@@ -408,7 +408,7 @@ public class OracleRepository extends BaseRepository{
             if (viewColumns.containsKey(view.getKey())) {
                 List<TableColumn> columns = viewColumns.get(view.getKey());
 
-                if (columns.size() > 0) {
+                if (!columns.isEmpty()) {
                     view.getValue().setColumns(columns);
                 }
             }

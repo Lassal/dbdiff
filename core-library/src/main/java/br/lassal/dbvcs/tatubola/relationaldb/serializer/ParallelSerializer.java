@@ -7,14 +7,15 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
 public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAction {
 
     private static Logger logger = LoggerFactory.getLogger(ParallelSerializer.class);
 
-    private DBModelSerializer serializer;
-    private CountDownLatch allTaskCounter;
+    private transient DBModelSerializer serializer;
+    private transient CountDownLatch allTaskCounter;
 
     public ParallelSerializer(DBModelSerializer serializer, CountDownLatch allTaskCounter){
         this.serializer = serializer;
@@ -40,7 +41,7 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
             logger.debug(logPrefix + "(A) call load DB metadata actions");
 
         }
-        ParallelSerializer.invokeAll(loadActions);
+        ForkJoinTask.invokeAll(loadActions);
 
         if(logger.isDebugEnabled()){
             logger.debug(logPrefix + "(B) finished load DB metadata");

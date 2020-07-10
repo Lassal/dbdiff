@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -151,5 +152,8 @@ public class Index implements DatabaseModelEntity{
         return indexStr.toString();
     }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(indexSchema, indexName, associateTableName, associateTableSchema, indexType, unique, columns);
+    }
 }

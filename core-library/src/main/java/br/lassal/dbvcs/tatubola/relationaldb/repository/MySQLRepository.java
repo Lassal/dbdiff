@@ -557,7 +557,7 @@ public class MySQLRepository extends BaseRepository{
             if(referencedTables.containsKey(view.getKey())){
                 List<Table> viewTables =  referencedTables.get(view.getKey());
 
-                if(viewTables.size() > 0){
+                if(!viewTables.isEmpty()){
                     view.getValue().setReferencedTables(viewTables);
                 }
             }
@@ -565,7 +565,7 @@ public class MySQLRepository extends BaseRepository{
             if(viewColumns.containsKey(view.getKey())){
                 List<TableColumn> columns = viewColumns.get(view.getKey());
 
-                if(columns.size() > 0){
+                if(!columns.isEmpty()){
                     view.getValue().setColumns(columns);
                 }
             }
@@ -608,7 +608,7 @@ public class MySQLRepository extends BaseRepository{
         String viewName = rs.getString("TABLE_NAME");
         String isUpdatable = rs.getString("IS_UPDATABLE");
         String viewDefinition = SqlFormatter.of("sql").format(rs.getString("VIEW_DEFINITION"));
-        boolean updatableView = "YES".equals(isUpdatable) ? true : false;
+        boolean updatableView = "YES".equals(isUpdatable);
 
 
         View view = new View(viewSchema, viewName);

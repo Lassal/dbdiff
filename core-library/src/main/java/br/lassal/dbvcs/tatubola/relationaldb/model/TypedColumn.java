@@ -2,6 +2,8 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Objects;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TypedColumn extends Column{
     private String dataType;
@@ -90,5 +92,8 @@ public class TypedColumn extends Column{
         return "";
     }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), dataType, textMaxLength, numericPrecision, numericScale);
+    }
 }

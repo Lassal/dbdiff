@@ -4,12 +4,11 @@ import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
+public abstract class DBModelSerializer<M extends DatabaseModelEntity>  {
 
     private RelationalDBRepository repository;
     private String schema;

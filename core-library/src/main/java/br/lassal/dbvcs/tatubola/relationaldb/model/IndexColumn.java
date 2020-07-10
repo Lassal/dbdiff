@@ -1,5 +1,7 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import java.util.Objects;
+
 public class IndexColumn extends Column {
 
     private ColumnOrder order;
@@ -40,5 +42,10 @@ public class IndexColumn extends Column {
     @Override
     public String toString(){
         return String.format("Name: %s|Position: %s|Order: %s", this.getName(), this.getOrdinalPosition(), this.getOrder());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), order);
     }
 }

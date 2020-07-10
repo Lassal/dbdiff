@@ -2,6 +2,8 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Objects;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TableColumn extends TypedColumn {
 
@@ -62,5 +64,10 @@ public class TableColumn extends TypedColumn {
         }
 
         return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), nullable, defaultValue);
     }
 }

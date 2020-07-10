@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -142,5 +143,10 @@ public class Routine implements DatabaseModelEntity{
         }
 
         return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema, name, routineType, returnParamater, parameters, routineDefinition);
     }
 }

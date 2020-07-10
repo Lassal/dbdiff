@@ -12,7 +12,7 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
 
     private static Logger logger = LoggerFactory.getLogger(TriggerSerializer.class);
 
-    private List<Trigger> triggers;
+    private transient List<Trigger> triggers;
 
     public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
         super(repository, dbModelFS, targetSchema, environmentName, TriggerSerializer.logger );
@@ -31,10 +31,7 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
     private LoadCommand getLoadTriggersStep(){
         TriggerSerializer serializer = this;
 
-        return () -> {
-            serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
-        };
-
+        return () -> serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());
     }
 
 }

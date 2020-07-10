@@ -1,5 +1,7 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import java.util.Objects;
+
 public class ReferentialIntegrityColumn extends Column{
 
     private String referencedSchemaName;
@@ -39,5 +41,21 @@ public class ReferentialIntegrityColumn extends Column{
 
     public String toString(){
         return String.format("%s -> %s.%s.%s", this.getName(), this.referencedSchemaName, this.referencedTableName, this.referencedTableColumnName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ReferentialIntegrityColumn)) return false;
+        if (!super.equals(o)) return false;
+        ReferentialIntegrityColumn that = (ReferentialIntegrityColumn) o;
+        return Objects.equals(getReferencedSchemaName(), that.getReferencedSchemaName()) &&
+                Objects.equals(getReferencedTableName(), that.getReferencedTableName()) &&
+                Objects.equals(getReferencedTableColumnName(), that.getReferencedTableColumnName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getReferencedSchemaName(), getReferencedTableName(), getReferencedTableColumnName());
     }
 }

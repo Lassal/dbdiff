@@ -16,8 +16,8 @@ public class TableSerializer extends DBModelSerializer<Table>{
 
     private static Logger logger = LoggerFactory.getLogger(TableSerializer.class);
 
-    private Map<String, Table> tables;
-    private List<TableConstraint> tableConstraints;
+    private transient Map<String, Table> tables;
+    private transient List<TableConstraint> tableConstraints;
 
     public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
         super(repository, dbModelFS, targetSchema, environmentName, logger );
@@ -48,20 +48,9 @@ public class TableSerializer extends DBModelSerializer<Table>{
     private LoadCommand getLoadTableColumnsStep(){
         TableSerializer serializer = this;
 
-        return () -> {
-                serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
-            };
-    }
-
-    private LoadCommand getLoadTableColumnsStep2(){
-        TableSerializer serializer = this;
-
-        return () -> {
-                serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
-            };
+        return () -> serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
 
     }
-
 
     private LoadCommand getLoadTableConstraintsStep(){
         TableSerializer serializer = this;

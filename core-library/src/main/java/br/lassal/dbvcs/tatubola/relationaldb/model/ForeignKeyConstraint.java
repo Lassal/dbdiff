@@ -1,9 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,7 +68,7 @@ public class ForeignKeyConstraint extends TableConstraint{
                     isEqual &= thisColumns.containsKey(col.getName());
 
                     if(isEqual){
-                        ReferentialIntegrityColumn thisCol = (ReferentialIntegrityColumn) thisColumns.get(col.getName());
+                        ReferentialIntegrityColumn thisCol = thisColumns.get(col.getName());
                         isEqual &= thisCol.getName().equals(col.getName());
                         isEqual &= thisCol.getOrdinalPosition() == col.getOrdinalPosition();
                         isEqual &= thisCol.getReferencedSchemaName().equals(col.getReferencedSchemaName());
@@ -85,4 +82,8 @@ public class ForeignKeyConstraint extends TableConstraint{
         return isEqual;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), orderedColumns);
+    }
 }

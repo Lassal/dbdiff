@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -163,23 +164,10 @@ public class View implements DatabaseModelEntity{
         return view.toString();
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema, name, updatedAllowed, insertAllowed, viewDefinition, columns, referencedTables);
+    }
 }
 
 
-/*
-
- - Schema
- - Name
- - AllowUpdate
- - AllowInsert
- - View Definition
- - Columns
-   - Name
-   - Ordinal position
-   - Data Type
-   - Length/ size
- - Referenced Tables
-    - Schema
-    - Name
-
- */

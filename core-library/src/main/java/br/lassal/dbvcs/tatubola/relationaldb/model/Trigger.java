@@ -2,6 +2,8 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Objects;
+
 @JsonIgnoreProperties(ignoreUnknown = true, value={"schema", "triggerID"})
 public class Trigger implements DatabaseModelEntity{
 
@@ -153,6 +155,10 @@ public class Trigger implements DatabaseModelEntity{
     }
 
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(targetObjectSchema, targetObjectName, targetObjectType, name, eventTiming, event, eventActionBody, executionOrder);
+    }
 }
 
 

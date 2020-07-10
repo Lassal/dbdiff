@@ -3,6 +3,8 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Objects;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value={"routineSchema", "routineName", "routineID", "dataTypeLength"})
 public class RoutineParameter extends TypedColumn{
@@ -69,5 +71,10 @@ public class RoutineParameter extends TypedColumn{
         }
 
         return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), routineSchema, routineName, parameterMode);
     }
 }

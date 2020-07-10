@@ -16,8 +16,8 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
 
     private static Logger logger = LoggerFactory.getLogger(RoutineSerializer.class);
 
-    private List<Routine> routines;
-    private List<RoutineParameter> routinesParameters;
+    private transient List<Routine> routines;
+    private transient List<RoutineParameter> routinesParameters;
 
     public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
         super(repository, dbModelFS, targetSchema, environmentName, logger );
@@ -60,17 +60,13 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
     private LoadCommand getLoadRoutineDefinitionStep(){
         RoutineSerializer serializer = this;
 
-        return () -> {
-            serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
-        };
+        return () -> serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
     }
 
     private LoadCommand getLoadRoutinesParameters(){
         RoutineSerializer serializer = this;
 
-        return () -> {
-            serializer.routinesParameters = serializer.getRepository().loadRoutineParameters(serializer.getSchema());
-        };
+        return () -> serializer.routinesParameters = serializer.getRepository().loadRoutineParameters(serializer.getSchema());
     }
 
 }

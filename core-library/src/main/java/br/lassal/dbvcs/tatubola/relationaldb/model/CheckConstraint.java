@@ -1,5 +1,7 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import java.util.Objects;
+
 public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model.TableConstraint {
 
     private String checkClause;
@@ -46,4 +48,8 @@ public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model
         return isEqual;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getTableID(), this.getName(), this.getType(), this.checkClause);
+    }
 }
