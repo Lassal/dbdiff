@@ -17,12 +17,12 @@ public class ViewSerializer extends DBModelSerializer<View> {
 
     private static Logger logger = LoggerFactory.getLogger(ViewSerializer.class);
 
-    private transient List<View> views;
-    private transient Map<String, List<Table>> referencedTables;
-    private transient Map<String, List<TableColumn>> viewsColumns;
+    private List<View> views;
+    private Map<String, List<Table>> referencedTables;
+    private Map<String, List<TableColumn>> viewsColumns;
 
     public ViewSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
-        super(repository, dbModelFS, targetSchema, environmentName, ViewSerializer.logger );
+        super(repository, dbModelFS, targetSchema, environmentName, ViewSerializer.logger);
 
     }
 

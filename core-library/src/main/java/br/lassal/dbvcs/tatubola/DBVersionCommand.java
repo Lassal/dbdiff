@@ -25,7 +25,7 @@ public class DBVersionCommand {
         this.vcsController.setWorkspacePath(new File(rootPathLocalVCRepository));
     }
 
-    public DBVersionCommand addDBEnvironment(DBModelSerializerBuilder serializerBuilder){
+    public DBVersionCommand addDBEnvironment(DBModelSerializerBuilder serializerBuilder) {
         this.environments.add(serializerBuilder);
 
         return this;
@@ -33,16 +33,13 @@ public class DBVersionCommand {
 
     public void takeDatabaseSchemaSnapshotVersion() throws Exception {
 
-        //TODO: setup local vcs repository
         this.vcsController.setupRepositoryInitialState();
 
-        boolean listAllSchemas = this.schemas == null || this.schemas.size() < 1;
+        boolean listAllSchemas = this.schemas == null || this.schemas.isEmpty();
 
         for (DBModelSerializerBuilder envBuilder : this.environments) {
-            //TODO: create a serializer for each environment in  the repository output
             envBuilder.setOutputPath(this.rootPathLocalVCRepository, false);
 
-            //TODO: VCS checkout repository for the env branch
             this.vcsController.checkout(envBuilder.getEnvironmentName());
 
             List<DBModelSerializer> serializers = new ArrayList<>();
@@ -58,11 +55,9 @@ public class DBVersionCommand {
                 serializer.serialize();
             }
 
-            //TODO: VCS commit changes
             this.vcsController.commitAllChanges("-- ?? add info in the message about the number of objects created ---");
         }
 
-        //TODO: VCS push changes to server
         this.vcsController.syncChangesToServer();
     }
 

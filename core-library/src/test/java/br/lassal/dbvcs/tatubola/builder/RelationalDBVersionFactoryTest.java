@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNull;
 public class RelationalDBVersionFactoryTest {
 
     @Test
-    public void testCreateRelationalDBRepository(){
+    public void testCreateRelationalDBRepository() {
         String mySqlUrl = "jdbc:mysql://localhost:3306/test";
         String oracleUrl = "jdbc:oracle:thin:root/secret@localhost:1521:testdb";
         String postreSQLUrl = "jdbc:postgresql://localhost:5432/testdb";
@@ -31,17 +31,17 @@ public class RelationalDBVersionFactoryTest {
     }
 
     @Test
-    public void testNormalizeNames(){
+    public void testNormalizeNames() {
         String envName = "Meu nome ambiente ++";
 
         String normalizedName = envName
-                .replaceAll("[^a-zA-Z\\d\\s:]*","").trim()
-                .replaceAll("\\s","_")
+                .replaceAll("[^a-zA-Z\\d\\s:]*", "").trim()
+                .replaceAll("\\s", "_")
                 .toUpperCase();
 
         String expected = "MEU_NOME_AMBIENTE";
 
-        System.out.println("Teste: !@#$%+".replace("@$","#"));
+        System.out.println("Teste: !@#$%+".replace("@$", "#"));
 
         assertEquals(expected, normalizedName);
     }

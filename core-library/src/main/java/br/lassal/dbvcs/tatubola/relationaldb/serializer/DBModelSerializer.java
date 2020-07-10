@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DBModelSerializer<M extends DatabaseModelEntity>  {
+public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
 
     private RelationalDBRepository repository;
     private String schema;
@@ -18,7 +18,7 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity>  {
     private Logger logger;
 
     public DBModelSerializer(RelationalDBRepository repository, DBModelFS dbModelFS
-            , String targetSchema, String environmentName, Logger logger){
+            , String targetSchema, String environmentName, Logger logger) {
         this.repository = repository;
         this.modelFS = dbModelFS;
         this.schema = targetSchema;
@@ -41,46 +41,47 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity>  {
         return modelFS;
     }
 
-    public String getEnvironmentName(){ return this.environmentName; }
+    public String getEnvironmentName() {
+        return this.environmentName;
+    }
 
     abstract List<M> assemble();
 
     void serialize(List<M> entities) throws Exception {
-        for(M model : entities){
+        for (M model : entities) {
             this.getModelFS().save(model);
         }
     }
 
-    protected long showEllapsedMicros(long start){
+    protected long showEllapsedMicros(long start) {
         double delta = (System.nanoTime() - start) / 1000000.00;
         this.logger.trace("Ellapsed millis " + delta);
 
         return System.nanoTime();
     }
 
-    protected void addLoadStep(LoadCommand loadStep, String stepName){
+    protected void addLoadStep(LoadCommand loadStep, String stepName) {
 
         this.loadSteps.add(this.traceLoadStep(loadStep, stepName));
 
     }
 
-    private LoadCommand traceLoadStep(LoadCommand loadStep, String stepName){
+    private LoadCommand traceLoadStep(LoadCommand loadStep, String stepName) {
         String logMessage = String.format("Env: %s|Schema: %s|Action: %s > "
                 , this.getEnvironmentName(), this.getSchema(), stepName);
 
-        if(this.logger != null && this.logger.isTraceEnabled()){
+        if (this.logger != null && this.logger.isTraceEnabled()) {
             return () -> {
                 this.logger.trace(logMessage + " BEFORE ACTION");
                 loadStep.execute();
                 this.logger.trace(logMessage + " AFTER ACTION");
             };
-        }
-        else{
+        } else {
             return loadStep;
         }
     }
 
-    public List<LoadCommand> getLoadSteps(){
+    public List<LoadCommand> getLoadSteps() {
         return this.loadSteps;
     }
 
@@ -90,7 +91,7 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity>  {
 
         long lastMark = System.nanoTime();
 
-        for(LoadCommand loadStep : this.loadSteps){
+        for (LoadCommand loadStep : this.loadSteps) {
             loadStep.execute();
             lastMark = this.showEllapsedMicros(lastMark);
         }
@@ -101,8 +102,8 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity>  {
 
     }
 
-    protected void trace(String action, String message){
-        if(this.logger != null && this.logger.isTraceEnabled()){
+    protected void trace(String action, String message) {
+        if (this.logger != null && this.logger.isTraceEnabled()) {
             this.logger.trace(String.format("Env: %s|Schema: %s|Action: %s > %s"
                     , this.getEnvironmentName(), this.getSchema(), action, message));
         }

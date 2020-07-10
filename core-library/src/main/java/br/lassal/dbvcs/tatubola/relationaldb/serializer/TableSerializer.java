@@ -12,21 +12,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class TableSerializer extends DBModelSerializer<Table>{
+public class TableSerializer extends DBModelSerializer<Table> {
 
     private static Logger logger = LoggerFactory.getLogger(TableSerializer.class);
 
-    private transient Map<String, Table> tables;
-    private transient List<TableConstraint> tableConstraints;
+    private Map<String, Table> tables;
+    private List<TableConstraint> tableConstraints;
 
-    public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName, logger );
+    public TableSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
+        super(repository, dbModelFS, targetSchema, environmentName, logger);
     }
 
-    List<Table> assemble(){
+    List<Table> assemble() {
 
-        for (TableConstraint constraint: this.tableConstraints) {
-            if(this.tables.containsKey(constraint.getTableID())){
+        for (TableConstraint constraint : this.tableConstraints) {
+            if (this.tables.containsKey(constraint.getTableID())) {
                 this.tables.get(constraint.getTableID()).addConstraint(constraint);
             }
         }
@@ -41,35 +41,35 @@ public class TableSerializer extends DBModelSerializer<Table>{
 
     @Override
     protected void defineLoadSteps() {
-         this.addLoadStep(this.getLoadTableColumnsStep(), "Load TableColumns");
-         this.addLoadStep(this.getLoadTableConstraintsStep(), "Load TableConstraints");
+        this.addLoadStep(this.getLoadTableColumnsStep(), "Load TableColumns");
+        this.addLoadStep(this.getLoadTableConstraintsStep(), "Load TableConstraints");
     }
 
-    private LoadCommand getLoadTableColumnsStep(){
+    private LoadCommand getLoadTableColumnsStep() {
         TableSerializer serializer = this;
 
         return () -> serializer.tables = serializer.getRepository().loadTableColumns(serializer.getSchema());
 
     }
 
-    private LoadCommand getLoadTableConstraintsStep(){
+    private LoadCommand getLoadTableConstraintsStep() {
         TableSerializer serializer = this;
 
         return () -> {
 
-                String schema = serializer.getSchema();
+            String schema = serializer.getSchema();
 
-                serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(schema);
+            serializer.tableConstraints = serializer.getRepository().loadCheckConstraints(schema);
 
-                List<TableConstraint> uniqueConstraints = serializer.getRepository().loadUniqueConstraints(schema);
-                if(uniqueConstraints != null){
-                    serializer.tableConstraints.addAll(uniqueConstraints);
-                }
+            List<TableConstraint> uniqueConstraints = serializer.getRepository().loadUniqueConstraints(schema);
+            if (uniqueConstraints != null) {
+                serializer.tableConstraints.addAll(uniqueConstraints);
+            }
 
-                List<TableConstraint> refConstraints = serializer.getRepository().loadReferentialConstraints(schema);
-                if(refConstraints != null){
-                    serializer.tableConstraints.addAll(refConstraints);
-                }
+            List<TableConstraint> refConstraints = serializer.getRepository().loadReferentialConstraints(schema);
+            if (refConstraints != null) {
+                serializer.tableConstraints.addAll(refConstraints);
+            }
         };
     }
 

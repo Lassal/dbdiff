@@ -18,7 +18,7 @@ import java.util.Objects;
         @Type(value = ForeignKeyConstraint.class, name = "fk-constraint")
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true, value={"tableID","schema"})
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"tableID", "schema"})
 public abstract class TableConstraint {
 
     private String schema;
@@ -26,11 +26,11 @@ public abstract class TableConstraint {
     private ConstraintType type;
     private String tableName;
 
-    public TableConstraint(){
+    public TableConstraint() {
 
     }
 
-    public TableConstraint(String schema, String tableName, String constraintName, ConstraintType type){
+    public TableConstraint(String schema, String tableName, String constraintName, ConstraintType type) {
         this.schema = schema;
         this.name = constraintName;
         this.type = type;
@@ -69,7 +69,7 @@ public abstract class TableConstraint {
     public abstract void onAfterLoad();
 
     @Override
-    public String toString(){
+    public String toString() {
         return String.format("Type: %s|Name: %s|", this.type, this.name);
     }
 
@@ -77,7 +77,7 @@ public abstract class TableConstraint {
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof TableConstraint){
+        if (obj instanceof TableConstraint) {
             TableConstraint other = (TableConstraint) obj;
             isEqual = true;
 
@@ -92,7 +92,7 @@ public abstract class TableConstraint {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hash(this.schema, this.tableName, this.name, this.type);
     }
 }

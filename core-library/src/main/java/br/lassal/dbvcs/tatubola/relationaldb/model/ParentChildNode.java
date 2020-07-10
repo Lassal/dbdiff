@@ -5,7 +5,7 @@ public class ParentChildNode {
     private ParentChildNode parent;
     private String id;
 
-    public ParentChildNode(String id){
+    public ParentChildNode(String id) {
         this.id = id;
     }
 
@@ -23,11 +23,10 @@ public class ParentChildNode {
         return id;
     }
 
-    public int getLevel(){
-        if(parent != null){
+    public int getLevel() {
+        if (parent != null) {
             return this.parent.getLevel() + 1;
-        }
-        else{
+        } else {
             return 0;
         }
     }

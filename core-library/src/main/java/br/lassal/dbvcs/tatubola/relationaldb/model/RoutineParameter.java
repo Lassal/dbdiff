@@ -6,21 +6,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true, value={"routineSchema", "routineName", "routineID", "dataTypeLength"})
-public class RoutineParameter extends TypedColumn{
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"routineSchema", "routineName", "routineID", "dataTypeLength"})
+public class RoutineParameter extends TypedColumn {
 
     private String routineSchema;
     private String routineName;
     private ParameterMode parameterMode;
 
-    public RoutineParameter(){
+    public RoutineParameter() {
     }
 
     public RoutineParameter(String name, int ordinalPosition, String dataType, ParameterMode parameterMode) {
         super(name, ordinalPosition, dataType);
         this.setParameterMode(parameterMode);
     }
-
 
 
     public ParameterMode getParameterMode() {
@@ -47,15 +46,15 @@ public class RoutineParameter extends TypedColumn{
         this.routineName = routineName;
     }
 
-    public String getRoutineID(){
+    public String getRoutineID() {
         return (this.routineSchema + "." + this.routineName).toUpperCase();
     }
 
     @Override
-    public String toString(){
+    public String toString() {
 
         return String.format("Name: %s|Datatype: %s(%s) |Param-mode: %s|Position: %s", this.getName(), this.getDataType()
-                , this.getDataTypeLength(),  this.getParameterMode(), this.getOrdinalPosition());
+                , this.getDataTypeLength(), this.getParameterMode(), this.getOrdinalPosition());
 
     }
 
@@ -63,7 +62,7 @@ public class RoutineParameter extends TypedColumn{
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof RoutineParameter){
+        if (obj instanceof RoutineParameter) {
             RoutineParameter other = (RoutineParameter) obj;
             isEqual = super.equals(other);
 

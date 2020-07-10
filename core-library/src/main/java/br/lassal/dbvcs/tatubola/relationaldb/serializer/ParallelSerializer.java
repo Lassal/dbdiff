@@ -17,7 +17,7 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
     private transient DBModelSerializer serializer;
     private transient CountDownLatch allTaskCounter;
 
-    public ParallelSerializer(DBModelSerializer serializer, CountDownLatch allTaskCounter){
+    public ParallelSerializer(DBModelSerializer serializer, CountDownLatch allTaskCounter) {
         this.serializer = serializer;
         this.allTaskCounter = allTaskCounter;
     }
@@ -28,22 +28,22 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
 
         List<LoadCommand> loadSteps = this.serializer.getLoadSteps();
 
-        for(LoadCommand loadStep : loadSteps)
+        for (LoadCommand loadStep : loadSteps)
             loadActions.add(this.convertToRecursiveAction(loadStep));
 
         String logPrefix = null;
 
-        if(logger.isDebugEnabled()){
-           logPrefix = String.format("Serializer %s [ENV: %s | Schema: %s] : "
-                       , this.serializer.getClass().getSimpleName(), this.serializer.getEnvironmentName()
-                       , this.serializer.getSchema());
+        if (logger.isDebugEnabled()) {
+            logPrefix = String.format("Serializer %s [ENV: %s | Schema: %s] : "
+                    , this.serializer.getClass().getSimpleName(), this.serializer.getEnvironmentName()
+                    , this.serializer.getSchema());
 
             logger.debug(logPrefix + "(A) call load DB metadata actions");
 
         }
         ForkJoinTask.invokeAll(loadActions);
 
-        if(logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug(logPrefix + "(B) finished load DB metadata");
         }
 
@@ -53,22 +53,22 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
         try {
             this.serializer.serialize(dbEntities);
         } catch (Exception e) {
-           logger.error("Error serializing db entities", e);
+            logger.error("Error serializing db entities", e);
         }
 
-        if(logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug(logPrefix + "(C) all objects serialized to filesystem");
 
         }
 
         this.allTaskCounter.countDown();
-        if(logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug(logPrefix + "(C2) remaining tasks #" + this.allTaskCounter.getCount());
 
         }
     }
 
-    private RecursiveAction convertToRecursiveAction(LoadCommand command){
+    private RecursiveAction convertToRecursiveAction(LoadCommand command) {
         return new RecursiveAction() {
             @Override
             protected void compute() {

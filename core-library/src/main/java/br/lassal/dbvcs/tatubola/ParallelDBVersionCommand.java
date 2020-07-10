@@ -32,7 +32,7 @@ public class ParallelDBVersionCommand {
 
 
     public ParallelDBVersionCommand(List<String> schemas, String rootPathLocalVCRepository, String tmpPath
-            , VersionControlSystem vcsController, int parallelism){
+            , VersionControlSystem vcsController, int parallelism) {
         this.schemas = schemas;
         this.rootPathLocalVCRepository = rootPathLocalVCRepository;
         this.tmpPath = tmpPath;
@@ -40,17 +40,17 @@ public class ParallelDBVersionCommand {
         this.environments = new ArrayList<>();
         this.threadPool = new ForkJoinPool(parallelism);
 
-        if(this.vcsController != null){
+        if (this.vcsController != null) {
             this.vcsController.setWorkspacePath(new File(rootPathLocalVCRepository));
         }
     }
 
     public ParallelDBVersionCommand(List<String> schemas, String rootPathLocalVCRepository, String tmpPath
-            , VersionControlSystem vcsController){
+            , VersionControlSystem vcsController) {
         this(schemas, rootPathLocalVCRepository, tmpPath, vcsController, ParallelDBVersionCommand.DEFAULT_PARALLELISM);
     }
 
-    public ParallelDBVersionCommand addDBEnvironment(DBModelSerializerBuilder serializerBuilder){
+    public ParallelDBVersionCommand addDBEnvironment(DBModelSerializerBuilder serializerBuilder) {
         this.environments.add(serializerBuilder);
 
         return this;
@@ -64,12 +64,12 @@ public class ParallelDBVersionCommand {
                     try {
                         Path targetPath = destinationDir.resolve(sourceDir.relativize(sourcePath));
 
-                        if(logger.isTraceEnabled()){
-                       //     logger.trace(String.format("Copying %s to %s", sourcePath, targetPath));
+                        if (logger.isTraceEnabled()) {
+                            //     logger.trace(String.format("Copying %s to %s", sourcePath, targetPath));
                         }
                         Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException ex) {
-                       // logger.warn(String.format("I/O error: %s%n", ex));
+                        // logger.warn(String.format("I/O error: %s%n", ex));
                     }
                 });
     }
@@ -85,23 +85,22 @@ public class ParallelDBVersionCommand {
 
         boolean listAllSchemas = this.schemas == null || this.schemas.isEmpty();
 
-        if(logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("(Step 1) Serialize each environment. Environment count = " + this.environments.size());
         }
 
-        for (DBModelSerializerBuilder envBuilder: this.environments ) {
+        for (DBModelSerializerBuilder envBuilder : this.environments) {
             envBuilder.setOutputPath(this.tmpPath, true);
 
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.debug("(Step 2|" + envBuilder.getEnvironmentName() + ") Create serializers by environment");
             }
 
             List<DBModelSerializer> serializers = new ArrayList<>();
-            if(listAllSchemas){
+            if (listAllSchemas) {
                 serializers = envBuilder.getDBModelSerializers();
-            }
-            else{
-                for(String schema : this.schemas){
+            } else {
+                for (String schema : this.schemas) {
                     List<DBModelSerializer> schemaSer = envBuilder
                             .getDBModelSerializers(schema);
 
@@ -116,7 +115,7 @@ public class ParallelDBVersionCommand {
 
             serializers.stream().forEach(s -> threadPool.execute(new ParallelSerializer(s, envTotalTasks)));
 
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.debug("(Step 3|" + envBuilder.getEnvironmentName() + ") Start serialization in parallel thread");
             }
 
@@ -125,11 +124,11 @@ public class ParallelDBVersionCommand {
 
         File repositoryFolder = new File(this.rootPathLocalVCRepository);
 
-        for(int i=0; i < envBranches.length; i++){
+        for (int i = 0; i < envBranches.length; i++) {
             allTasksEnv[i].await();
 
-            if(logger.isDebugEnabled()){
-                logger.debug("Branch : " +envBranches[i] + " | Remaining tasks: " + allTasksEnv[i].getCount());
+            if (logger.isDebugEnabled()) {
+                logger.debug("Branch : " + envBranches[i] + " | Remaining tasks: " + allTasksEnv[i].getCount());
                 logger.debug("(Step 4|" + envBranches[i] + ") About to check-out branch : " + envBranches[i]);
 
 
@@ -137,12 +136,12 @@ public class ParallelDBVersionCommand {
             this.vcsController.checkout(envBranches[i]);
 
             File envFiles = new File(this.tmpPath, sourceFolder[i]);
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.debug("(Step 5|" + envBranches[i] + ") About to copy files from " + envFiles + " to " + repositoryFolder);
             }
             this.copyFullFolderStructure(envFiles.toPath(), repositoryFolder.toPath());
 
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.debug("(Step 6|" + envBranches[i] + ") About to commit changes in branch: " + envBranches[i]);
             }
 

@@ -5,21 +5,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TypedColumn extends Column{
+public class TypedColumn extends Column {
     private String dataType;
     private Long textMaxLength;
     private Integer numericPrecision;
     private Integer numericScale;
 
-    public TypedColumn(){
+    public TypedColumn() {
     }
 
-    public TypedColumn(String name, int ordinalPosition, String dataType){
+    public TypedColumn(String name, int ordinalPosition, String dataType) {
         super(name, ordinalPosition);
         this.setDataType(dataType);
     }
 
-    public TypedColumn(String name){
+    public TypedColumn(String name) {
         this.setName(name);
     }
 
@@ -59,7 +59,7 @@ public class TypedColumn extends Column{
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof TypedColumn){
+        if (obj instanceof TypedColumn) {
             TypedColumn other = (TypedColumn) obj;
             isEqual = super.equals(other);
 
@@ -75,16 +75,15 @@ public class TypedColumn extends Column{
         return isEqual;
     }
 
-    public String getDataTypeLength(){
-        if(this.getTextMaxLength() != null){
+    public String getDataTypeLength() {
+        if (this.getTextMaxLength() != null) {
             return this.getTextMaxLength().toString();
         }
 
-        if(this.getNumericPrecision() != null){
-            if(this.getNumericScale() != null){
+        if (this.getNumericPrecision() != null) {
+            if (this.getNumericScale() != null) {
                 return this.getNumericPrecision() + "," + this.getNumericScale();
-            }
-            else{
+            } else {
                 return this.getNumericPrecision().toString();
             }
         }

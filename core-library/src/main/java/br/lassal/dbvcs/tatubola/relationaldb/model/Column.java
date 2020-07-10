@@ -7,11 +7,11 @@ public class Column {
     private String name;
     private int ordinalPosition;
 
-    public Column(){
+    public Column() {
 
     }
 
-    public Column(String name, int ordinalPosition){
+    public Column(String name, int ordinalPosition) {
         this.name = name;
         this.ordinalPosition = ordinalPosition;
     }
@@ -36,7 +36,7 @@ public class Column {
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof Column){
+        if (obj instanceof Column) {
             Column other = (Column) obj;
             isEqual = true;
 

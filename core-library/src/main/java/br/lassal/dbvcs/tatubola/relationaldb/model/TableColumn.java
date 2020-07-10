@@ -10,7 +10,8 @@ public class TableColumn extends TypedColumn {
     private boolean nullable;
     private String defaultValue;
 
-    public TableColumn(){}
+    public TableColumn() {
+    }
 
     public TableColumn(String name) {
         super(name);
@@ -24,11 +25,11 @@ public class TableColumn extends TypedColumn {
         this.nullable = nullable;
     }
 
-    public String getDefaultValue(){
+    public String getDefaultValue() {
         return this.defaultValue;
     }
 
-    public void setDefaultValue(String defaultValue){
+    public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
@@ -42,10 +43,10 @@ public class TableColumn extends TypedColumn {
     }
 
     @Override
-    public boolean equals(Object other){
+    public boolean equals(Object other) {
         boolean isEqual = false;
 
-        if(other instanceof TableColumn){
+        if (other instanceof TableColumn) {
             TableColumn otherC = (TableColumn) other;
             isEqual = true;
 

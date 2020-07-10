@@ -69,7 +69,7 @@
             <version>3.4.5</version>
         </dependency>
 
-    <!-- Test dependencies -->
+        <!-- Test dependencies -->
 
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <dependency>

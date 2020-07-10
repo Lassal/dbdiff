@@ -12,36 +12,35 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class RoutineSerializer extends DBModelSerializer<Routine>{
+public class RoutineSerializer extends DBModelSerializer<Routine> {
 
     private static Logger logger = LoggerFactory.getLogger(RoutineSerializer.class);
 
-    private transient List<Routine> routines;
-    private transient List<RoutineParameter> routinesParameters;
+    private List<Routine> routines;
+    private List<RoutineParameter> routinesParameters;
 
-    public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName, logger );
+    public RoutineSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
+        super(repository, dbModelFS, targetSchema, environmentName, logger);
 
     }
 
 
-    List<Routine> assemble(){
+    List<Routine> assemble() {
 
         Map<String, Routine> routinesMap = this.routines.stream().collect(Collectors.toMap(Routine::getRoutineID, Function.identity()));
 
         Routine currentRoutine = null;
-        for(RoutineParameter param : this.routinesParameters){
+        for (RoutineParameter param : this.routinesParameters) {
 
-            if(currentRoutine == null || !param.getRoutineID().equals(currentRoutine.getRoutineID())){
+            if (currentRoutine == null || !param.getRoutineID().equals(currentRoutine.getRoutineID())) {
                 currentRoutine = routinesMap.containsKey(param.getRoutineID()) ?
                         routinesMap.get(param.getRoutineID()) : null;
             }
 
-            if(currentRoutine != null){
-                if(param.getOrdinalPosition() == 0){
+            if (currentRoutine != null) {
+                if (param.getOrdinalPosition() == 0) {
                     currentRoutine.setReturnParamater(param);
-                }
-                else{
+                } else {
                     currentRoutine.addParameter(param);
                 }
             }
@@ -57,13 +56,13 @@ public class RoutineSerializer extends DBModelSerializer<Routine>{
         this.addLoadStep(this.getLoadRoutinesParameters(), "Load RoutineParametes");
     }
 
-    private LoadCommand getLoadRoutineDefinitionStep(){
+    private LoadCommand getLoadRoutineDefinitionStep() {
         RoutineSerializer serializer = this;
 
         return () -> serializer.routines = serializer.getRepository().loadRoutineDefinition(serializer.getSchema());
     }
 
-    private LoadCommand getLoadRoutinesParameters(){
+    private LoadCommand getLoadRoutinesParameters() {
         RoutineSerializer serializer = this;
 
         return () -> serializer.routinesParameters = serializer.getRepository().loadRoutineParameters(serializer.getSchema());

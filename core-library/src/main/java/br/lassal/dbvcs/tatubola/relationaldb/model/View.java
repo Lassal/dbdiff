@@ -9,10 +9,10 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@JsonIgnoreProperties(ignoreUnknown = true, value={"viewID"})
-public class View implements DatabaseModelEntity{
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"viewID"})
+public class View implements DatabaseModelEntity {
 
-    public static String createViewID(String viewSchema, String viewName){
+    public static String createViewID(String viewSchema, String viewName) {
         return viewSchema + "." + viewName;
     }
 
@@ -25,9 +25,10 @@ public class View implements DatabaseModelEntity{
     private List<Table> referencedTables;
 
 
-    public View(){ }
+    public View() {
+    }
 
-    public View(String schema, String name){
+    public View(String schema, String name) {
         this.schema = schema;
         this.name = name;
         this.setColumns(new ArrayList<>());
@@ -39,7 +40,7 @@ public class View implements DatabaseModelEntity{
         return this.schema;
     }
 
-    public void setSchema(String schema){
+    public void setSchema(String schema) {
         this.schema = schema;
     }
 
@@ -48,7 +49,7 @@ public class View implements DatabaseModelEntity{
         return this.name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -92,24 +93,24 @@ public class View implements DatabaseModelEntity{
         this.referencedTables = referencedTables;
     }
 
-    public void addTable(String tableSchema, String tableName){
+    public void addTable(String tableSchema, String tableName) {
         Table table = new Table(tableSchema, tableName, false);
         this.referencedTables.add(table);
     }
 
-    public void addColumn(TableColumn column){
+    public void addColumn(TableColumn column) {
         this.columns.add(column);
     }
 
-    public String getViewID(){
+    public String getViewID() {
         return View.createViewID(this.schema, this.name);
     }
 
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof View){
+        if (obj instanceof View) {
             View other = (View) obj;
             isEqual = true;
 
@@ -121,14 +122,14 @@ public class View implements DatabaseModelEntity{
 
             isEqual &= this.getColumns().size() == other.getColumns().size();
 
-            if(isEqual){
+            if (isEqual) {
                 Map<String, TableColumn> thisColumns = this.columns.stream()
                         .collect(Collectors.toMap(TableColumn::getName, Function.identity()));
 
-                for(TableColumn c : other.getColumns()){
+                for (TableColumn c : other.getColumns()) {
                     isEqual &= thisColumns.containsKey(c.getName());
 
-                    if(isEqual){
+                    if (isEqual) {
                         isEqual &= thisColumns.get(c.getName()).equals(c);
                     }
                 }
@@ -142,20 +143,20 @@ public class View implements DatabaseModelEntity{
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder view = new StringBuilder();
 
-        view.append(String.format("Schema: %s | View: %s%n",this.schema, this.name));
-        view.append(String.format("InsertedAllowed: %s | UpdatedAllowed: %s %n",this.insertAllowed, this.updatedAllowed));
+        view.append(String.format("Schema: %s | View: %s%n", this.schema, this.name));
+        view.append(String.format("InsertedAllowed: %s | UpdatedAllowed: %s %n", this.insertAllowed, this.updatedAllowed));
 
         view.append("  ::Columns\n");
-        for (TableColumn column: this.columns) {
-            view.append(String.format("    %s%n", column ));
+        for (TableColumn column : this.columns) {
+            view.append(String.format("    %s%n", column));
         }
 
         view.append("  ::RefTables & Views\n");
-        for (Table refTable: this.referencedTables) {
-            view.append(String.format("    %s%n", refTable.getTableID() ));
+        for (Table refTable : this.referencedTables) {
+            view.append(String.format("    %s%n", refTable.getTableID()));
         }
         view.append("\n----- VIEW DEFINITION -----\n");
         view.append(this.viewDefinition);

@@ -23,11 +23,11 @@ public class RelationalDBVersionFactory {
 
     private static RelationalDBVersionFactory instance = new RelationalDBVersionFactory();
 
-    public static RelationalDBVersionFactory getInstance(){
+    public static RelationalDBVersionFactory getInstance() {
         return instance;
     }
 
-    private RelationalDBVersionFactory(){
+    private RelationalDBVersionFactory() {
 
     }
 
@@ -97,7 +97,7 @@ public class RelationalDBVersionFactory {
         RelationalDBRepository repository = this.createRDBRepository(jdbcUrl, username, password, openConnectionsOnInitialization);
         DBModelFS dbModelFS = this.createDBModelFS(outputPath);
 
-        return this.createDBObjectsSerializers(environmentName ,schema, repository, dbModelFS);
+        return this.createDBObjectsSerializers(environmentName, schema, repository, dbModelFS);
     }
 
     public List<DBModelSerializer> createDBObjectsSerializers(String environmentName, String schema, String jdbcUrl
@@ -108,14 +108,14 @@ public class RelationalDBVersionFactory {
     }
 
     public List<RecursiveAction> createParallelDBObjectsSerializers(String environmentName, String schema, String jdbcUrl
-            , String username, String password, String outputPath, boolean openConnectionsOnInitialization, CountDownLatch taskCounter){
+            , String username, String password, String outputPath, boolean openConnectionsOnInitialization, CountDownLatch taskCounter) {
 
         List<DBModelSerializer> serializers = this.createDBObjectsSerializers(environmentName, schema, jdbcUrl, username, password,
-                    outputPath, openConnectionsOnInitialization );
+                outputPath, openConnectionsOnInitialization);
 
         List<RecursiveAction> parallelSerializer = new ArrayList<>();
 
-        for (DBModelSerializer ser: serializers) {
+        for (DBModelSerializer ser : serializers) {
             parallelSerializer.add(new ParallelSerializer(ser, taskCounter));
         }
 

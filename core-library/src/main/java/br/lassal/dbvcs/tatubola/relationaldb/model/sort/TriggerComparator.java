@@ -12,7 +12,7 @@ public class TriggerComparator implements Comparator<Trigger> {
 
     private static final TriggerComparator comparator;
 
-    public static final TriggerComparator getSingleton(){
+    public static final TriggerComparator getSingleton() {
         return comparator;
     }
 
@@ -23,7 +23,7 @@ public class TriggerComparator implements Comparator<Trigger> {
         return firstTriggerOrder.compareTo(secondTriggerOrder);
     }
 
-    private String getPartitionOrder(Trigger trigger){
+    private String getPartitionOrder(Trigger trigger) {
         return String.format("[%s].[%s].[%s].[%s].%09d"
                 , trigger.getTargetObjectSchema()
                 , trigger.getTargetObjectName()

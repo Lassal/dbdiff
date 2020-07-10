@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
 
-@JsonIgnoreProperties(ignoreUnknown = true, value={"schema", "triggerID"})
-public class Trigger implements DatabaseModelEntity{
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"schema", "triggerID"})
+public class Trigger implements DatabaseModelEntity {
 
     private String targetObjectSchema;
     private String targetObjectName;
@@ -18,16 +18,17 @@ public class Trigger implements DatabaseModelEntity{
     private int executionOrder;
 
 
+    public Trigger() {
+    }
 
-    public Trigger(){ }
-
-    public Trigger(String name){
+    public Trigger(String name) {
         this.name = name;
     }
 
     /**
      * Returns the schema of the target object that
      * this trigger is linked/attached
+     *
      * @return
      */
     public String getTargetObjectSchema() {
@@ -41,6 +42,7 @@ public class Trigger implements DatabaseModelEntity{
     /**
      * Returns the name of the target object that
      * this trigger is linked/attached
+     *
      * @return
      */
     public String getTargetObjectName() {
@@ -59,6 +61,7 @@ public class Trigger implements DatabaseModelEntity{
      * IMPORTANT: we will not map DATABASE triggers in this first
      * release because it doesn't relate to problems of versioning for
      * applications in general
+     *
      * @return
      */
     public String getTargetObjectType() {
@@ -114,18 +117,18 @@ public class Trigger implements DatabaseModelEntity{
         return executionOrder;
     }
 
-    public String getTriggerID(){
+    public String getTriggerID() {
         return this.getSchema() + "." + this.name;
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder trigger = new StringBuilder();
         trigger.append("TRIGGER: " + this.name + "\n");
         trigger.append(String.format("Target Object Type: %s| Target Object: %s.%s %n"
                 , this.targetObjectType, this.targetObjectSchema, this.targetObjectName));
         trigger.append(String.format("Event: %s | Timing: %s | Execution order: %s %n"
-                , this.event, this.eventTiming, this.executionOrder ));
+                , this.event, this.eventTiming, this.executionOrder));
         trigger.append("ACTION: \n\n");
         trigger.append(this.eventActionBody);
         trigger.append("\n------------------X");
@@ -137,7 +140,7 @@ public class Trigger implements DatabaseModelEntity{
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof Trigger){
+        if (obj instanceof Trigger) {
             Trigger other = (Trigger) obj;
             isEqual = true;
 

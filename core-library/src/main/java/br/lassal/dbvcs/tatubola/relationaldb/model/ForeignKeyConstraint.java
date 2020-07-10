@@ -4,33 +4,33 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ForeignKeyConstraint extends TableConstraint{
+public class ForeignKeyConstraint extends TableConstraint {
 
     private List<ReferentialIntegrityColumn> orderedColumns;
 
-    public ForeignKeyConstraint(){
+    public ForeignKeyConstraint() {
 
     }
 
-    public ForeignKeyConstraint(String constraintSchema, String tableName, String constraintName){
+    public ForeignKeyConstraint(String constraintSchema, String tableName, String constraintName) {
         super(constraintSchema, tableName, constraintName, ConstraintType.FOREIGN_KEY);
         this.orderedColumns = new ArrayList<>();
     }
 
-    public void addColumn(ReferentialIntegrityColumn column){
+    public void addColumn(ReferentialIntegrityColumn column) {
         this.orderedColumns.add(column);
 
     }
 
-    public List<ReferentialIntegrityColumn> getColumns(){
+    public List<ReferentialIntegrityColumn> getColumns() {
         return this.orderedColumns;
     }
 
-    public void setColumns(List<ReferentialIntegrityColumn> columns){
+    public void setColumns(List<ReferentialIntegrityColumn> columns) {
         this.orderedColumns = columns;
     }
 
-    public void sortColumns(){
+    public void sortColumns() {
         this.orderedColumns.sort(Comparator.comparingInt(Column::getOrdinalPosition));
     }
 
@@ -41,7 +41,7 @@ public class ForeignKeyConstraint extends TableConstraint{
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder constStr = new StringBuilder(super.toString());
         String constraintColumns = String.join(", ", this.orderedColumns.stream().map(ReferentialIntegrityColumn::toString).collect(Collectors.toList()));
         constStr.append("(" + constraintColumns + ")");
@@ -53,21 +53,21 @@ public class ForeignKeyConstraint extends TableConstraint{
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof ForeignKeyConstraint){
+        if (obj instanceof ForeignKeyConstraint) {
             ForeignKeyConstraint other = (ForeignKeyConstraint) obj;
 
             isEqual = super.equals(other);
             isEqual &= (this.orderedColumns != null) && (other.orderedColumns != null)
                     && (this.orderedColumns.size() == other.orderedColumns.size());
 
-            if(isEqual){
+            if (isEqual) {
                 Map<String, ReferentialIntegrityColumn> thisColumns = this.orderedColumns.stream()
                         .collect(Collectors.toMap(Column::getName, Function.identity()));
 
-                for(ReferentialIntegrityColumn col : other.orderedColumns){
+                for (ReferentialIntegrityColumn col : other.orderedColumns) {
                     isEqual &= thisColumns.containsKey(col.getName());
 
-                    if(isEqual){
+                    if (isEqual) {
                         ReferentialIntegrityColumn thisCol = thisColumns.get(col.getName());
                         isEqual &= thisCol.getName().equals(col.getName());
                         isEqual &= thisCol.getOrdinalPosition() == col.getOrdinalPosition();

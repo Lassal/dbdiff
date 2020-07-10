@@ -9,10 +9,10 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@JsonIgnoreProperties(ignoreUnknown = true, value={"routineID"})
-public class Routine implements DatabaseModelEntity{
+@JsonIgnoreProperties(ignoreUnknown = true, value = {"routineID"})
+public class Routine implements DatabaseModelEntity {
 
-    public static String getRoutineID(String schema, String name){
+    public static String getRoutineID(String schema, String name) {
         return (schema + "." + name).toUpperCase();
     }
 
@@ -23,11 +23,11 @@ public class Routine implements DatabaseModelEntity{
     private List<RoutineParameter> parameters;
     private String routineDefinition;
 
-    public Routine(){
+    public Routine() {
 
     }
 
-    public Routine(String schema, String name, RoutineType routineType){
+    public Routine(String schema, String name, RoutineType routineType) {
         this.schema = schema;
         this.name = name;
         this.routineType = routineType;
@@ -50,7 +50,7 @@ public class Routine implements DatabaseModelEntity{
         this.name = name;
     }
 
-    public String getRoutineID(){
+    public String getRoutineID() {
         return Routine.getRoutineID(this.schema, this.name);
     }
 
@@ -70,7 +70,7 @@ public class Routine implements DatabaseModelEntity{
         this.returnParamater = returnParamater;
     }
 
-    public List<RoutineParameter> getParameters(){
+    public List<RoutineParameter> getParameters() {
         return this.parameters;
     }
 
@@ -83,25 +83,25 @@ public class Routine implements DatabaseModelEntity{
         this.routineDefinition = routineDefinition;
     }
 
-    public void addParameter(RoutineParameter param){
+    public void addParameter(RoutineParameter param) {
         this.parameters.add(param);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder routine = new StringBuilder();
 
-        routine.append(String.format("Schema: %s | Routine: %s%n",this.schema, this.name));
-        routine.append(String.format("Type: %s ",this.routineType));
+        routine.append(String.format("Schema: %s | Routine: %s%n", this.schema, this.name));
+        routine.append(String.format("Type: %s ", this.routineType));
 
-        if(RoutineType.FUNCTION.equals(this.routineType)){
+        if (RoutineType.FUNCTION.equals(this.routineType)) {
             routine.append(String.format("| RETURN TYPE -> %s(%s)"
                     , this.returnParamater.getDataType(), this.returnParamater.getDataTypeLength()));
         }
         routine.append("\n");
 
-        for (RoutineParameter param: this.parameters) {
-            routine.append(String.format("    %s%n", param ));
+        for (RoutineParameter param : this.parameters) {
+            routine.append(String.format("    %s%n", param));
         }
 
         routine.append("\n----- BODY -----\n");
@@ -114,7 +114,7 @@ public class Routine implements DatabaseModelEntity{
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof Routine){
+        if (obj instanceof Routine) {
             Routine other = (Routine) obj;
             isEqual = true;
 
@@ -126,14 +126,14 @@ public class Routine implements DatabaseModelEntity{
             isEqual &= this.routineDefinition.equals(other.routineDefinition);
             isEqual &= this.parameters.size() == other.parameters.size();
 
-            if(isEqual){
+            if (isEqual) {
                 Map<String, RoutineParameter> thisParams = this.parameters.stream()
                         .collect(Collectors.toMap(RoutineParameter::getName, Function.identity()));
 
-                for(RoutineParameter param : other.getParameters()){
+                for (RoutineParameter param : other.getParameters()) {
                     isEqual &= thisParams.containsKey(param.getName());
 
-                    if(isEqual){
+                    if (isEqual) {
                         isEqual &= thisParams.get(param.getName()).equals(param);
                     }
                 }

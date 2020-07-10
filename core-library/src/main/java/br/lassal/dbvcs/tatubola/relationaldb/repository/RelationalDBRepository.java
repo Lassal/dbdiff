@@ -9,8 +9,11 @@ public interface RelationalDBRepository {
 
     // Table
     Map<String, Table> loadTableColumns(String schema);
+
     List<TableConstraint> loadUniqueConstraints(String schema);
+
     List<TableConstraint> loadReferentialConstraints(String schema);
+
     List<TableConstraint> loadCheckConstraints(String schema);
 
     // Index
@@ -18,7 +21,9 @@ public interface RelationalDBRepository {
 
     // Views
     List<View> loadViewDefinitions(String schema);
+
     Map<String, List<Table>> loadViewTables(String schema);
+
     Map<String, List<TableColumn>> loadViewColumns(String schema);
 
     // Triggers
@@ -26,6 +31,7 @@ public interface RelationalDBRepository {
 
     // Routines
     List<Routine> loadRoutineDefinition(String schema);
+
     List<RoutineParameter> loadRoutineParameters(String schema);
 
     // General - Database

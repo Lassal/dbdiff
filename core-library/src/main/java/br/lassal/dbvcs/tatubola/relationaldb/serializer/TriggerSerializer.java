@@ -8,18 +8,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class TriggerSerializer extends DBModelSerializer<Trigger>{
+public class TriggerSerializer extends DBModelSerializer<Trigger> {
 
     private static Logger logger = LoggerFactory.getLogger(TriggerSerializer.class);
 
-    private transient List<Trigger> triggers;
+    private List<Trigger> triggers;
 
-    public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName, TriggerSerializer.logger );
+    public TriggerSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
+        super(repository, dbModelFS, targetSchema, environmentName, TriggerSerializer.logger);
     }
 
 
-    List<Trigger> assemble(){
+    List<Trigger> assemble() {
         return this.triggers;
     }
 
@@ -28,7 +28,7 @@ public class TriggerSerializer extends DBModelSerializer<Trigger>{
         this.addLoadStep(this.getLoadTriggersStep(), "Load Triggers");
     }
 
-    private LoadCommand getLoadTriggersStep(){
+    private LoadCommand getLoadTriggersStep() {
         TriggerSerializer serializer = this;
 
         return () -> serializer.triggers = serializer.getRepository().loadTriggers(serializer.getSchema());

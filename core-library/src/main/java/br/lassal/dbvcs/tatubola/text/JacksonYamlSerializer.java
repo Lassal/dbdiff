@@ -15,7 +15,7 @@ public class JacksonYamlSerializer implements TextSerializer {
 
     private ObjectMapper yamlMapper;
 
-    public JacksonYamlSerializer(){
+    public JacksonYamlSerializer() {
         this.yamlMapper = new ObjectMapper(new YAMLFactory()
                 .disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
                 .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES));
@@ -23,7 +23,7 @@ public class JacksonYamlSerializer implements TextSerializer {
         this.yamlMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
-    private  <W extends Writer> W writeAsYAML(W output, DatabaseModelEntity dbEntity) throws IOException {
+    private <W extends Writer> W writeAsYAML(W output, DatabaseModelEntity dbEntity) throws IOException {
         this.yamlMapper.writeValue(output, dbEntity);
         return output;
     }

@@ -4,11 +4,11 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public abstract class BaseRepository implements RelationalDBRepository{
+public abstract class BaseRepository implements RelationalDBRepository {
 
     private DataSource dataSource;
 
-    public BaseRepository(DataSource dataSource){
+    public BaseRepository(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

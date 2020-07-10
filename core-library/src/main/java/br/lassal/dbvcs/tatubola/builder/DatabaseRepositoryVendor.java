@@ -15,26 +15,28 @@ public enum DatabaseRepositoryVendor {
     private static Logger logger = LoggerFactory.getLogger(DatabaseRepositoryVendor.class);
 
 
-    public static RelationalDBRepository createRelationalDBRepository(String dbVendor, DataSource datasource){
+    public static RelationalDBRepository createRelationalDBRepository(String dbVendor, DataSource datasource) {
 
         DatabaseRepositoryVendor database = null;
 
-        try{
+        try {
             database = DatabaseRepositoryVendor.valueOf(dbVendor.toUpperCase());
-        }
-        catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             logger.warn("Could not identify database : " + dbVendor, ex);
         }
 
 
-        if(database == null){
+        if (database == null) {
             return null;
         }
 
-        switch (database){
-            case MYSQL: return new MySQLRepository(datasource);
-            case ORACLE: return new OracleRepository(datasource);
-            default: return null;
+        switch (database) {
+            case MYSQL:
+                return new MySQLRepository(datasource);
+            case ORACLE:
+                return new OracleRepository(datasource);
+            default:
+                return null;
         }
     }
 }

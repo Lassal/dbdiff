@@ -8,18 +8,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class IndexSerializer extends  DBModelSerializer<Index> {
+public class IndexSerializer extends DBModelSerializer<Index> {
 
     private static Logger logger = LoggerFactory.getLogger(IndexSerializer.class);
 
-    private transient List<Index> indexes;
+    private List<Index> indexes;
 
-    public IndexSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName){
-        super(repository, dbModelFS, targetSchema, environmentName, logger );
+    public IndexSerializer(RelationalDBRepository repository, DBModelFS dbModelFS, String targetSchema, String environmentName) {
+        super(repository, dbModelFS, targetSchema, environmentName, logger);
     }
 
 
-    List<Index> assemble(){
+    List<Index> assemble() {
         return this.indexes;
     }
 
@@ -28,7 +28,7 @@ public class IndexSerializer extends  DBModelSerializer<Index> {
         this.addLoadStep(this.getLoadIndexes(), "LoadIndexes");
     }
 
-    private LoadCommand getLoadIndexes(){
+    private LoadCommand getLoadIndexes() {
         IndexSerializer serializer = this;
 
         return () -> serializer.indexes = serializer.getRepository().loadIndexes(serializer.getSchema());

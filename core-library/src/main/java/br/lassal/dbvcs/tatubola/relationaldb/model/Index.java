@@ -9,8 +9,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@JsonIgnoreProperties(ignoreUnknown = true, value={})
-public class Index implements DatabaseModelEntity{
+@JsonIgnoreProperties(ignoreUnknown = true, value = {})
+public class Index implements DatabaseModelEntity {
 
     private String indexSchema;
     private String indexName;
@@ -20,7 +20,7 @@ public class Index implements DatabaseModelEntity{
     private boolean unique;
     List<IndexColumn> columns;
 
-    public Index(){
+    public Index() {
         // for serialization purposes
         this.columns = new ArrayList<>();
     }
@@ -51,7 +51,7 @@ public class Index implements DatabaseModelEntity{
         return this.indexSchema;
     }
 
-    public void setSchema(String schema){
+    public void setSchema(String schema) {
         this.indexSchema = schema;
     }
 
@@ -60,7 +60,7 @@ public class Index implements DatabaseModelEntity{
         return this.indexName;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.indexName = name;
     }
 
@@ -97,11 +97,11 @@ public class Index implements DatabaseModelEntity{
         this.unique = unique;
     }
 
-    public void addColumn(IndexColumn column){
+    public void addColumn(IndexColumn column) {
         this.columns.add(column);
     }
 
-    public List<IndexColumn> getColumns(){
+    public List<IndexColumn> getColumns() {
         return this.columns;
     }
 
@@ -109,7 +109,7 @@ public class Index implements DatabaseModelEntity{
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof Index){
+        if (obj instanceof Index) {
             Index other = (Index) obj;
             isEqual = true;
 
@@ -121,14 +121,14 @@ public class Index implements DatabaseModelEntity{
             isEqual &= this.unique == other.unique;
             isEqual &= this.columns.size() == other.columns.size();
 
-            if(isEqual){
+            if (isEqual) {
                 Map<String, IndexColumn> thisColumns = this.columns.stream()
                         .collect(Collectors.toMap(IndexColumn::getName, Function.identity()));
 
-                for(IndexColumn column : other.getColumns()){
+                for (IndexColumn column : other.getColumns()) {
                     isEqual &= thisColumns.containsKey(column.getName());
 
-                    if(isEqual){
+                    if (isEqual) {
                         isEqual &= thisColumns.get(column.getName()).equals(column);
                     }
                 }
@@ -141,12 +141,12 @@ public class Index implements DatabaseModelEntity{
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder indexStr = new StringBuilder();
 
-        indexStr.append(String.format("Schema: %s >> Table: %s >> Index %s%n",this.getSchema(), this.getAssociateTableName() ,this.getName()));
-        for (IndexColumn column: this.columns) {
-            indexStr.append(String.format("    %s%n", column ));
+        indexStr.append(String.format("Schema: %s >> Table: %s >> Index %s%n", this.getSchema(), this.getAssociateTableName(), this.getName()));
+        for (IndexColumn column : this.columns) {
+            indexStr.append(String.format("    %s%n", column));
         }
 
         return indexStr.toString();

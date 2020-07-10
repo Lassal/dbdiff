@@ -6,9 +6,10 @@ public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model
 
     private String checkClause;
 
-    public CheckConstraint(){ }
+    public CheckConstraint() {
+    }
 
-    public CheckConstraint(String constraintSchema, String tableName, String constraintName, String checkClause){
+    public CheckConstraint(String constraintSchema, String tableName, String constraintName, String checkClause) {
         super(constraintSchema, tableName, constraintName, ConstraintType.CHECK);
         this.checkClause = checkClause;
     }
@@ -30,7 +31,7 @@ public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return super.toString() + "Check clause: " + this.checkClause;
     }
 
@@ -38,11 +39,11 @@ public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model
     public boolean equals(Object obj) {
         boolean isEqual = false;
 
-        if(obj instanceof CheckConstraint){
-           CheckConstraint other = (CheckConstraint) obj;
+        if (obj instanceof CheckConstraint) {
+            CheckConstraint other = (CheckConstraint) obj;
 
-           isEqual = super.equals(other);
-           isEqual &= this.checkClause.equals(other.checkClause);
+            isEqual = super.equals(other);
+            isEqual &= this.checkClause.equals(other.checkClause);
         }
 
         return isEqual;

@@ -5,25 +5,31 @@ public enum ColumnOrder {
     DESC;
 
 
-    public static ColumnOrder fromMySQL(String columnOrder){
-        if(columnOrder == null){
+    public static ColumnOrder fromMySQL(String columnOrder) {
+        if (columnOrder == null) {
             return null;
         }
-        switch (columnOrder){
-            case "A" : return ColumnOrder.ASC;
-            case "D" : return ColumnOrder.DESC;
-            default: return null;
+        switch (columnOrder) {
+            case "A":
+                return ColumnOrder.ASC;
+            case "D":
+                return ColumnOrder.DESC;
+            default:
+                return null;
         }
     }
 
-    public static ColumnOrder fromOracle(String columnOrder){
-        if(columnOrder == null){
+    public static ColumnOrder fromOracle(String columnOrder) {
+        if (columnOrder == null) {
             return null;
         }
-        switch (columnOrder){
-            case "ASC" : return ColumnOrder.ASC;
-            case "DESC" : return ColumnOrder.DESC;
-            default: return null;
+        switch (columnOrder) {
+            case "ASC":
+                return ColumnOrder.ASC;
+            case "DESC":
+                return ColumnOrder.DESC;
+            default:
+                return null;
         }
     }
 }

@@ -16,7 +16,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class OracleRepository extends BaseRepository{
+public class OracleRepository extends BaseRepository {
 
     private static Logger logger = LoggerFactory.getLogger(OracleRepository.class);
 
@@ -26,22 +26,22 @@ public class OracleRepository extends BaseRepository{
         super(dataSource);
     }
 
-    public List<String> listSchemas(){
+    public List<String> listSchemas() {
         String sql = "SELECT USERNAME FROM SYS.ALL_USERS";
 
 
         List<String> schemas = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while(rs.next()){
+            while (rs.next()) {
                 schemas.add(rs.getString("USERNAME"));
             }
 
         } catch (Exception ex) {
-            logger.error("Error listing schemas",ex);
+            logger.error("Error listing schemas", ex);
         }
 
         return schemas;
@@ -73,10 +73,10 @@ public class OracleRepository extends BaseRepository{
     public Map<String, Table> loadTableColumns(String schema) {
         String sql =
                 "SELECT T.OWNER , T.TABLE_NAME, C.COLUMN_NAME, C.COLUMN_ID " +
-                "     , C.DATA_TYPE, C.NULLABLE, C.CHAR_LENGTH, C.DATA_PRECISION, C.DATA_SCALE, C.DATA_DEFAULT " +
-                "FROM SYS.ALL_TABLES T " +
-                " INNER JOIN SYS.ALL_TAB_COLUMNS C " +
-                "   ON T.OWNER = C.OWNER AND T.TABLE_NAME = C.TABLE_NAME ";
+                        "     , C.DATA_TYPE, C.NULLABLE, C.CHAR_LENGTH, C.DATA_PRECISION, C.DATA_SCALE, C.DATA_DEFAULT " +
+                        "FROM SYS.ALL_TABLES T " +
+                        " INNER JOIN SYS.ALL_TAB_COLUMNS C " +
+                        "   ON T.OWNER = C.OWNER AND T.TABLE_NAME = C.TABLE_NAME ";
 
         if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE T.OWNER = '%s'", schema);
@@ -127,17 +127,17 @@ public class OracleRepository extends BaseRepository{
         column.setNullable("Y".equals(rs.getString("NULLABLE")));
 
         Long textMaxLength = rs.getLong("CHAR_LENGTH");
-        if(!rs.wasNull() && textMaxLength > 0){
+        if (!rs.wasNull() && textMaxLength > 0) {
             column.setTextMaxLength(textMaxLength);
         }
 
         Integer precision = rs.getInt("DATA_PRECISION");
-        if(!rs.wasNull() && precision > 0){
+        if (!rs.wasNull() && precision > 0) {
             column.setNumericPrecision(precision);
         }
 
         Integer scale = rs.getInt("DATA_SCALE");
-        if(!rs.wasNull()){
+        if (!rs.wasNull()) {
             column.setNumericScale(scale);
         }
 
@@ -373,7 +373,7 @@ public class OracleRepository extends BaseRepository{
     private Index convertToIndex(String indexSchema, String indexName, ResultSet rs) throws SQLException {
         String indexType = rs.getString("INDEX_TYPE");
         String uniqueness = rs.getString("UNIQUENESS");
-        boolean isUnique = uniqueness != null && uniqueness.equals("UNIQUE") ;
+        boolean isUnique = uniqueness != null && uniqueness.equals("UNIQUE");
         String targetTableSchema = rs.getString("TABLE_OWNER");
         String targetTable = rs.getString("TABLE_NAME");
 
@@ -590,10 +590,10 @@ public class OracleRepository extends BaseRepository{
     public List<Trigger> loadTriggers(String schema) {
         String sql =
                 "SELECT TABLE_OWNER, TABLE_NAME, BASE_OBJECT_TYPE, OWNER, TRIGGER_NAME " +
-                "      ,TRIGGERING_EVENT, TRIGGER_TYPE, TRIGGER_BODY " +
-                "FROM SYS.ALL_TRIGGERS ";
+                        "      ,TRIGGERING_EVENT, TRIGGER_TYPE, TRIGGER_BODY " +
+                        "FROM SYS.ALL_TRIGGERS ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE TABLE_OWNER = '%s'", schema);
         }
 
@@ -602,17 +602,17 @@ public class OracleRepository extends BaseRepository{
         List<Trigger> triggers = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 Trigger trigger = this.convertToTrigger(rs);
                 triggers.add(trigger);
             }
 
         } catch (Exception ex) {
-            logger.error("Error loading triggers",ex);
+            logger.error("Error loading triggers", ex);
         }
 
         triggers = this.setTriggerExecutionOrder(triggers);
@@ -625,25 +625,26 @@ public class OracleRepository extends BaseRepository{
      * Define the trigger execution order based on the hierarchical relationship with the others triggers.
      * Usually all triggers have executionOrder equals to 1 but in case a trigger must be executed after
      * another trigger it will have its execution number converted to
-     *    10^(ChildLevel + 1)
-     *
+     * 10^(ChildLevel + 1)
+     * <p>
      * Example:
-     *    Trigger A1 do not execute before or after other trigger : executionOrder = 1
-     *    Trigger B2 execute after Trigger A1 - Level 1           : executionOrder = 1+10^(1+1) = 100+1
-     *    Trigger C3 execute after Trigger B2 - Level 2           : executionOrder = 1+10^(1+2) = 1000+1
+     * Trigger A1 do not execute before or after other trigger : executionOrder = 1
+     * Trigger B2 execute after Trigger A1 - Level 1           : executionOrder = 1+10^(1+1) = 100+1
+     * Trigger C3 execute after Trigger B2 - Level 2           : executionOrder = 1+10^(1+2) = 1000+1
+     *
      * @param triggers
      * @return List of ordered triggers
      */
-    private List<Trigger> setTriggerExecutionOrder(List<Trigger> triggers){
+    private List<Trigger> setTriggerExecutionOrder(List<Trigger> triggers) {
         Map<String, ParentChildNode> triggersExecOrder = this.getTriggerHierarchy();
 
-        for(Trigger trigger: triggers){
-            if(triggersExecOrder.containsKey(trigger.getTriggerID())){
+        for (Trigger trigger : triggers) {
+            if (triggersExecOrder.containsKey(trigger.getTriggerID())) {
                 int hierarchyLevel = triggersExecOrder.get(trigger.getTriggerID()).getLevel();
 
-                if(hierarchyLevel > 0){
+                if (hierarchyLevel > 0) {
                     // set the magnitude level to 10 power level, starting from 10^2
-                    int execOrderMagnitude = (int) Math.pow(10,hierarchyLevel +1);
+                    int execOrderMagnitude = (int) Math.pow(10, hierarchyLevel + 1);
                     int execOrder = execOrderMagnitude + trigger.getExecutionOrder();
                     trigger.setExecutionOrder(execOrder);
                 }
@@ -677,31 +678,30 @@ public class OracleRepository extends BaseRepository{
      * Each trigger has a sequence of execution, this sequence is defined by the type of event and timing of
      * the event. If there are many triggers to the same target object for the same event and timing it is not
      * possible to know in what order they will execute. But for triggers that were created using
-     *  FOLLOWS | PRECEDES clauses it is possible to say if this trigger will be executed before (PRECEDES) or
-     *  after (FOLLOWS) a related trigger.
-     *
+     * FOLLOWS | PRECEDES clauses it is possible to say if this trigger will be executed before (PRECEDES) or
+     * after (FOLLOWS) a related trigger.
+     * <p>
      * This method identify these hierarchical relations and returns a dictionary for each trigger showing
      * a linked dependency between triggers. The @class ParentChildNode has a property "getLevel()" that return
      * the current level of the trigger with relation to its parents. For nodes in root level the level is 0,
      * each child level increase this number in 1.
      * Example:
-     *   Node 1 (root) : Level = 0
-     *    Node 2       : Level = 1
-     *     Node 3      : Level = 2
-     *
+     * Node 1 (root) : Level = 0
+     * Node 2       : Level = 1
+     * Node 3      : Level = 2
      *
      * @return
      */
-    private Map<String, ParentChildNode> getTriggerHierarchy(){
+    private Map<String, ParentChildNode> getTriggerHierarchy() {
         String sql = "SELECT * FROM SYS.ALL_TRIGGER_ORDERING ";
 
         Map<String, ParentChildNode> triggerHierarchy = new HashMap<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 String orderingType = rs.getString("ORDERING_TYPE");
                 String triggerID = rs.getString("TRIGGER_OWNER") + "." + rs.getString("TRIGGER_NAME");
@@ -731,7 +731,7 @@ public class OracleRepository extends BaseRepository{
             }
 
         } catch (Exception ex) {
-            logger.error("Error loading Oracle triggers references",ex);
+            logger.error("Error loading Oracle triggers references", ex);
         }
 
         return triggerHierarchy;
@@ -884,17 +884,17 @@ public class OracleRepository extends BaseRepository{
         param.setRoutineName(routineName);
 
         Long textMaxLength = rs.getLong("CHAR_LENGTH");
-        if(!rs.wasNull() && textMaxLength > 0){
+        if (!rs.wasNull() && textMaxLength > 0) {
             param.setTextMaxLength(textMaxLength);
         }
 
         Integer precision = rs.getInt("DATA_PRECISION");
-        if(!rs.wasNull() && precision > 0){
+        if (!rs.wasNull() && precision > 0) {
             param.setNumericPrecision(precision);
         }
 
         Integer scale = rs.getInt("DATA_SCALE");
-        if(!rs.wasNull()){
+        if (!rs.wasNull()) {
             param.setNumericScale(scale);
         }
 

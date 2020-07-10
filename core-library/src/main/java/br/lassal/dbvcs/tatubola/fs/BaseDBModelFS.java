@@ -15,25 +15,24 @@ import java.util.Set;
  * Create text file representation of the database object in YAML.
  * The files are organized and represented using the following
  * naming standard
- *
- *      - Tables
- *       - TABLE_{table name}.yaml
- *       - Triggers
- *         - TABLE_{table name}_TRIGGER_{trigger name}.yaml
- *       - Indexes
- *         - TABLE_{table name}_INDEX_{index name}.yaml
- *     - Routines
- *       - {name}_PROCEDURE.yaml
- *       - {name}_FUNCTION.yaml
- *
+ * <p>
+ * - Tables
+ * - TABLE_{table name}.yaml
+ * - Triggers
+ * - TABLE_{table name}_TRIGGER_{trigger name}.yaml
+ * - Indexes
+ * - TABLE_{table name}_INDEX_{index name}.yaml
+ * - Routines
+ * - {name}_PROCEDURE.yaml
+ * - {name}_FUNCTION.yaml
  */
-public class BaseDBModelFS implements DBModelFS{
+public class BaseDBModelFS implements DBModelFS {
 
     private String rootPath;
     private TextSerializer objToTxtTranslator;
     private Set<Path> existingPaths;
 
-    public BaseDBModelFS(String rootPath, TextSerializer textSerializer){
+    public BaseDBModelFS(String rootPath, TextSerializer textSerializer) {
         this.rootPath = rootPath;
         this.objToTxtTranslator = textSerializer;
         this.existingPaths = new HashSet<>();
@@ -43,19 +42,15 @@ public class BaseDBModelFS implements DBModelFS{
 
         Path dbModelFile = null;
 
-        if(dbEntity instanceof Table){
+        if (dbEntity instanceof Table) {
             dbModelFile = Paths.get(rootPath, this.getFileName((Table) dbEntity));
-        }
-        else if(dbEntity instanceof Routine){
+        } else if (dbEntity instanceof Routine) {
             dbModelFile = Paths.get(rootPath, this.getFileName((Routine) dbEntity));
-        }
-        else if(dbEntity instanceof Trigger){
+        } else if (dbEntity instanceof Trigger) {
             dbModelFile = Paths.get(rootPath, this.getFileName((Trigger) dbEntity));
-        }
-        else if(dbEntity instanceof Index){
+        } else if (dbEntity instanceof Index) {
             dbModelFile = Paths.get(rootPath, this.getFileName((Index) dbEntity));
-        }
-        else if(dbEntity instanceof View){
+        } else if (dbEntity instanceof View) {
             dbModelFile = Paths.get(rootPath, this.getFileName((View) dbEntity));
         }
 
@@ -67,28 +62,26 @@ public class BaseDBModelFS implements DBModelFS{
 
     private void safeWrite(Path dbModelFile, DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
 
-        if(dbModelFile == null){
+        if (dbModelFile == null) {
             throw new DBModelFSException();
         }
 
         this.verifyPath(dbModelFile.getParent());
 
-        try(FileWriter writer = new FileWriter(dbModelFile.toFile())){
+        try (FileWriter writer = new FileWriter(dbModelFile.toFile())) {
 
             writer.write(this.objToTxtTranslator.toText(dbEntity));
         }
     }
 
     private boolean verifyPath(Path path) throws IOException {
-        if(this.existingPaths.contains(path)){
+        if (this.existingPaths.contains(path)) {
             return true;
-        }
-        else{
-            if(Files.exists(path)){
+        } else {
+            if (Files.exists(path)) {
                 this.existingPaths.add(path);
                 return true;
-            }
-            else{
+            } else {
                 Files.createDirectories(path);
                 this.existingPaths.add(path);
                 return false;
@@ -110,29 +103,29 @@ public class BaseDBModelFS implements DBModelFS{
      */
 
 
-    private String getFileName(Table table){
+    private String getFileName(Table table) {
         return String.format("%s/Tables/TABLE_%s.yaml", table.getSchema().toUpperCase(), table.getName());
     }
 
-    private String getFileName(Trigger trigger){
+    private String getFileName(Trigger trigger) {
         String objectPrefix = trigger.getTargetObjectType() != null
                 ? trigger.getTargetObjectType().toUpperCase() : "OBJECT";
 
         return String.format("%s/Tables/Triggers/%s_%s_TRIGGER_%s.yaml", trigger.getTargetObjectSchema().toUpperCase()
-                ,objectPrefix, trigger.getTargetObjectName(), trigger.getName());
+                , objectPrefix, trigger.getTargetObjectName(), trigger.getName());
     }
 
-    private String getFileName(Routine routine){
+    private String getFileName(Routine routine) {
         return String.format("%s/Routines/%s_%s.yaml", routine.getSchema().toUpperCase()
-                ,routine.getName(), routine.getRoutineType());
+                , routine.getName(), routine.getRoutineType());
     }
 
-    private String getFileName(Index index){
+    private String getFileName(Index index) {
         return String.format("%s/Tables/Indexes/TABLE_%s_INDEX_%s.yaml", index.getAssociateTableSchema().toUpperCase()
                 , index.getAssociateTableName(), index.getName());
     }
 
-    private String getFileName(View view){
+    private String getFileName(View view) {
         return String.format("%s/Views/VIEW_%s.yaml", view.getSchema().toUpperCase(), view.getName());
     }
 

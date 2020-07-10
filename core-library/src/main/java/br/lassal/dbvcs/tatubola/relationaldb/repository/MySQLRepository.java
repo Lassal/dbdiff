@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
-public class MySQLRepository extends BaseRepository{
+public class MySQLRepository extends BaseRepository {
 
 
     private static final String SCHEMA = "TABLE_SCHEMA";
@@ -28,22 +28,22 @@ public class MySQLRepository extends BaseRepository{
         super(dataSource);
     }
 
-    public List<String> listSchemas(){
+    public List<String> listSchemas() {
         String sql = "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA;";
 
 
         List<String> schemas = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while(rs.next()){
+            while (rs.next()) {
                 schemas.add(rs.getString("SCHEMA_NAME"));
             }
 
         } catch (Exception ex) {
-            logger.error("Error listing schemas",ex);
+            logger.error("Error listing schemas", ex);
         }
 
         return schemas;
@@ -51,20 +51,20 @@ public class MySQLRepository extends BaseRepository{
     }
 
 
-    public List<Table> listTables(String schema){
+    public List<Table> listTables(String schema) {
         Map<String, Table> tableMap = this.loadTableColumns(schema);
 
         List<TableConstraint> otherConstraints = this.loadPKFKUniqueConstraints(schema);
-        for (TableConstraint constraint: otherConstraints) {
-            if(tableMap.containsKey(constraint.getTableID())){
+        for (TableConstraint constraint : otherConstraints) {
+            if (tableMap.containsKey(constraint.getTableID())) {
                 tableMap.get(constraint.getTableID()).addConstraint(constraint);
             }
         }
 
 
         List<TableConstraint> checkConstraints = this.loadCheckConstraints(schema);
-        for (TableConstraint constraint: checkConstraints) {
-            if(tableMap.containsKey(constraint.getTableID())){
+        for (TableConstraint constraint : checkConstraints) {
+            if (tableMap.containsKey(constraint.getTableID())) {
                 tableMap.get(constraint.getTableID()).addConstraint(constraint);
             }
         }
@@ -76,12 +76,12 @@ public class MySQLRepository extends BaseRepository{
                 .collect(Collectors.toList());
     }
 
-    public Map<String, Table> loadTableColumns(String schema){
+    public Map<String, Table> loadTableColumns(String schema) {
         String sql = "SELECT C.* FROM information_schema.TABLES T " +
-                     "  INNER JOIN information_schema.COLUMNS C " +
-                     "   ON T.TABLE_SCHEMA = C.TABLE_SCHEMA AND T.TABLE_NAME = C.TABLE_NAME AND T.TABLE_TYPE = 'BASE TABLE' ";
+                "  INNER JOIN information_schema.COLUMNS C " +
+                "   ON T.TABLE_SCHEMA = C.TABLE_SCHEMA AND T.TABLE_NAME = C.TABLE_NAME AND T.TABLE_TYPE = 'BASE TABLE' ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE T.TABLE_SCHEMA = '%s'", schema);
         }
 
@@ -91,8 +91,8 @@ public class MySQLRepository extends BaseRepository{
         List<Table> tables = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             Table currentTable = null;
             // loop through the result set
@@ -101,9 +101,9 @@ public class MySQLRepository extends BaseRepository{
                 String tableSchema = rs.getString(MySQLRepository.SCHEMA);
                 String tableName = rs.getString(MySQLRepository.TABLE_NAME);
 
-                if(     currentTable == null ||
+                if (currentTable == null ||
                         !currentTable.getSchema().equals(tableSchema) ||
-                        !currentTable.getName().equals(tableName)){
+                        !currentTable.getName().equals(tableName)) {
 
                     currentTable = new Table(tableSchema, tableName);
                     tables.add(currentTable);
@@ -130,18 +130,18 @@ public class MySQLRepository extends BaseRepository{
         column.setNullable("YES".equals(rs.getString("IS_NULLABLE")));
 
         Long textMaxLength = rs.getLong("CHARACTER_MAXIMUM_LENGTH");
-        if(!rs.wasNull() && textMaxLength > 0){
+        if (!rs.wasNull() && textMaxLength > 0) {
             column.setTextMaxLength(textMaxLength);
         }
 
         Integer precision = rs.getInt("NUMERIC_PRECISION");
         precision = rs.wasNull() ? rs.getInt("DATETIME_PRECISION") : precision;
-        if(!rs.wasNull() && precision > 0){
+        if (!rs.wasNull() && precision > 0) {
             column.setNumericPrecision(precision);
         }
 
         Integer scale = rs.getInt("NUMERIC_SCALE");
-        if(!rs.wasNull()){
+        if (!rs.wasNull()) {
             column.setNumericScale(scale);
         }
 
@@ -151,23 +151,23 @@ public class MySQLRepository extends BaseRepository{
 
     }
 
-    public List<TableConstraint> loadUniqueConstraints(String schema){
+    public List<TableConstraint> loadUniqueConstraints(String schema) {
         return this.loadPKFKUniqueConstraints(schema);
     }
 
-    public List<TableConstraint> loadReferentialConstraints(String schema){
+    public List<TableConstraint> loadReferentialConstraints(String schema) {
         return null;
     }
 
-    public List<TableConstraint> loadPKFKUniqueConstraints(String schema){
+    public List<TableConstraint> loadPKFKUniqueConstraints(String schema) {
 
         String sql = "SELECT TC.CONSTRAINT_TYPE, TC.ENFORCED, CC.* " +
-                     "FROM information_schema.TABLE_CONSTRAINTS TC " +
-                     "  INNER JOIN information_schema.KEY_COLUMN_USAGE CC " +
-                     "    ON TC.CONSTRAINT_SCHEMA = CC.CONSTRAINT_SCHEMA AND TC.CONSTRAINT_NAME  = CC.CONSTRAINT_NAME " +
-                     "       AND TC.TABLE_NAME = CC.TABLE_NAME AND TC.CONSTRAINT_TYPE <> 'CHECK' ";
+                "FROM information_schema.TABLE_CONSTRAINTS TC " +
+                "  INNER JOIN information_schema.KEY_COLUMN_USAGE CC " +
+                "    ON TC.CONSTRAINT_SCHEMA = CC.CONSTRAINT_SCHEMA AND TC.CONSTRAINT_NAME  = CC.CONSTRAINT_NAME " +
+                "       AND TC.TABLE_NAME = CC.TABLE_NAME AND TC.CONSTRAINT_TYPE <> 'CHECK' ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE TC.TABLE_SCHEMA = '%s'", schema);
         }
 
@@ -176,18 +176,18 @@ public class MySQLRepository extends BaseRepository{
         List<TableConstraint> constraints = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             TableConstraint constraint = null;
 
-            do{
+            do {
                 constraint = this.buildConstraint(rs);
 
-                if(constraint != null){
+                if (constraint != null) {
                     constraints.add(constraint);
                 }
-            }while(constraint != null);
+            } while (constraint != null);
 
         } catch (Exception ex) {
             logger.error("Error loading PK, FK and Unique constraints", ex);
@@ -199,32 +199,30 @@ public class MySQLRepository extends BaseRepository{
     private TableConstraint buildConstraint(ResultSet rs) throws SQLException {
         TableConstraint constraint = null;
 
-        if(rs.next()){
+        if (rs.next()) {
             String tableSchema = rs.getString(MySQLRepository.SCHEMA);
             String tableName = rs.getString(MySQLRepository.TABLE_NAME);
             String constraintName = rs.getString("CONSTRAINT_NAME");
             ConstraintType type = ConstraintType.fromMySQL(rs.getString("CONSTRAINT_TYPE"));
 
-            if(ConstraintType.FOREIGN_KEY.equals(type)){
+            if (ConstraintType.FOREIGN_KEY.equals(type)) {
                 constraint = new ForeignKeyConstraint(tableSchema, tableName, constraintName);
 
-            }
-            else{
+            } else {
                 constraint = new UniqueConstraint(tableSchema, tableName, constraintName, type);
             }
 
             this.addConstraintColumn(constraint, rs);
 
-            while(rs.next()){
+            while (rs.next()) {
                 String currTableSchema = rs.getString(MySQLRepository.SCHEMA);
                 String currTableName = rs.getString(MySQLRepository.TABLE_NAME);
                 String currConstraintName = rs.getString("CONSTRAINT_NAME");
 
-                if(currTableSchema.equals(tableSchema) && currTableName.equals(tableName)
-                        && currConstraintName.equals(constraintName)){
+                if (currTableSchema.equals(tableSchema) && currTableName.equals(tableName)
+                        && currConstraintName.equals(constraintName)) {
                     this.addConstraintColumn(constraint, rs);
-                }
-                else{
+                } else {
                     rs.previous();
                     break;
                 }
@@ -234,11 +232,10 @@ public class MySQLRepository extends BaseRepository{
     }
 
     private void addConstraintColumn(TableConstraint constraint, ResultSet rs) throws SQLException {
-        if(constraint instanceof UniqueConstraint){
+        if (constraint instanceof UniqueConstraint) {
             UniqueConstraint uniqueConstr = (UniqueConstraint) constraint;
             uniqueConstr.addColumn(this.convertToConstraintColumn(rs));
-        }
-        else if(constraint instanceof ForeignKeyConstraint){
+        } else if (constraint instanceof ForeignKeyConstraint) {
             ((ForeignKeyConstraint) constraint).addColumn(this.convertToReferentialIntegrityColumn(rs));
         }
 
@@ -258,17 +255,16 @@ public class MySQLRepository extends BaseRepository{
         return new Column(rs.getString("COLUMN_NAME"), rs.getInt("ORDINAL_POSITION"));
     }
 
-    public List<TableConstraint> loadCheckConstraints(String schema){
+    public List<TableConstraint> loadCheckConstraints(String schema) {
         String sql = "SELECT CC.CHECK_CLAUSE, TC.* " +
-                     "FROM information_schema.TABLE_CONSTRAINTS TC " +
-                     "  INNER JOIN information_schema.CHECK_CONSTRAINTS CC " +
-                     "   ON TC.CONSTRAINT_SCHEMA = CC.CONSTRAINT_SCHEMA " +
-                     "      AND TC.CONSTRAINT_NAME = CC.CONSTRAINT_NAME " +
-                     "      AND TC.CONSTRAINT_TYPE = 'CHECK' ";
+                "FROM information_schema.TABLE_CONSTRAINTS TC " +
+                "  INNER JOIN information_schema.CHECK_CONSTRAINTS CC " +
+                "   ON TC.CONSTRAINT_SCHEMA = CC.CONSTRAINT_SCHEMA " +
+                "      AND TC.CONSTRAINT_NAME = CC.CONSTRAINT_NAME " +
+                "      AND TC.CONSTRAINT_TYPE = 'CHECK' ";
 
 
-
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE TC.TABLE_SCHEMA = '%s'", schema);
         }
 
@@ -277,28 +273,28 @@ public class MySQLRepository extends BaseRepository{
         List<TableConstraint> constraints = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while(rs.next()){
+            while (rs.next()) {
                 String checkClause = SqlFormatter.of("sql").format(rs.getString("CHECK_CLAUSE"));
                 CheckConstraint constraint =
-                        new CheckConstraint(rs.getString(MySQLRepository.SCHEMA),rs.getString(MySQLRepository.TABLE_NAME)
-                                          , rs.getString("CONSTRAINT_NAME"), checkClause);
+                        new CheckConstraint(rs.getString(MySQLRepository.SCHEMA), rs.getString(MySQLRepository.TABLE_NAME)
+                                , rs.getString("CONSTRAINT_NAME"), checkClause);
                 constraints.add(constraint);
             }
 
         } catch (Exception ex) {
-            logger.error("Error loading check constraints",ex);
+            logger.error("Error loading check constraints", ex);
         }
 
         return constraints;
     }
 
-    public List<Trigger> loadTriggers(String schema){
+    public List<Trigger> loadTriggers(String schema) {
         String sql = "SELECT * FROM information_schema.TRIGGERS T ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE T.EVENT_OBJECT_SCHEMA = '%s'", schema);
         }
 
@@ -307,17 +303,17 @@ public class MySQLRepository extends BaseRepository{
         List<Trigger> triggers = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 Trigger trigger = this.convertToTrigger(rs);
                 triggers.add(trigger);
             }
 
         } catch (Exception ex) {
-            logger.error("Error loading triggers",ex);
+            logger.error("Error loading triggers", ex);
         }
 
 
@@ -351,23 +347,22 @@ public class MySQLRepository extends BaseRepository{
         return trigger;
     }
 
-    public List<Routine> listRoutines(String schema){
+    public List<Routine> listRoutines(String schema) {
         List<Routine> routines = this.loadRoutineDefinition(schema);
         Map<String, Routine> routinesMap = routines.stream().collect(Collectors.toMap(Routine::getRoutineID, Function.identity()));
 
         Routine currentRoutine = null;
-        for(RoutineParameter param : this.loadRoutineParameters(schema)){
+        for (RoutineParameter param : this.loadRoutineParameters(schema)) {
 
-            if(currentRoutine == null || !param.getRoutineID().equals(currentRoutine.getRoutineID())){
+            if (currentRoutine == null || !param.getRoutineID().equals(currentRoutine.getRoutineID())) {
                 currentRoutine = routinesMap.containsKey(param.getRoutineID()) ?
-                           routinesMap.get(param.getRoutineID()) : null;
+                        routinesMap.get(param.getRoutineID()) : null;
             }
 
-            if(currentRoutine != null){
-                if(param.getOrdinalPosition() == 0){
+            if (currentRoutine != null) {
+                if (param.getOrdinalPosition() == 0) {
                     currentRoutine.setReturnParamater(param);
-                }
-                else{
+                } else {
                     currentRoutine.addParameter(param);
                 }
             }
@@ -376,12 +371,12 @@ public class MySQLRepository extends BaseRepository{
         return routines;
     }
 
-    public List<Routine> loadRoutineDefinition(String schema){
+    public List<Routine> loadRoutineDefinition(String schema) {
         String sql =
                 "SELECT ROUTINE_SCHEMA, ROUTINE_NAME, ROUTINE_TYPE, ROUTINE_DEFINITION " +
-                        "FROM information_schema.ROUTINES " ;
+                        "FROM information_schema.ROUTINES ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE ROUTINE_SCHEMA = '%s'", schema);
         }
 
@@ -390,8 +385,8 @@ public class MySQLRepository extends BaseRepository{
         List<Routine> routines = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             // loop through the result set
             while (rs.next()) {
@@ -404,7 +399,7 @@ public class MySQLRepository extends BaseRepository{
             logger.error("Error loading routine definitions", ex);
         }
 
-       return routines;
+        return routines;
     }
 
     private Routine convertToRoutine(ResultSet rs) throws SQLException {
@@ -419,14 +414,14 @@ public class MySQLRepository extends BaseRepository{
         return routine;
     }
 
-    public List<RoutineParameter> loadRoutineParameters(String schema){
+    public List<RoutineParameter> loadRoutineParameters(String schema) {
         String sql =
                 "SELECT P.SPECIFIC_SCHEMA, P.SPECIFIC_NAME, P.ROUTINE_TYPE " +
                         "     , P.PARAMETER_NAME, P.DATA_TYPE, P.ORDINAL_POSITION, P.PARAMETER_MODE " +
                         "     , P.CHARACTER_MAXIMUM_LENGTH, P.NUMERIC_PRECISION, P.NUMERIC_SCALE, P.DATETIME_PRECISION " +
                         "FROM information_schema.PARAMETERS P ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE SPECIFIC_SCHEMA = '%s'", schema);
         }
 
@@ -435,8 +430,8 @@ public class MySQLRepository extends BaseRepository{
         List<RoutineParameter> parameters = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             // loop through the result set
             while (rs.next()) {
@@ -459,7 +454,7 @@ public class MySQLRepository extends BaseRepository{
         String paramDataType = rs.getString("DATA_TYPE");
         int paramPosition = rs.getInt("ORDINAL_POSITION");
         String paramModeLiteral = rs.getString("PARAMETER_MODE");
-        ParameterMode paramMode =  paramModeLiteral == null ? null : ParameterMode.valueOf(paramModeLiteral);
+        ParameterMode paramMode = paramModeLiteral == null ? null : ParameterMode.valueOf(paramModeLiteral);
 
         RoutineParameter param = new RoutineParameter(paramName, paramPosition, paramDataType, paramMode);
         param.setRoutineSchema(routineSchema);
@@ -467,28 +462,28 @@ public class MySQLRepository extends BaseRepository{
 
 
         Long textMaxLength = rs.getLong("CHARACTER_MAXIMUM_LENGTH");
-        if(!rs.wasNull() && textMaxLength > 0){
+        if (!rs.wasNull() && textMaxLength > 0) {
             param.setTextMaxLength(textMaxLength);
         }
 
         Integer precision = rs.getInt("NUMERIC_PRECISION");
         precision = rs.wasNull() ? rs.getInt("DATETIME_PRECISION") : precision;
-        if(!rs.wasNull() && precision > 0){
+        if (!rs.wasNull() && precision > 0) {
             param.setNumericPrecision(precision);
         }
 
         Integer scale = rs.getInt("NUMERIC_SCALE");
-        if(!rs.wasNull()){
+        if (!rs.wasNull()) {
             param.setNumericScale(scale);
         }
 
         return param;
     }
 
-    public List<Index> loadIndexes(String schema){
+    public List<Index> loadIndexes(String schema) {
         String sql = "SELECT * FROM information_schema.STATISTICS I ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE I.TABLE_SCHEMA = '%s'", schema);
         }
 
@@ -497,23 +492,23 @@ public class MySQLRepository extends BaseRepository{
         List<Index> indexes = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             Index currentIndex = null;
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 String tableSchema = rs.getString("TABLE_SCHEMA");
                 String tableName = rs.getString("TABLE_NAME");
                 String indexSchema = rs.getString("INDEX_SCHEMA");
                 String indexName = rs.getString("INDEX_NAME");
 
-                if(     currentIndex == null ||
+                if (currentIndex == null ||
                         !currentIndex.getAssociateTableSchema().equals(tableSchema) ||
                         !currentIndex.getAssociateTableName().equals(tableName) ||
                         !currentIndex.getSchema().equals(indexSchema) ||
-                        !currentIndex.getName().equals(indexName)){
+                        !currentIndex.getName().equals(indexName)) {
 
                     currentIndex = this.convertToIndex(indexSchema, indexName, tableSchema, tableName, rs);
                     indexes.add(currentIndex);
@@ -524,7 +519,7 @@ public class MySQLRepository extends BaseRepository{
             }
 
         } catch (Exception ex) {
-            logger.error("Error loading triggers",ex);
+            logger.error("Error loading triggers", ex);
         }
 
         return indexes;
@@ -538,34 +533,34 @@ public class MySQLRepository extends BaseRepository{
     }
 
     private IndexColumn convertToIndexColumn(ResultSet rs) throws SQLException {
-         String columnName = rs.getString("COLUMN_NAME");
-         int ordinalPosition = rs.getInt("SEQ_IN_INDEX");
-         String collation = rs.getString("COLLATION");
-         ColumnOrder order  = ColumnOrder.fromMySQL(collation);
+        String columnName = rs.getString("COLUMN_NAME");
+        int ordinalPosition = rs.getInt("SEQ_IN_INDEX");
+        String collation = rs.getString("COLLATION");
+        ColumnOrder order = ColumnOrder.fromMySQL(collation);
 
-         return new IndexColumn(columnName, ordinalPosition, order);
+        return new IndexColumn(columnName, ordinalPosition, order);
     }
 
-    public List<View> listViews(String schema){
+    public List<View> listViews(String schema) {
         List<View> views = this.loadViewDefinitions(schema);
 
         Map<String, View> mapViews = views.stream().collect(Collectors.toMap(View::getViewID, Function.identity()));
         Map<String, List<Table>> referencedTables = this.loadViewTables(schema);
         Map<String, List<TableColumn>> viewColumns = this.loadViewColumns(schema);
 
-        for(Map.Entry<String,View> view:mapViews.entrySet()){
-            if(referencedTables.containsKey(view.getKey())){
-                List<Table> viewTables =  referencedTables.get(view.getKey());
+        for (Map.Entry<String, View> view : mapViews.entrySet()) {
+            if (referencedTables.containsKey(view.getKey())) {
+                List<Table> viewTables = referencedTables.get(view.getKey());
 
-                if(!viewTables.isEmpty()){
+                if (!viewTables.isEmpty()) {
                     view.getValue().setReferencedTables(viewTables);
                 }
             }
 
-            if(viewColumns.containsKey(view.getKey())){
+            if (viewColumns.containsKey(view.getKey())) {
                 List<TableColumn> columns = viewColumns.get(view.getKey());
 
-                if(!columns.isEmpty()){
+                if (!columns.isEmpty()) {
                     view.getValue().setColumns(columns);
                 }
             }
@@ -574,10 +569,10 @@ public class MySQLRepository extends BaseRepository{
         return views;
     }
 
-    public List<View> loadViewDefinitions(String schema){
+    public List<View> loadViewDefinitions(String schema) {
         String sql = "SELECT * FROM information_schema.VIEWS ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE TABLE_SCHEMA = '%s'", schema);
         }
 
@@ -586,8 +581,8 @@ public class MySQLRepository extends BaseRepository{
         List<View> views = new ArrayList<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             // loop through the result set
             while (rs.next()) {
@@ -619,20 +614,20 @@ public class MySQLRepository extends BaseRepository{
         return view;
     }
 
-    public Map<String,List<Table>> loadViewTables(String schema){
+    public Map<String, List<Table>> loadViewTables(String schema) {
         String sql = "SELECT * FROM information_schema.VIEW_TABLE_USAGE ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE VIEW_SCHEMA = '%s'", schema);
         }
 
         sql += "ORDER BY VIEW_SCHEMA, VIEW_NAME, TABLE_SCHEMA , TABLE_NAME ";
 
-        Map<String,List<Table>> refTables = new HashMap<>();
+        Map<String, List<Table>> refTables = new HashMap<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             String currentViewID = null;
             List<Table> viewTables = null;
@@ -643,13 +638,12 @@ public class MySQLRepository extends BaseRepository{
                 String viewName = rs.getString("VIEW_NAME");
                 String viewID = View.createViewID(viewSchema, viewName);
 
-                if(!viewID.equals(currentViewID)){
+                if (!viewID.equals(currentViewID)) {
                     currentViewID = viewID;
 
-                    if(refTables.containsKey(viewID)){
+                    if (refTables.containsKey(viewID)) {
                         viewTables = refTables.get(viewID);
-                    }
-                    else{
+                    } else {
                         viewTables = new ArrayList<>();
                         refTables.put(viewID, viewTables);
                     }
@@ -672,23 +666,23 @@ public class MySQLRepository extends BaseRepository{
         return new Table(tableSchema, tableName, false);
     }
 
-    public Map<String, List<TableColumn>> loadViewColumns(String schema){
+    public Map<String, List<TableColumn>> loadViewColumns(String schema) {
         String sql = "SELECT C.* " +
-                     "FROM information_schema.VIEWS V " +
-                     " INNER JOIN information_schema.COLUMNS C " +
-                     "   ON V.TABLE_SCHEMA = C.TABLE_SCHEMA  AND V.TABLE_NAME = C.TABLE_NAME ";
+                "FROM information_schema.VIEWS V " +
+                " INNER JOIN information_schema.COLUMNS C " +
+                "   ON V.TABLE_SCHEMA = C.TABLE_SCHEMA  AND V.TABLE_NAME = C.TABLE_NAME ";
 
-        if(schema !=null && !schema.isEmpty()) {
+        if (schema != null && !schema.isEmpty()) {
             sql += String.format("WHERE  V.TABLE_SCHEMA = '%s'", schema);
         }
 
         sql += "ORDER BY C.TABLE_SCHEMA, C.TABLE_NAME, C.COLUMN_NAME";
 
-        Map<String,List<TableColumn>> columns = new HashMap<>();
+        Map<String, List<TableColumn>> columns = new HashMap<>();
 
         try (Connection conn = this.getConnection();
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)) {
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             String currentViewID = null;
             List<TableColumn> viewColumns = null;
@@ -699,13 +693,12 @@ public class MySQLRepository extends BaseRepository{
                 String viewName = rs.getString("TABLE_NAME");
                 String viewID = View.createViewID(viewSchema, viewName);
 
-                if(!viewID.equals(currentViewID)){
+                if (!viewID.equals(currentViewID)) {
                     currentViewID = viewID;
 
-                    if(columns.containsKey(viewID)){
+                    if (columns.containsKey(viewID)) {
                         viewColumns = columns.get(viewID);
-                    }
-                    else{
+                    } else {
                         viewColumns = new ArrayList<>();
                         columns.put(viewID, viewColumns);
                     }
