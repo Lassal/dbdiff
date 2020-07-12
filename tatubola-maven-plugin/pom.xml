@@ -5,7 +5,7 @@
   <parent>
     <artifactId>db-vcs-tatubola</artifactId>
     <groupId>br.lassal.dbvcs.tatubola</groupId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2a1-SNAPSHOT</version>
   </parent>
 
   <artifactId>tatubola-maven-plugin</artifactId>
@@ -70,6 +70,12 @@
       <version>3.3.0</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>br.lassal.dbvcs.tatubola</groupId>
+          <artifactId>core-library</artifactId>
+          <version>0.2-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
   <build>
