@@ -15,10 +15,12 @@ public class DBModelSerializerBuilder {
     private DBModelFS outputFS;
     private RelationalDBRepository repository;
     private String normalizedEnvironmentName = null;
+    private String jdbcUrl = null;
 
     public DBModelSerializerBuilder(String environmentName, String jdbcUrl, String username, String password) {
         this.environmentName = environmentName;
         this.repository = RelationalDBVersionFactory.getInstance().createRDBRepository(jdbcUrl, username, password);
+        this.jdbcUrl = jdbcUrl;
     }
 
     public String getEnvironmentName() {
@@ -31,6 +33,10 @@ public class DBModelSerializerBuilder {
         }
 
         return this.normalizedEnvironmentName;
+    }
+
+    public String getJdbcUrl(){
+        return this.jdbcUrl;
     }
 
     /**

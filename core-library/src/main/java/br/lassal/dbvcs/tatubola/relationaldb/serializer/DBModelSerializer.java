@@ -3,6 +3,7 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.serializer.metrics.SerializerMetricsListener;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
     private List<LoadCommand> loadSteps;
     private String environmentName;
     private Logger logger;
+    private SerializerMetricsListener metricListener;
 
     public DBModelSerializer(RelationalDBRepository repository, DBModelFS dbModelFS
             , String targetSchema, String environmentName, Logger logger) {
@@ -51,6 +53,21 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
         for (M model : entities) {
             this.getModelFS().save(model);
         }
+
+        this.notifyAfterSerialization(entities);
+    }
+
+    private void notifyAfterSerialization(List<M> entities){
+
+        if(this.metricListener != null && !entities.isEmpty()){
+            this.metricListener.notifySerializedObjects(entities.get(0).getClass(), this.schema, entities.size());
+        }
+    }
+
+    public DBModelSerializer setMetricsListener(SerializerMetricsListener listener){
+        this.metricListener = listener;
+
+        return this;
     }
 
     protected long showEllapsedMicros(long start) {

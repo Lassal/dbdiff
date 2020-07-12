@@ -54,7 +54,7 @@ public class DBVersionCommandTest {
         schemas.add("HR");
         schemas.add("XDB");
 
-        return schemas;
+        return null;//schemas;
     }
 
     @Test

@@ -3,7 +3,9 @@ package br.lassal.dbvcs.tatubola;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.DBModelSerializer;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
+import br.lassal.dbvcs.tatubola.report.DBModelSerializationReport;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
+import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ForkJoinPool;
 
 public class ParallelDBVersionCommand {
@@ -76,9 +77,7 @@ public class ParallelDBVersionCommand {
 
     public void takeDatabaseSchemaSnapshotVersion() throws Exception {
 
-        String[] envBranches = new String[this.environments.size()];
-        String[] sourceFolder = new String[this.environments.size()];
-        CountDownLatch[] allTasksEnv = new CountDownLatch[this.environments.size()];
+        EnvironmentInfo[] dbEnvs = new EnvironmentInfo[this.environments.size()];
         int envIndex = 0;
 
         this.vcsController.setupRepositoryInitialState();
@@ -108,12 +107,13 @@ public class ParallelDBVersionCommand {
                 }
             }
 
-            CountDownLatch envTotalTasks = new CountDownLatch(serializers.size());
-            allTasksEnv[envIndex] = envTotalTasks;
-            envBranches[envIndex] = envBuilder.getEnvironmentName();
-            sourceFolder[envIndex] = envBuilder.getNormalizedEnvironmentName();
 
-            serializers.stream().forEach(s -> threadPool.execute(new ParallelSerializer(s, envTotalTasks)));
+            EnvironmentInfo envInfo = new EnvironmentInfo(envBuilder, serializers.size());
+            dbEnvs[envIndex] = envInfo;
+
+            serializers.stream()
+                    .forEach(s -> threadPool.execute(
+                            new ParallelSerializer(s.setMetricsListener(envInfo.getSerializerCounter()), envInfo.getTaskSerializerLatch())));
 
             if (logger.isDebugEnabled()) {
                 logger.debug("(Step 3|" + envBuilder.getEnvironmentName() + ") Start serialization in parallel thread");
@@ -122,34 +122,58 @@ public class ParallelDBVersionCommand {
             envIndex++;
         }
 
-        File repositoryFolder = new File(this.rootPathLocalVCRepository);
 
-        for (int i = 0; i < envBranches.length; i++) {
-            allTasksEnv[i].await();
+        for (int i = 0; i < dbEnvs.length; i++) {
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Branch : " + envBranches[i] + " | Remaining tasks: " + allTasksEnv[i].getCount());
-                logger.debug("(Step 4|" + envBranches[i] + ") About to check-out branch : " + envBranches[i]);
+            this.waitEndSerializationAndCheckEnvBranch(dbEnvs[i]);
 
+            this.moveDBSerializedObjectsToLocalRepository(dbEnvs[i]);
 
-            }
-            this.vcsController.checkout(envBranches[i]);
-
-            File envFiles = new File(this.tmpPath, sourceFolder[i]);
-            if (logger.isDebugEnabled()) {
-                logger.debug("(Step 5|" + envBranches[i] + ") About to copy files from " + envFiles + " to " + repositoryFolder);
-            }
-            this.copyFullFolderStructure(envFiles.toPath(), repositoryFolder.toPath());
-
-            if (logger.isDebugEnabled()) {
-                logger.debug("(Step 6|" + envBranches[i] + ") About to commit changes in branch: " + envBranches[i]);
-            }
-
-            this.vcsController.commitAllChanges("Commited parallel environment");
+            this.commitEnvironmentSerialization(dbEnvs[i]);
         }
 
         logger.debug("(Step 7) About to sync changes to Server");
         this.vcsController.syncChangesToServer();
+
+    }
+
+    private void waitEndSerializationAndCheckEnvBranch(EnvironmentInfo envInfo) throws InterruptedException, VersionControlSystemException {
+        envInfo.getTaskSerializerLatch().await();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Branch : " + envInfo.getEnvName() + " | Remaining tasks: " + envInfo.getTaskSerializerLatch().getCount());
+            logger.debug("(Step 4|" + envInfo.getEnvName() + ") About to check-out branch : " + envInfo.getEnvName());
+
+        }
+
+        this.vcsController.checkout(envInfo.getEnvName());
+
+    }
+
+    private void moveDBSerializedObjectsToLocalRepository(EnvironmentInfo envInfo) throws IOException {
+        File localRepoFolder = new File(this.rootPathLocalVCRepository);
+        File dbEnvFiles = new File(this.tmpPath, envInfo.getSourceFolder());
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("(Step 5|" + envInfo.getEnvName() + ") About to copy files from " + dbEnvFiles + " to " + localRepoFolder);
+        }
+
+        this.copyFullFolderStructure(dbEnvFiles.toPath(), localRepoFolder.toPath());
+
+    }
+
+    private void commitEnvironmentSerialization(EnvironmentInfo envInfo) throws VersionControlSystemException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("(Step 6|" + envInfo.getEnvName() + ") About to commit changes in branch: " + envInfo.getEnvName());
+        }
+
+        DBModelSerializationReport report = new DBModelSerializationReport(envInfo.getEnvName(), envInfo.getDBJdbcUrl());
+
+        report.writeSchemaSerializationMetrics(envInfo.getSerializerCounter().getMetrics());
+
+        logger.info(report.print());
+
+        this.vcsController.commitAllChanges(report.print());
 
     }
 
