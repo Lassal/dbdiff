@@ -30,8 +30,8 @@ public class DBVersionSnapshotGoal extends AbstractMojo {
     @Parameter(property = "environments", required = true)
     private List<DBEnvironment> environments;
 
-    @Parameter( defaultValue = "${project.basedir}", property = "baseDir", required = true )
-    private File baseDir;
+    @Parameter( defaultValue = "${project.build.directory}", property = "baseDir", required = true )
+    private File buildDir;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -46,8 +46,8 @@ public class DBVersionSnapshotGoal extends AbstractMojo {
     }
 
     private ParallelDBVersionCommand buildCommand() throws MalformedURLException {
-        Path workspacePath = Paths.get(this.baseDir.getAbsolutePath(), "vcsrepo");
-        Path tmpPath = Paths.get(this.baseDir.getAbsolutePath(), "tmpwork");
+        Path workspacePath = Paths.get(this.buildDir.getAbsolutePath(), "vcsrepo");
+        Path tmpPath = Paths.get(this.buildDir.getAbsolutePath(), "tmpwork");
 
         this.getLog().info(this.vcsInfo.getRemoteRepositoryUrl());
         this.getLog().info(this.vcsInfo.getCredentials().getUsername());

@@ -137,6 +137,14 @@ public class ParallelDBVersionCommand {
 
     }
 
+    /**
+     * Waits for all serialization tasks for this environment finishes and then checkout the corresponding branch
+     * in the local repository
+     *
+     * @param envInfo All the information of the current branch
+     * @throws InterruptedException
+     * @throws VersionControlSystemException
+     */
     private void waitEndSerializationAndCheckEnvBranch(EnvironmentInfo envInfo) throws InterruptedException, VersionControlSystemException {
         envInfo.getTaskSerializerLatch().await();
 
@@ -150,6 +158,14 @@ public class ParallelDBVersionCommand {
 
     }
 
+    /**
+     * Move all serialized objects of this environment generated in the temp folder and move it to
+     * the local repository to detect the object changes.
+     * Inside the temp folder there are a different folder for each environment
+     *
+     * @param envInfo
+     * @throws IOException
+     */
     private void moveDBSerializedObjectsToLocalRepository(EnvironmentInfo envInfo) throws IOException {
         File localRepoFolder = new File(this.rootPathLocalVCRepository);
         File dbEnvFiles = new File(this.tmpPath, envInfo.getSourceFolder());
@@ -162,6 +178,14 @@ public class ParallelDBVersionCommand {
 
     }
 
+    /**
+     * Generate a report with all the serialization changes and commit all the local changes in the repository
+     *
+     *
+     *
+     * @param envInfo
+     * @throws VersionControlSystemException
+     */
     private void commitEnvironmentSerialization(EnvironmentInfo envInfo) throws VersionControlSystemException {
         if (logger.isDebugEnabled()) {
             logger.debug("(Step 6|" + envInfo.getEnvName() + ") About to commit changes in branch: " + envInfo.getEnvName());

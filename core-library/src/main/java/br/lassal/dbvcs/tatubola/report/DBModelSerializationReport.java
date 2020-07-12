@@ -9,7 +9,7 @@ public class DBModelSerializationReport {
     private StringBuilder report;
 
     public DBModelSerializationReport(String environmentName, String jdbcUrl){
-        this.report = new StringBuilder("Tatubola database environment snapshot\n");
+        this.report = new StringBuilder("Tatubola database environment version snapshot\n");
 
         this.writeEnvironmentInfo(environmentName, jdbcUrl);
     }
