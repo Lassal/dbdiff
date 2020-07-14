@@ -60,7 +60,7 @@ public class BaseDBModelFS implements DBModelFS {
         return dbModelFile;
     }
 
-    private void safeWrite(Path dbModelFile, DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
+    protected void safeWrite(Path dbModelFile, DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
 
         if (dbModelFile == null) {
             throw new DBModelFSException();

@@ -122,15 +122,9 @@ public class Index implements DatabaseModelEntity {
             isEqual &= this.columns.size() == other.columns.size();
 
             if (isEqual) {
-                Map<String, IndexColumn> thisColumns = this.columns.stream()
-                        .collect(Collectors.toMap(IndexColumn::getName, Function.identity()));
-
-                for (IndexColumn column : other.getColumns()) {
-                    isEqual &= thisColumns.containsKey(column.getName());
-
-                    if (isEqual) {
-                        isEqual &= thisColumns.get(column.getName()).equals(column);
-                    }
+                
+                for(int i=0; i < this.columns.size(); i++){
+                    isEqual &= this.columns.get(i).equals(other.columns.get(i));
                 }
 
             }
