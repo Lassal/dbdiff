@@ -22,10 +22,6 @@ public class OracleRepository extends BaseRepository {
 
     public static final String RETURN_PARAMETER_NAME = "(--return--)";
 
-    public OracleRepository(DataSource dataSource) {
-        super(dataSource);
-    }
-
     public List<String> listSchemas() {
         String sql = "SELECT USERNAME FROM SYS.ALL_USERS";
 

@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,12 +24,14 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class IndexSerializerTest {
 
+    private final String rootPath = "root";
+
     @Mock
     private RelationalDBRepository repository;
 
 
     private InMemoryTestDBModelFS createNewDBModelFS(){
-       return new InMemoryTestDBModelFS("root", new JacksonYamlSerializer());
+       return new InMemoryTestDBModelFS(this.rootPath, new JacksonYamlSerializer());
     }
 
     @Test
@@ -37,21 +41,27 @@ public class IndexSerializerTest {
         InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
         IndexSerializer serializer = new IndexSerializer(this.repository, dbModelFS, schema, env);
 
-        List<Index> expectedIndexesUnordered = new ArrayList<>();
-        expectedIndexesUnordered.add(this.createTestIndex(schema, 2, false, true));
-        expectedIndexesUnordered.add(this.createTestIndex(schema, 1, true, true));
+        List<Index> unorderedIndexList = new ArrayList<>();
+        unorderedIndexList.add(this.createTestIndex(schema, 2, false, true));
+        unorderedIndexList.add(this.createTestIndex(schema, 1, true, true));
 
         List<Index> expectedIndexesOrdered = new ArrayList<>();
         expectedIndexesOrdered.add(this.createTestIndex(schema, 1, true, false));
         expectedIndexesOrdered.add(this.createTestIndex(schema, 2, false, false));
 
-        when(this.repository.loadIndexes(schema)).thenReturn(expectedIndexesUnordered);
+        when(this.repository.loadIndexes(schema)).thenReturn(unorderedIndexList);
 
         serializer.serialize();
 
         for (Index expectedIdx: expectedIndexesOrdered) {
-            assertEquals(expectedIdx, dbModelFS.getSerializationInfo(expectedIdx).getDBObject());
+            InMemoryTestDBModelFS.SerializationInfo serializationInfo = dbModelFS.getSerializationInfo(expectedIdx);
+            assertEquals(expectedIdx, serializationInfo.getDBObject());
+            //TODO: implement these tests in DBModelFS
+            assertEquals(this.getIndexOutputPath((Index) serializationInfo.getDBObject()), serializationInfo.getObjectOutputPath());
         }
+
+        verify(this.repository, times(1)).loadIndexes(schema);
+        assertEquals(unorderedIndexList.size(), dbModelFS.getNumberSerializedObjects());
     }
 
     private Index createTestIndex(String schema, int id, boolean unique, boolean columnsOutOfOrder){
@@ -84,5 +94,15 @@ public class IndexSerializerTest {
         IndexColumn col = new IndexColumn(columnName, seqId, order);
 
         return col;
+    }
+
+    //TODO: remove from here; implement in the DBModelFS unit tests
+    private Path getIndexOutputPath(Index index){
+        return Paths.get( this.rootPath,
+                String.format("%s/Tables/Indexes/TABLE_%s_INDEX_%s.yaml"
+                        , index.getAssociateTableSchema().toUpperCase()
+                        , index.getAssociateTableName(), index.getName()
+                )
+        );
     }
 }

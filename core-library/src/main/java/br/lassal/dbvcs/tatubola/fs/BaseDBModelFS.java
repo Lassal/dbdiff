@@ -38,6 +38,10 @@ public class BaseDBModelFS implements DBModelFS {
         this.existingPaths = new HashSet<>();
     }
 
+    protected TextSerializer getObjToTxtTranslator(){
+        return this.objToTxtTranslator;
+    }
+
     public Path save(DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
 
         Path dbModelFile = null;

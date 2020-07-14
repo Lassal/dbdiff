@@ -24,10 +24,6 @@ public class MySQLRepository extends BaseRepository {
 
     private static Logger logger = LoggerFactory.getLogger(MySQLRepository.class);
 
-    public MySQLRepository(DataSource dataSource) {
-        super(dataSource);
-    }
-
     public List<String> listSchemas() {
         String sql = "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA;";
 

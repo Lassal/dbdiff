@@ -8,7 +8,7 @@ public abstract class BaseRepository implements RelationalDBRepository {
 
     private DataSource dataSource;
 
-    public BaseRepository(DataSource dataSource) {
+    public void setDataSource(DataSource dataSource){
         this.dataSource = dataSource;
     }
 

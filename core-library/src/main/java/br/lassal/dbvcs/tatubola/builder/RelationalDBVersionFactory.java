@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.builder;
 
 import br.lassal.dbvcs.tatubola.fs.BaseDBModelFS;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.relationaldb.repository.BaseRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.*;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
@@ -60,8 +61,13 @@ public class RelationalDBVersionFactory {
             String[] jdbcUrlInfo = jdbcUrl.split(":");
 
             if (jdbcUrlInfo.length > 2) {
-                return DatabaseRepositoryVendor.createRelationalDBRepository(jdbcUrlInfo[1]
-                        , this.createConnectionPool(jdbcUrl, username, password, openConnectionsOnInitialization));
+                BaseRepository repository = DatabaseRepositoryVendor.createRelationalDBRepository(jdbcUrlInfo[1]);
+
+                if(repository != null) {
+                    repository.setDataSource(this.createConnectionPool(jdbcUrl, username, password, openConnectionsOnInitialization));
+                }
+
+                return repository;
             }
         }
         return null;

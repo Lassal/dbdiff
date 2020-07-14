@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.builder;
 
+import br.lassal.dbvcs.tatubola.relationaldb.repository.BaseRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.OracleRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
@@ -15,7 +16,7 @@ public enum DatabaseRepositoryVendor {
     private static Logger logger = LoggerFactory.getLogger(DatabaseRepositoryVendor.class);
 
 
-    public static RelationalDBRepository createRelationalDBRepository(String dbVendor, DataSource datasource) {
+    public static BaseRepository createRelationalDBRepository(String dbVendor) {
 
         DatabaseRepositoryVendor database = null;
 
@@ -32,9 +33,9 @@ public enum DatabaseRepositoryVendor {
 
         switch (database) {
             case MYSQL:
-                return new MySQLRepository(datasource);
+                return new MySQLRepository();
             case ORACLE:
-                return new OracleRepository(datasource);
+                return new OracleRepository();
             default:
                 return null;
         }
