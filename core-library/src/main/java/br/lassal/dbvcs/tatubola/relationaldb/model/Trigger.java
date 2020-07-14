@@ -88,7 +88,7 @@ public class Trigger implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
     }
 
 

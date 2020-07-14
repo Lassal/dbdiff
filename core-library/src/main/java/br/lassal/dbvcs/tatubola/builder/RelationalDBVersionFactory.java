@@ -74,7 +74,7 @@ public class RelationalDBVersionFactory {
     }
 
     public RelationalDBRepository createRDBRepository(String jdbcUrl, String username, String password) {
-        return this.createRDBRepository(jdbcUrl, username, password, true);
+        return this.createRDBRepository(jdbcUrl, username, password, false);
     }
 
     public DBModelFS createDBModelFS(String rootPathPerEnv) {

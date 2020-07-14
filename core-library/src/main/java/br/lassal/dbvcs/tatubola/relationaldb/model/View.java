@@ -56,7 +56,7 @@ public class View implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
     }
 
     public boolean isUpdatedAllowed() {
