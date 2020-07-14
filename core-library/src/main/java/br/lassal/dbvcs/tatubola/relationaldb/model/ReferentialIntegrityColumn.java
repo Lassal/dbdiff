@@ -1,7 +1,10 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.Objects;
 
+@JsonPropertyOrder({"name", "ordinalPosition", "referencedSchemaName", "referencedTableName", "referencedTableColumnName" })
 public class ReferentialIntegrityColumn extends Column {
 
     private String referencedSchemaName;

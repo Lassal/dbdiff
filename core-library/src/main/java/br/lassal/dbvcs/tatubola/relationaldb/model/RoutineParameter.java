@@ -2,10 +2,12 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"name","order","dataType", "textMaxLength", "numericPrecision", "numericScale","parameterMode"})
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"routineSchema", "routineName", "routineID", "dataTypeLength"})
 public class RoutineParameter extends TypedColumn {
 

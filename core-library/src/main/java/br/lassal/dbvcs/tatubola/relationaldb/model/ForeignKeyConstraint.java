@@ -1,9 +1,12 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@JsonPropertyOrder({"name", "type", "columns"})
 public class ForeignKeyConstraint extends TableConstraint {
 
     private List<ReferentialIntegrityColumn> orderedColumns;

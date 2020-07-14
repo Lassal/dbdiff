@@ -1,8 +1,11 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.Comparator;
 import java.util.Objects;
 
+@JsonPropertyOrder({"name","order","ordinalPosition"})
 public class IndexColumn extends Column {
 
     public static final Comparator DEFAULT_SORT_ORDER = Comparator.comparing(IndexColumn::getOrdinalPosition)

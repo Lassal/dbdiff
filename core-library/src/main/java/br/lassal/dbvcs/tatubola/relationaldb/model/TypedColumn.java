@@ -1,9 +1,11 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
 
+@JsonPropertyOrder({"name","order","dataType", "textMaxLength", "numericPrecision", "numericScale"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TypedColumn extends Column {
     private String dataType;

@@ -1,10 +1,12 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"name","order","dataType", "textMaxLength", "numericPrecision", "numericScale", "nullable", "defaultValue"})
 public class TableColumn extends TypedColumn {
 
     private boolean nullable;

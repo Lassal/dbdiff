@@ -1,7 +1,10 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.Objects;
 
+@JsonPropertyOrder({"name", "type", "checkClause"})
 public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model.TableConstraint {
 
     private String checkClause;

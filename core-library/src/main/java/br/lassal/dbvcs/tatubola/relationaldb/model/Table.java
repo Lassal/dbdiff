@@ -3,11 +3,13 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@JsonPropertyOrder({"schema","name","columns","constraints"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"tableID"})
 public class Table implements DatabaseModelEntity {

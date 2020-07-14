@@ -2,9 +2,12 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.Objects;
 
+@JsonPropertyOrder({"schema", "name", "targetObjectSchema", "targetObjectName", "targetObjectType", "eventTiming"
+        , "event", "eventActionBody"})
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"schema", "triggerID"})
 public class Trigger implements DatabaseModelEntity {
 
