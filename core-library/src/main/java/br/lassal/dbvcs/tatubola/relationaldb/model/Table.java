@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -47,6 +48,12 @@ public class Table implements DatabaseModelEntity {
     public void setSchema(String schema) {
         this.schema = schema;
     }
+
+    @Override
+    public void tidyUpProperties(SqlNormalizer normalizer) {
+        throw new UnsupportedOperationException();
+    }
+
 
     public void addColumn(TableColumn column) {
         this.columns.add(column);

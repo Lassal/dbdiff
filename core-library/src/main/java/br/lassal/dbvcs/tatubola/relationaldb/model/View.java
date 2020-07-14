@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -51,6 +52,11 @@ public class View implements DatabaseModelEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public void tidyUpProperties(SqlNormalizer normalizer) {
+        throw new UnsupportedOperationException();
     }
 
     public boolean isUpdatedAllowed() {

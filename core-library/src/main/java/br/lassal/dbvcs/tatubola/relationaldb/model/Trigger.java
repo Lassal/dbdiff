@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
@@ -84,6 +85,12 @@ public class Trigger implements DatabaseModelEntity {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public void tidyUpProperties(SqlNormalizer normalizer) {
+        throw new UnsupportedOperationException();
+    }
+
 
     public String getEventTiming() {
         return eventTiming;

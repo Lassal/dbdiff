@@ -1,16 +1,15 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true, value = {})
 public class Index implements DatabaseModelEntity {
+
 
     private String indexSchema;
     private String indexName;
@@ -35,17 +34,6 @@ public class Index implements DatabaseModelEntity {
         this.columns = new ArrayList<>();
     }
 
-    /*
-    - Schema
- - Name
- - Type
- - Uniqueness
- - Columns
-   - Name
-   - Ordinal Position : 1..z
-   - Order: ASC | DESC
-     */
-
     @Override
     public String getSchema() {
         return this.indexSchema;
@@ -58,6 +46,11 @@ public class Index implements DatabaseModelEntity {
     @Override
     public String getName() {
         return this.indexName;
+    }
+
+    @Override
+    public void tidyUpProperties(SqlNormalizer normalizer) {
+        this.columns.sort(IndexColumn.DEFAULT_SORT_ORDER);
     }
 
     public void setName(String name) {
@@ -122,7 +115,7 @@ public class Index implements DatabaseModelEntity {
             isEqual &= this.columns.size() == other.columns.size();
 
             if (isEqual) {
-                
+
                 for(int i=0; i < this.columns.size(); i++){
                     isEqual &= this.columns.get(i).equals(other.columns.get(i));
                 }

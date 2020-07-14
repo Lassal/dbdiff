@@ -1,8 +1,13 @@
 package br.lassal.dbvcs.tatubola.relationaldb.model;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 public class IndexColumn extends Column {
+
+    public static final Comparator DEFAULT_SORT_ORDER = Comparator.comparing(IndexColumn::getOrdinalPosition)
+            .thenComparing(IndexColumn::getName);
+
 
     private ColumnOrder order;
 

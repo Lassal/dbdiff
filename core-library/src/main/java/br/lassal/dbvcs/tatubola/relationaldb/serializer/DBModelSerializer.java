@@ -4,6 +4,7 @@ import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.DatabaseModelEntity;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.metrics.SerializerMetricsListener;
+import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -50,7 +51,10 @@ public abstract class DBModelSerializer<M extends DatabaseModelEntity> {
     abstract List<M> assemble();
 
     void serialize(List<M> entities) throws Exception {
+        SqlNormalizer normalizer = SqlNormalizer.getInstance(this.repository);
+
         for (M model : entities) {
+            model.tidyUpProperties(normalizer);
             this.getModelFS().save(model);
         }
 
