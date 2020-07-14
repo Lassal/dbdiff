@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.report;
 
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.metrics.SchemaMetrics;
 
+import java.time.Instant;
 import java.util.List;
 
 public class DBModelSerializationReport {
@@ -10,6 +11,7 @@ public class DBModelSerializationReport {
 
     public DBModelSerializationReport(String environmentName, String jdbcUrl){
         this.report = new StringBuilder("Tatubola database environment version snapshot\n");
+        this.report.append("  Taken at: " + Instant.now() + "\n\n");
 
         this.writeEnvironmentInfo(environmentName, jdbcUrl);
     }
