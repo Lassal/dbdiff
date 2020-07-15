@@ -25,17 +25,29 @@ import static org.mockito.Mockito.*;
 public class IndexSerializerTest {
 
     private final String rootPath = "root";
+    private final JacksonYamlSerializer serializer = new JacksonYamlSerializer();
 
     @Mock
     private RelationalDBRepository repository;
 
 
     private InMemoryTestDBModelFS createNewDBModelFS(){
-       return new InMemoryTestDBModelFS(this.rootPath, new JacksonYamlSerializer());
+       return new InMemoryTestDBModelFS(this.rootPath, this.serializer);
     }
 
+    /**
+     * Test the serialization process in IndexSerializer.
+     * Tests if
+     *  - unordered items read from the repository are tidy up before serialization
+     *  - all items generated from the repository are serialized
+     *
+     * Each serializer is used for a single schema so this test case already covers
+     * all schemas case.
+     *
+     * @throws Exception
+     */
     @Test
-    public void testIndexSerializerSpecifSchema() throws Exception {
+    public void testIndexSerializerSingleSchema() throws Exception {
         String env = "DEV";
         String schema = "XPTO";
         InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
@@ -50,18 +62,48 @@ public class IndexSerializerTest {
         expectedIndexesOrdered.add(this.createTestIndex(schema, 2, false, false));
 
         when(this.repository.loadIndexes(schema)).thenReturn(unorderedIndexList);
+        serializer.serialize();
+
+        // verify the serialized index is equal to the expected index (ordered properly)
+        for (Index expectedIdx: expectedIndexesOrdered) {
+            assertEquals(expectedIdx, dbModelFS.getSerializationInfo(expectedIdx).getDBObject());
+        }
+
+        // check that loadIndexes were called in the mock repository once
+        verify(this.repository, times(1)).loadIndexes(schema);
+        // and the number of serialized objects are the same than the provided
+        assertEquals(unorderedIndexList.size(), dbModelFS.getNumberSerializedObjects());
+    }
+
+    /**
+     * Verify that the serialized index object can be deseralized and
+     * the original and the deserialized version are identical
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testIndexSerializationDeserialization() throws Exception {
+        String env = "DEV";
+        String schema = "XPTO";
+        InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
+        IndexSerializer serializer = new IndexSerializer(this.repository, dbModelFS, schema, env);
+
+        List<Index> sourceIndexList = new ArrayList<>();
+        sourceIndexList.add(this.createTestIndex(schema, 1, true, true));
+
+        when(this.repository.loadIndexes(schema)).thenReturn(sourceIndexList);
 
         serializer.serialize();
 
-        for (Index expectedIdx: expectedIndexesOrdered) {
-            InMemoryTestDBModelFS.SerializationInfo serializationInfo = dbModelFS.getSerializationInfo(expectedIdx);
-            assertEquals(expectedIdx, serializationInfo.getDBObject());
-            //TODO: implement these tests in DBModelFS
-            assertEquals(this.getIndexOutputPath((Index) serializationInfo.getDBObject()), serializationInfo.getObjectOutputPath());
-        }
+        Index sourceIndex = sourceIndexList.get(0);
+        InMemoryTestDBModelFS.SerializationInfo serializedIndexInfo = dbModelFS.getSerializationInfo(sourceIndex);
 
-        verify(this.repository, times(1)).loadIndexes(schema);
-        assertEquals(unorderedIndexList.size(), dbModelFS.getNumberSerializedObjects());
+        assertEquals(sourceIndex, serializedIndexInfo.getDBObject());
+
+        Index deserializedIndex = this.serializer.fromYAMLtoPOJO(serializedIndexInfo.getYamlText(), Index.class);
+
+        assertEquals(sourceIndex, deserializedIndex);
+
     }
 
     private Index createTestIndex(String schema, int id, boolean unique, boolean columnsOutOfOrder){
@@ -96,13 +138,4 @@ public class IndexSerializerTest {
         return col;
     }
 
-    //TODO: remove from here; implement in the DBModelFS unit tests
-    private Path getIndexOutputPath(Index index){
-        return Paths.get( this.rootPath,
-                String.format("%s/Tables/Indexes/TABLE_%s_INDEX_%s.yaml"
-                        , index.getAssociateTableSchema().toUpperCase()
-                        , index.getAssociateTableName(), index.getName()
-                )
-        );
-    }
 }

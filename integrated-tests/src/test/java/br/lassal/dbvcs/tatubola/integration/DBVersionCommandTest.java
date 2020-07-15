@@ -49,12 +49,12 @@ public class DBVersionCommandTest {
 
 
         //schemas.add("SYS");
-        schemas.add("APEX_050000");
+       // schemas.add("APEX_050000");
         schemas.add("APP_DATA");
         schemas.add("HR");
-        schemas.add("XDB");
+       // schemas.add("XDB");
 
-        return null;//schemas;
+        return null; //schemas;
     }
 
     @Test
