@@ -9,9 +9,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 
 
-public class JacksonYamlSerializer implements TextSerializer {
+public class JacksonYamlSerializer implements TextSerializer, TextDeserializer {
 
     private ObjectMapper yamlMapper;
 
@@ -33,5 +34,15 @@ public class JacksonYamlSerializer implements TextSerializer {
         StringWriter output = new StringWriter();
         this.writeAsYAML(output, entity);
         return output.toString();
+    }
+
+    @Override
+    public <T> T fromYAMLtoPOJO(Path yamlPath, Class<T> outpuClass) throws IOException {
+        return this.yamlMapper.readValue(yamlPath.toFile(), outpuClass);
+    }
+
+    @Override
+    public <T> T fromYAMLtoPOJO(String yaml, Class<T> outpuClass) throws IOException {
+        return this.yamlMapper.readValue(yaml, outpuClass);
     }
 }
