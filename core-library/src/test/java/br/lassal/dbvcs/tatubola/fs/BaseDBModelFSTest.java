@@ -1,9 +1,6 @@
 package br.lassal.dbvcs.tatubola.fs;
 
-import br.lassal.dbvcs.tatubola.relationaldb.model.Index;
-import br.lassal.dbvcs.tatubola.relationaldb.model.Table;
-import br.lassal.dbvcs.tatubola.relationaldb.model.TableColumn;
-import br.lassal.dbvcs.tatubola.relationaldb.model.Trigger;
+import br.lassal.dbvcs.tatubola.relationaldb.model.*;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
 import br.lassal.dbvcs.tatubola.text.TextDeserializer;
 import org.junit.Test;
@@ -111,5 +108,52 @@ public class BaseDBModelFSTest {
         column.setOrdinalPosition(position);
 
         return column;
+    }
+
+    /**
+     *
+     * /{SCHEMA}/Views/VIEW_{View name}.yaml
+     *
+     * @throws IOException
+     * @throws DBModelFSException
+     */
+    @Test
+    public void testSaveView() throws IOException, DBModelFSException {
+        JacksonYamlSerializer serializer = new JacksonYamlSerializer();
+        InMemoryTestDBModelFS dbModelFS = new InMemoryTestDBModelFS(this.rootPath, serializer);
+
+        View view = new View("DDD","VEmployeeManagement");
+        view.setInsertAllowed(false);
+        view.setUpdatedAllowed(false);
+        view.getColumns().add(this.createNumericTableColumn("IDEmployee", 20, false, 1));
+        view.getColumns().add(this.createNumericTableColumn("IDManager", 20, false, 2));
+        view.getColumns().add(this.createTextTableColumn("EmployeeFullName", 60, false, 3));
+        view.getColumns().add(this.createTextTableColumn("ManagerFullName", 60, false, 4));
+        view.setViewDefinition("SELECT IDEmployee, IDManager, * from Employee e1 inner join Employee e2 on e1.managerid = e2.id");
+
+        Path outputPath = dbModelFS.save(view);
+        Path expectedOutputPath = Paths.get(this.rootPath + "/DDD/Views/VIEW_VEmployeeManagement.yaml");
+        assertEquals(expectedOutputPath, outputPath);
+
+        View deserializedView = serializer.fromYAMLtoPOJO(dbModelFS.getSerializationInfo(view).getYamlText(), View.class);
+        assertEquals(view, deserializedView);
+    }
+
+    @Test
+    public void testSaveRoutine() throws IOException, DBModelFSException {
+        JacksonYamlSerializer serializer = new JacksonYamlSerializer();
+        InMemoryTestDBModelFS dbModelFS = new InMemoryTestDBModelFS(this.rootPath, serializer);
+
+        Routine routine = new Routine("EEE", "FUNC_Count_Employee", RoutineType.FUNCTION);
+        routine.setReturnParamater(new TypedColumn(null, 0, "NUMBER"));
+        routine.addParameter(new RoutineParameter("departmentID", 1,"NUMBER", ParameterMode.IN));
+        routine.setRoutineDefinition("do something about something; get all employees in depto and count then");
+
+        Path outputPath = dbModelFS.save(routine);
+        Path expectedOutputPath = Paths.get(this.rootPath + "/EEE/Routines/FUNC_Count_Employee_FUNCTION.yaml");
+        assertEquals(expectedOutputPath, outputPath);
+
+        Routine deserializedRoutine = serializer.fromYAMLtoPOJO(dbModelFS.getSerializationInfo(routine).getYamlText(), Routine.class);
+        assertEquals(routine, deserializedRoutine);
     }
 }

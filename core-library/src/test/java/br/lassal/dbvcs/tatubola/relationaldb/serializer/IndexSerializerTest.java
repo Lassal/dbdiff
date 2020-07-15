@@ -78,7 +78,7 @@ public class IndexSerializerTest {
     /**
      * Verify that the serialized index object can be deseralized and
      * the original and the deserialized version are identical
-     * 
+     *
      * @throws Exception
      */
     @Test
