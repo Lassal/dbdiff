@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.relationaldb.model;
 
 import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@JsonPropertyOrder({"schema","name","updatedAllowed","insertAllowed","columns", "referencedTables", "viewDefinition"})
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"viewID"})
 public class View implements DatabaseModelEntity {
 
