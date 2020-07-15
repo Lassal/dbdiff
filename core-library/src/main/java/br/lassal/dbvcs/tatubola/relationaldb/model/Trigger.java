@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Objects;
 
 @JsonPropertyOrder({"schema", "name", "targetObjectSchema", "targetObjectName", "targetObjectType", "eventTiming"
-        , "event", "executionOrder", "eventActionBody"})
+        , "event", "executionOrder","eventActionBody"})
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"schema", "triggerID"})
 public class Trigger implements DatabaseModelEntity {
 
