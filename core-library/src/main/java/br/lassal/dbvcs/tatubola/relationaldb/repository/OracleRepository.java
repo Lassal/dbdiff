@@ -660,9 +660,7 @@ public class OracleRepository extends BaseRepository {
         trigger.setEventTiming(rs.getString("TRIGGER_TYPE"));
         trigger.setExecutionOrder(1);
 
-        trigger.setEventActionBody(SqlFormatter
-                .of("pl/sql")
-                .format(rs.getString("TRIGGER_BODY")));
+        trigger.setEventActionBody(rs.getString("TRIGGER_BODY"));
 
         return trigger;
     }

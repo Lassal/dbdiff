@@ -91,7 +91,7 @@ public class Trigger implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        //throw new UnsupportedOperationException();
+        this.eventActionBody = normalizer.formatSql(this.eventActionBody);
     }
 
 

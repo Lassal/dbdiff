@@ -334,9 +334,7 @@ public class MySQLRepository extends BaseRepository {
         trigger.setEvent(rs.getString("EVENT_MANIPULATION") + " on " + rs.getString("ACTION_ORIENTATION"));
         trigger.setEventTiming(rs.getString("ACTION_TIMING"));
         trigger.setExecutionOrder(rs.getInt("ACTION_ORDER"));
-        trigger.setEventActionBody(SqlFormatter
-                .of("sql")
-                .format(rs.getString("ACTION_STATEMENT")));
+        trigger.setEventActionBody(rs.getString("ACTION_STATEMENT"));
 
         return trigger;
     }
