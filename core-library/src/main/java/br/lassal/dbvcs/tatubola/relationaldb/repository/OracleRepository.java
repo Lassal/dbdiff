@@ -305,10 +305,6 @@ public class OracleRepository extends BaseRepository {
             checkClause = rs.getString("SEARCH_CONDITION_VC");
         }
 
-        if (checkClause != null) {
-            checkClause = SqlFormatter.of("pl/sql").format(checkClause);
-        }
-
         return new CheckConstraint(
                 rs.getString("OWNER")
                 , rs.getString("TABLE_NAME")
@@ -785,10 +781,8 @@ public class OracleRepository extends BaseRepository {
                 if (currentRoutine == null || !routineID.equals(currentRoutine.getRoutineID())) {
 
                     if (currentRoutine != null) {
-                        String routineDefinition = SqlFormatter.of("pl/sql")
-                                .format(routineBody.toString());
-                        currentRoutine.setRoutineDefinition(routineDefinition);
 
+                        currentRoutine.setRoutineDefinition(routineBody.toString());
                         routines.add(currentRoutine);
                     }
 

@@ -59,6 +59,11 @@ public class Table implements DatabaseModelEntity{
 
         for(TableConstraint tc : this.constraints){
             tc.onAfterLoad();
+            
+            if(tc instanceof CheckConstraint){
+                CheckConstraint checkC = (CheckConstraint) tc;
+                checkC.setCheckClause(normalizer.formatSql(checkC.getCheckClause()));
+            }
         }
 
         this.constraints.sort(TableConstraint.DEFAULT_SORT_ORDER);

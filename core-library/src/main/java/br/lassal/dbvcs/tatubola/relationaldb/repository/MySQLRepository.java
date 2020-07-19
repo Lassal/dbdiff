@@ -271,10 +271,9 @@ public class MySQLRepository extends BaseRepository {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                String checkClause = SqlFormatter.of("sql").format(rs.getString("CHECK_CLAUSE"));
                 CheckConstraint constraint =
                         new CheckConstraint(rs.getString(MySQLRepository.SCHEMA), rs.getString(MySQLRepository.TABLE_NAME)
-                                , rs.getString("CONSTRAINT_NAME"), checkClause);
+                                , rs.getString("CONSTRAINT_NAME"), rs.getString("CHECK_CLAUSE"));
                 constraints.add(constraint);
             }
 
@@ -400,8 +399,7 @@ public class MySQLRepository extends BaseRepository {
         RoutineType routineType = RoutineType.fromMySQL(rs.getString("ROUTINE_TYPE"));
 
         Routine routine = new Routine(routineSchema, routineName, routineType);
-        String routineDefinition = SqlFormatter.of("sql").format(rs.getString("ROUTINE_DEFINITION"));
-        routine.setRoutineDefinition(routineDefinition);
+        routine.setRoutineDefinition(rs.getString("ROUTINE_DEFINITION"));
 
         return routine;
     }

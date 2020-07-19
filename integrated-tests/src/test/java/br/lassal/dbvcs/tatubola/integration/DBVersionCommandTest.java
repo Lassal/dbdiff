@@ -52,7 +52,7 @@ public class DBVersionCommandTest {
        // schemas.add("APEX_050000");
         schemas.add("APP_DATA");
         schemas.add("HR");
-       // schemas.add("XDB");
+        schemas.add("XDB");
 
         return schemas;
     }

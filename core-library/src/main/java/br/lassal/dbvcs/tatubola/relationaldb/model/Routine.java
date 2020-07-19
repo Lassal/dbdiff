@@ -4,16 +4,13 @@ import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JsonPropertyOrder({"schema","name", "routineType", "returnParamater", "parameters", "routineDefinition"})
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"routineID"})
-public class Routine implements DatabaseModelEntity {
+public class Routine implements DatabaseModelEntity, Cloneable {
 
     public static String getRoutineID(String schema, String name) {
         return (schema + "." + name).toUpperCase();
@@ -51,7 +48,16 @@ public class Routine implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        //throw new UnsupportedOperationException();
+
+        if(this.routineType.equals(RoutineType.PACKAGE)){
+            this.parameters.sort(Comparator.comparing(RoutineParameter::getPackageRoutineName)
+            .thenComparing(RoutineParameter::getOrdinalPosition));
+        }
+        else {
+            this.parameters.sort(RoutineParameter.DEFAULT_SORT_ORDER);
+        }
+
+        this.routineDefinition = normalizer.formatSql(this.routineDefinition);
     }
 
     public void setName(String name) {
@@ -156,5 +162,10 @@ public class Routine implements DatabaseModelEntity {
     @Override
     public int hashCode() {
         return Objects.hash(schema, name, routineType, returnParamater, parameters, routineDefinition);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
