@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JsonPropertyOrder({"name", "type", "columns"})
-public class UniqueConstraint extends TableConstraint {
+public class UniqueConstraint extends TableConstraint implements Cloneable{
 
     private List<Column> orderedColumns;
 
@@ -83,5 +83,10 @@ public class UniqueConstraint extends TableConstraint {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), orderedColumns);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

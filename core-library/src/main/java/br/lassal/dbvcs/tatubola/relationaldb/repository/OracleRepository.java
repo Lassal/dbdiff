@@ -59,8 +59,6 @@ public class OracleRepository extends BaseRepository {
             }
         }
 
-        tableMap.values().stream().forEach(Table::onAfterLoad);
-
         return tableMap.values().stream()
                 .sorted(Comparator.comparing(Table::getTableID))
                 .collect(Collectors.toList());

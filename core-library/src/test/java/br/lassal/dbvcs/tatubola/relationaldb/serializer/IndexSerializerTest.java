@@ -22,18 +22,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IndexSerializerTest {
-
-    private final String rootPath = "root";
-    private final JacksonYamlSerializer serializer = new JacksonYamlSerializer();
-
-    @Mock
-    private RelationalDBRepository repository;
-
-
-    private InMemoryTestDBModelFS createNewDBModelFS(){
-       return new InMemoryTestDBModelFS(this.rootPath, this.serializer);
-    }
+public class IndexSerializerTest extends BaseSerializerTest{
 
     /**
      * Test the serialization process in IndexSerializer.
@@ -100,7 +89,7 @@ public class IndexSerializerTest {
 
         assertEquals(sourceIndex, serializedIndexInfo.getDBObject());
 
-        Index deserializedIndex = this.serializer.fromYAMLtoPOJO(serializedIndexInfo.getYamlText(), Index.class);
+        Index deserializedIndex = this.textSerializer.fromYAMLtoPOJO(serializedIndexInfo.getYamlText(), Index.class);
 
         assertEquals(sourceIndex, deserializedIndex);
 

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JsonPropertyOrder({"name", "type", "columns"})
-public class ForeignKeyConstraint extends TableConstraint {
+public class ForeignKeyConstraint extends TableConstraint implements Cloneable {
 
     private List<ReferentialIntegrityColumn> orderedColumns;
 
@@ -54,6 +54,10 @@ public class ForeignKeyConstraint extends TableConstraint {
 
     @Override
     public boolean equals(Object obj) {
+        return this.contentAndOrderEquals(obj);
+    }
+
+    public boolean contentEquals(Object obj) {
         boolean isEqual = false;
 
         if (obj instanceof ForeignKeyConstraint) {
@@ -85,8 +89,42 @@ public class ForeignKeyConstraint extends TableConstraint {
         return isEqual;
     }
 
+    public boolean contentAndOrderEquals(Object obj) {
+        boolean isEqual = false;
+
+        if (obj instanceof ForeignKeyConstraint) {
+            ForeignKeyConstraint other = (ForeignKeyConstraint) obj;
+
+            isEqual = super.equals(other);
+            isEqual &= (this.orderedColumns != null) && (other.orderedColumns != null)
+                    && (this.orderedColumns.size() == other.orderedColumns.size());
+
+            if (isEqual) {
+
+                for (int i = 0; i < this.orderedColumns.size(); i++) {
+                    ReferentialIntegrityColumn thisCol = this.orderedColumns.get(i);
+                    ReferentialIntegrityColumn otherCol = this.orderedColumns.get(i);
+
+                    isEqual &= thisCol.getName().equals(otherCol.getName());
+                    isEqual &= thisCol.getOrdinalPosition() == otherCol.getOrdinalPosition();
+                    isEqual &= thisCol.getReferencedSchemaName().equals(otherCol.getReferencedSchemaName());
+                    isEqual &= thisCol.getReferencedTableName().equals(otherCol.getReferencedTableName());
+                    isEqual &= thisCol.getReferencedTableColumnName().equals(otherCol.getReferencedTableColumnName());
+                }
+            }
+        }
+
+        return isEqual;
+    }
+
+
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), orderedColumns);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

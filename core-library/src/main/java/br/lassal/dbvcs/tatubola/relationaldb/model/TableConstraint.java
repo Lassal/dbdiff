@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 @JsonTypeInfo(
@@ -20,6 +21,9 @@ import java.util.Objects;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"tableID", "schema"})
 public abstract class TableConstraint {
+
+    public static final Comparator DEFAULT_SORT_ORDER = Comparator.comparing(TableConstraint::getType)
+            .thenComparing(TableConstraint::getName);
 
     private String schema;
     private String name;
@@ -81,8 +85,6 @@ public abstract class TableConstraint {
             TableConstraint other = (TableConstraint) obj;
             isEqual = true;
 
-            isEqual &= this.schema.equals(other.schema);
-            isEqual &= this.tableName.equals(other.tableName);
             isEqual &= this.name.equals(other.name);
             isEqual &= this.type.equals(other.type);
 

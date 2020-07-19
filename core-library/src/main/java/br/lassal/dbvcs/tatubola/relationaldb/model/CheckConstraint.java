@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.Objects;
 
 @JsonPropertyOrder({"name", "type", "checkClause"})
-public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model.TableConstraint {
+public class CheckConstraint extends TableConstraint implements Cloneable {
 
     private String checkClause;
 
@@ -55,5 +55,10 @@ public class CheckConstraint extends br.lassal.dbvcs.tatubola.relationaldb.model
     @Override
     public int hashCode() {
         return Objects.hash(this.getTableID(), this.getName(), this.getType(), this.checkClause);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 @JsonPropertyOrder({"schema","name","columns","constraints"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"tableID"})
-public class Table implements DatabaseModelEntity {
+public class Table implements DatabaseModelEntity{
+
+    public static final Comparator<Table> DEFAULT_SORT_ORDER = Comparator.comparing(Table::getTableID);
 
     private String name;
     private String schema;
@@ -53,7 +55,13 @@ public class Table implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        //throw new UnsupportedOperationException();
+        this.columns.sort(TableColumn.DEFAULT_SORT_ORDER);
+
+        for(TableConstraint tc : this.constraints){
+            tc.onAfterLoad();
+        }
+
+        this.constraints.sort(TableConstraint.DEFAULT_SORT_ORDER);
     }
 
 
@@ -77,12 +85,6 @@ public class Table implements DatabaseModelEntity {
         return this.schema + "." + this.name;
     }
 
-    public void onAfterLoad() {
-        if (this.constraints != null) {
-            this.constraints.sort(Comparator.comparing(c -> c.getType().getOrder() + "." + c.getName()));
-        }
-    }
-
     @Override
     public String toString() {
         StringBuilder tableStr = new StringBuilder();
@@ -101,9 +103,13 @@ public class Table implements DatabaseModelEntity {
         return tableStr.toString();
     }
 
-
     @Override
     public boolean equals(Object other) {
+        return this.contentAndOrderEquals(other);
+    }
+
+
+    private boolean contentEquals(Object other) {
         boolean isEqual = false;
         if (other instanceof Table) {
             Table otherT = (Table) other;
@@ -150,9 +156,39 @@ public class Table implements DatabaseModelEntity {
         return isEqual;
     }
 
+    private boolean contentAndOrderEquals(Object other) {
+        boolean isEqual = false;
+        if (other instanceof Table) {
+            Table otherT = (Table) other;
+            isEqual = true;
+
+            isEqual &= this.getSchema().equals(otherT.getSchema());
+            isEqual &= this.getName().equals(otherT.getName());
+            isEqual &= this.getColumns().size() == otherT.getColumns().size();
+            isEqual &= this.getConstraints().size() == otherT.getConstraints().size();
+
+            if (!isEqual) {
+                return false;
+            }
+
+            for (int i=0; i < this.getColumns().size(); i++) {
+                isEqual &= this.getColumns().get(i).equals(otherT.getColumns().get(i));
+            }
+
+
+            for (int i=0; i < this.getConstraints().size(); i++) {
+                isEqual &= this.getConstraints().get(i).equals(otherT.getConstraints().get(i));
+            }
+        }
+
+        return isEqual;
+    }
+
 
     @Override
     public int hashCode() {
         return Objects.hash(schema, name, columns, constraints);
     }
+
+
 }

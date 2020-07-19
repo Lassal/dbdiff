@@ -31,10 +31,7 @@ public class TableSerializer extends DBModelSerializer<Table> {
             }
         }
 
-        this.tables.values().stream().forEach(Table::onAfterLoad);
-
         return this.tables.values().stream()
-                .sorted(Comparator.comparing(Table::getTableID))
                 .collect(Collectors.toList());
 
     }
