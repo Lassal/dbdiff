@@ -35,7 +35,7 @@ public class ViewSerializer extends DBModelSerializer<View> {
             if (this.referencedTables.containsKey(view.getKey())) {
                 List<Table> viewTables = this.referencedTables.get(view.getKey());
 
-                if (viewTables.isEmpty()) {
+                if (!viewTables.isEmpty()) {
                     view.getValue().setReferencedTables(viewTables);
                 }
             }
@@ -43,7 +43,7 @@ public class ViewSerializer extends DBModelSerializer<View> {
             if (this.viewsColumns.containsKey(view.getKey())) {
                 List<TableColumn> columns = this.viewsColumns.get(view.getKey());
 
-                if (columns.isEmpty()) {
+                if (!columns.isEmpty()) {
                     view.getValue().setColumns(columns);
                 }
             }

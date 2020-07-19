@@ -1,11 +1,9 @@
 package br.lassal.dbvcs.tatubola.relationaldb.repository;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.*;
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -592,7 +590,7 @@ public class MySQLRepository extends BaseRepository {
         String viewSchema = rs.getString("TABLE_SCHEMA");
         String viewName = rs.getString("TABLE_NAME");
         String isUpdatable = rs.getString("IS_UPDATABLE");
-        String viewDefinition = SqlFormatter.of("sql").format(rs.getString("VIEW_DEFINITION"));
+        String viewDefinition = rs.getString("VIEW_DEFINITION");
         boolean updatableView = "YES".equals(isUpdatable);
 
 

@@ -2,11 +2,9 @@ package br.lassal.dbvcs.tatubola.relationaldb.repository;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.*;
 import br.lassal.dbvcs.tatubola.relationaldb.model.sort.TriggerComparator;
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -454,10 +452,6 @@ public class OracleRepository extends BaseRepository {
 
         if (viewDefinition == null || viewDefinition.isEmpty() || viewDefinition.length() >= 4000) {
             viewDefinition = rs.getString("TEXT");
-        }
-
-        if (viewDefinition != null) {
-            viewDefinition = SqlFormatter.of("pl/sql").format(viewDefinition);
         }
 
         String viewSchema = rs.getString("OWNER");

@@ -58,7 +58,11 @@ public class View implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        //throw new UnsupportedOperationException();
+        this.setViewDefinition(normalizer.formatSql(this.viewDefinition));
+
+        this.columns.sort(TableColumn.DEFAULT_SORT_ORDER);
+
+        this.referencedTables.sort(Table.DEFAULT_SORT_ORDER);
     }
 
     public boolean isUpdatedAllowed() {
@@ -116,6 +120,11 @@ public class View implements DatabaseModelEntity {
 
     @Override
     public boolean equals(Object obj) {
+
+        return this.contentAndOrderEquals(obj);
+    }
+
+    public boolean contentEquals(Object obj) {
         boolean isEqual = false;
 
         if (obj instanceof View) {
@@ -149,6 +158,47 @@ public class View implements DatabaseModelEntity {
         return isEqual;
 
     }
+
+    public boolean contentAndOrderEquals(Object obj) {
+        boolean isEqual = false;
+
+        if (obj instanceof View) {
+            View other = (View) obj;
+            isEqual = true;
+
+            isEqual &= this.schema.equals(other.schema);
+            isEqual &= this.name.equals(other.name);
+            isEqual &= this.isInsertAllowed() == other.isInsertAllowed();
+            isEqual &= this.isUpdatedAllowed() == other.isUpdatedAllowed();
+            isEqual &= this.viewDefinition.equals(other.viewDefinition);
+
+            isEqual &= this.getColumns().size() == other.getColumns().size();
+
+            if (isEqual) {
+
+                for (int i=0; i < this.columns.size(); i++) {
+
+                    isEqual &= this.columns.get(i).equals(other.columns.get(i));
+
+                }
+            }
+
+            if(isEqual){
+                for(int i=0; i < this.referencedTables.size(); i++){
+                    Table thisRefTable = this.referencedTables.get(i);
+                    Table otherRefTable = other.referencedTables.get(i);
+
+                    isEqual &= thisRefTable.getSchema().equals(otherRefTable.getSchema());
+                    isEqual &= thisRefTable.getName().equals(otherRefTable.getName());
+                }
+            }
+
+        }
+
+        return isEqual;
+
+    }
+
 
     @Override
     public String toString() {
