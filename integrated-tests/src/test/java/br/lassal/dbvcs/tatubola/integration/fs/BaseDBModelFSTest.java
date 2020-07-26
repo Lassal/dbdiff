@@ -73,7 +73,7 @@ public class BaseDBModelFSTest {
      * Test the DBModelFS standard implementation for view serialization
      * Tests:
      *   - view serialization to filesystem : {root path}/{VIEW SCHEMA}/Views/VIEW_{view name}.yaml
-     *   - Output path for table objects
+     *   - Output path for view objects
      *   - Object deserialization from filesystem
      *
      * @throws IOException
@@ -101,7 +101,7 @@ public class BaseDBModelFSTest {
      * Test the DBModelFS standard implementation for index serialization
      * Tests:
      *   - Index serialization to filesystem : {root path}/{TABLE SCHEMA}/Tables/Indexes/TABLE_{table name}_INDEX_{index name}.yaml
-     *   - Output path for table objects
+     *   - Output path for index objects
      *   - Object deserialization from filesystem
      *
      * @throws IOException
@@ -114,14 +114,71 @@ public class BaseDBModelFSTest {
 
         dfs.save(index);
 
-        Path expectedṔath = Paths.get(this.rootPath, index.getSchema().toUpperCase(), "Tables/Indexes"
+        Path expectedPath = Paths.get(this.rootPath, index.getSchema().toUpperCase(), "Tables/Indexes"
                 , "TABLE_" + index.getAssociateTableName() + "_INDEX_" + index.getName() + ".yaml");
-        File outputFile = expectedṔath.toFile();
+        File outputFile = expectedPath.toFile();
 
         assertTrue(outputFile.exists());
 
-        Index serializedIndex = dfs.loadFromFS(expectedṔath, Index.class);
+        Index serializedIndex = dfs.loadFromFS(expectedPath, Index.class);
         assertEquals(index, serializedIndex);
+    }
+
+    /**
+     * Test the DBModelFS standard implementation for trigger serialization
+     * Tests:
+     *   - Index serialization to filesystem :
+     *     {root path}/{TABLE SCHEMA}/Tables/Triggers/{TARGET OBJECT TYPE | OBJECT}_{target obj name}_Trigger_{trigger name}.yaml
+     *   - Output path for trigger objects
+     *   - Object deserialization from filesystem
+     *
+     * @throws IOException
+     * @throws DBModelFSException
+     */
+    @Test
+    public void testSerializeTrigger() throws IOException, DBModelFSException {
+        DBModelFS dfs = new BaseDBModelFS(this.rootPath, new JacksonYamlSerializer());
+        Trigger trigger = this.buildTrigger();
+
+        dfs.save(trigger);
+
+        Path expectedPath = Paths.get(this.rootPath, trigger.getSchema().toUpperCase(), "Tables/Triggers"
+                , trigger.getTargetObjectType().toUpperCase() +  "_" + trigger.getTargetObjectName()
+                        + "_TRIGGER_" + trigger.getName() + ".yaml");
+        File outputFile = expectedPath.toFile();
+
+        assertTrue(outputFile.exists());
+
+        Trigger serializedTrigger = dfs.loadFromFS(expectedPath, Trigger.class);
+        assertEquals(trigger, serializedTrigger);
+    }
+
+    /**
+     * Test the DBModelFS standard implementation for view serialization
+     * Tests:
+     *   - view serialization to filesystem : {root path}/{ROUTINE SCHEMA}/Routines/{routine name}_{routine type}.yaml
+     *   - Output path for routine objects
+     *   - Object deserialization from filesystem
+     *
+     * @throws IOException
+     * @throws DBModelFSException
+     */
+    @Test
+    public void testSerializeRoutine() throws IOException, DBModelFSException {
+        DBModelFS dfs = new BaseDBModelFS(this.rootPath, new JacksonYamlSerializer());
+        Routine routine = this.buildRoutine();
+
+        dfs.save(routine);
+
+        Path expectedPath = Paths.get(this.rootPath, routine.getSchema().toUpperCase(),"Routines"
+                , routine.getName() + "_" + routine.getRoutineType() + ".yaml");
+        File outputFile = expectedPath.toFile();
+
+        assertTrue(outputFile.exists());
+
+        Routine serializedRoutine = dfs.loadFromFS(expectedPath, Routine.class);
+        assertEquals(routine, serializedRoutine);
+
     }
 
     private Table buildTable(){
@@ -192,5 +249,48 @@ public class BaseDBModelFSTest {
         index.addColumn(new IndexColumn("Column2",2, ColumnOrder.ASC));
 
         return index;
+    }
+
+    private Trigger buildTrigger(){
+        Trigger trigger = new Trigger("TriggerSample");
+        trigger.setTargetObjectSchema("schemaA");
+        trigger.setTargetObjectName("TableA");
+        trigger.setTargetObjectType("TABLE");
+        trigger.setEvent("INSERT");
+        trigger.setEventTiming("BEFORE");
+        trigger.setExecutionOrder(1);
+        trigger.setEventActionBody(" BEGIN\n" +
+                "    add_job_history(\n" +
+                "      :old.employee_id,\n" +
+                "      :old.hire_date,\n" +
+                "      sysdate,\n" +
+                "      :old.job_id,\n" +
+                "      :old.department_id\n" +
+                "    );\n" +
+                "  END;");
+
+        return trigger;
+    }
+
+    private Routine buildRoutine(){
+        Routine routine = new Routine("schemaF", "Routine01", RoutineType.FUNCTION);
+        routine.setReturnParamater(new TypedColumn("", 0, "NUMBER"));
+        routine.addParameter(new RoutineParameter("Param1", 1, "VARCHAR", ParameterMode.IN));
+        routine.addParameter(new RoutineParameter("Param2", 2, "LONG", ParameterMode.IN));
+
+        routine.setRoutineDefinition(" DECLARE customerLevel VARCHAR(20);\n" +
+                "\n" +
+                "    IF credit > 50000 THEN\n" +
+                "\t\tSET customerLevel = 'PLATINUM';\n" +
+                "    ELSEIF (credit >= 50000 AND \n" +
+                "\t\t\tcredit <= 10000) THEN\n" +
+                "        SET customerLevel = 'GOLD';\n" +
+                "    ELSEIF credit < 10000 THEN\n" +
+                "        SET customerLevel = 'SILVER';\n" +
+                "    END IF;\n" +
+                "\t-- return the customer level\n" +
+                "\tRETURN (customerLevel);");
+
+        return routine;
     }
 }
