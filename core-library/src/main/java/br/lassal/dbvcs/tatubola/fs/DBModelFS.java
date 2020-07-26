@@ -8,4 +8,6 @@ import java.nio.file.Path;
 public interface DBModelFS {
 
     Path save(DatabaseModelEntity dbEntity) throws DBModelFSException, IOException;
+
+    <E extends DatabaseModelEntity> E loadFromFS(Path dbEntityOutputPath, Class<E> outputClass) throws IOException;
 }

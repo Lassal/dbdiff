@@ -12,7 +12,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 
 
-public class JacksonYamlSerializer implements TextSerializer, TextDeserializer {
+public class JacksonYamlSerializer implements TextSerializer {
 
     private ObjectMapper yamlMapper;
 

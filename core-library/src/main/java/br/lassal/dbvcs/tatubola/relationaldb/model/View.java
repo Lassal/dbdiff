@@ -58,7 +58,9 @@ public class View implements DatabaseModelEntity {
 
     @Override
     public void tidyUpProperties(SqlNormalizer normalizer) {
-        this.setViewDefinition(normalizer.formatSql(this.viewDefinition));
+        if(this.viewDefinition != null){
+            this.setViewDefinition(normalizer.formatSql(this.viewDefinition));
+        }
 
         this.columns.sort(TableColumn.DEFAULT_SORT_ORDER);
 

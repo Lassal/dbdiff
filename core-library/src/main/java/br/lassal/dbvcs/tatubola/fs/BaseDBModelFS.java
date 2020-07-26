@@ -64,6 +64,12 @@ public class BaseDBModelFS implements DBModelFS {
         return dbModelFile;
     }
 
+    @Override
+    public <E extends DatabaseModelEntity> E loadFromFS(Path dbEntityOutputPath, Class<E> outputClass) throws IOException {
+
+        return this.objToTxtTranslator.fromYAMLtoPOJO(dbEntityOutputPath, outputClass);
+    }
+
     protected void safeWrite(Path dbModelFile, DatabaseModelEntity dbEntity) throws DBModelFSException, IOException {
 
         if (dbModelFile == null) {
