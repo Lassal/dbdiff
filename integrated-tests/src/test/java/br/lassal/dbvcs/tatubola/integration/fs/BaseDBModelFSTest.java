@@ -27,6 +27,10 @@ public class BaseDBModelFSTest {
 
     }
 
+    /**
+     * Delete all directory content recursively
+     * @param file
+     */
     private void deleteDir(File file) {
         File[] contents = file.listFiles();
         if (contents != null) {
@@ -37,6 +41,16 @@ public class BaseDBModelFSTest {
         file.delete();
     }
 
+    /**
+     * Test the DBModelFS standard implementation for table serialization
+     * Tests:
+     *   - Table serialization to filesystem
+     *   - Output path for table objects
+     *   - Object deserialization from filesystem
+     *
+     * @throws IOException
+     * @throws DBModelFSException
+     */
     @Test
     public void testSerializeTable() throws IOException, DBModelFSException {
         DBModelFS dfs = new BaseDBModelFS(this.rootPath, new JacksonYamlSerializer());
@@ -55,24 +69,28 @@ public class BaseDBModelFSTest {
 
     }
 
+    @Test
+    public void testSerializeView() throws IOException, DBModelFSException {
+        DBModelFS dfs = new BaseDBModelFS(this.rootPath, new JacksonYamlSerializer());
+        View view = this.buildView();
+
+        dfs.save(view);
+
+        Path expectedPath = Paths.get(this.rootPath, view.getSchema().toUpperCase(),"Views", "VIEW_" + view.getName() + ".yaml");
+        File outputFile = expectedPath.toFile();
+
+        assertTrue(outputFile.exists());
+
+        View serializedView =  dfs.loadFromFS(expectedPath, view.getClass());
+
+        assertEquals(view, serializedView);
+
+    }
+
     private Table buildTable(){
         Table table = new Table("schemaA", "TableA");
-        TableColumn col1 = new TableColumn("Column1");
-        col1.setOrdinalPosition(1);
-        col1.setNullable(false);
-        col1.setDataType("NUMBER");
-        col1.setDefaultValue("27");
-        col1.setNumericPrecision(8);
-        col1.setNumericScale(3);
-        table.addColumn(col1);
-
-        TableColumn col2 = new TableColumn("Column2");
-        col2.setOrdinalPosition(2);
-        col2.setNullable(false);
-        col2.setDataType("VARCHAR");
-        col2.setDefaultValue("-- default value");
-        col2.setTextMaxLength(50L);
-        table.addColumn(col2);
+        table.addColumn(this.buildColumn1());
+        table.addColumn(this.buildColumn2());
 
         UniqueConstraint constr1 = new UniqueConstraint(table.getSchema(), table.getName(), "PK_01", ConstraintType.PRIMARY_KEY);
         constr1.addColumn(new Column("Column1", 1));
@@ -84,5 +102,50 @@ public class BaseDBModelFSTest {
         table.addConstraint(constr2);
 
         return table;
+    }
+
+    private TableColumn buildColumn1(){
+        TableColumn col1 = new TableColumn("Column1");
+        col1.setOrdinalPosition(1);
+        col1.setNullable(false);
+        col1.setDataType("NUMBER");
+        col1.setDefaultValue("27");
+        col1.setNumericPrecision(8);
+        col1.setNumericScale(3);
+
+        return col1;
+    }
+
+    private TableColumn buildColumn2(){
+        TableColumn col2 = new TableColumn("Column2");
+        col2.setOrdinalPosition(2);
+        col2.setNullable(false);
+        col2.setDataType("VARCHAR");
+        col2.setDefaultValue("-- default value");
+        col2.setTextMaxLength(50L);
+
+        return col2;
+    }
+
+    private View buildView(){
+        View view = new View("SchemaB", "ViewSample");
+        view.setUpdatedAllowed(true);
+        view.setInsertAllowed(true);
+        view.setViewDefinition("SELECT\n" +
+                "    NAME\n" +
+                "  FROM\n" +
+                "    ORDDATA.ORDDCM_CT_PRED_SET_TMP\n" +
+                "  WHERE\n" +
+                "    PSTYPE = 1\n" +
+                "    AND SUPER IS NULL\n" +
+                "    AND STATUS = 1 WITH READ ONLY");
+
+        view.addColumn(this.buildColumn1());
+        view.addColumn(this.buildColumn2());
+
+        view.addTable("SchemaC", "OtherTable1");
+        view.addTable("SchemaD", "OtherTable2");
+
+        return view;
     }
 }
