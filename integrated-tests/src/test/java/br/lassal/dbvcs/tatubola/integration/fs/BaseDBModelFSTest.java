@@ -3,6 +3,7 @@ package br.lassal.dbvcs.tatubola.integration.fs;
 import br.lassal.dbvcs.tatubola.fs.BaseDBModelFS;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.fs.DBModelFSException;
+import br.lassal.dbvcs.tatubola.integration.util.FileSystemUtil;
 import br.lassal.dbvcs.tatubola.relationaldb.model.*;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
 import org.junit.Before;
@@ -22,23 +23,7 @@ public class BaseDBModelFSTest {
 
     @Before
     public void cleanUpOutputFiles() throws IOException {
-
-        this.deleteDir(new File(this.rootPath));
-
-    }
-
-    /**
-     * Delete all directory content recursively
-     * @param file
-     */
-    private void deleteDir(File file) {
-        File[] contents = file.listFiles();
-        if (contents != null) {
-            for (File f : contents) {
-                deleteDir(f);
-            }
-        }
-        file.delete();
+        FileSystemUtil.deleteDir(new File(this.rootPath));
     }
 
     /**
