@@ -44,7 +44,7 @@ public class BaseDBModelFSTest {
     /**
      * Test the DBModelFS standard implementation for table serialization
      * Tests:
-     *   - Table serialization to filesystem
+     *   - Table serialization to filesystem : {root path}/{TABLE SCHEMA}/Tables/TABLE_{table name}.yaml
      *   - Output path for table objects
      *   - Object deserialization from filesystem
      *
@@ -69,6 +69,16 @@ public class BaseDBModelFSTest {
 
     }
 
+    /**
+     * Test the DBModelFS standard implementation for view serialization
+     * Tests:
+     *   - view serialization to filesystem : {root path}/{VIEW SCHEMA}/Views/VIEW_{view name}.yaml
+     *   - Output path for table objects
+     *   - Object deserialization from filesystem
+     *
+     * @throws IOException
+     * @throws DBModelFSException
+     */
     @Test
     public void testSerializeView() throws IOException, DBModelFSException {
         DBModelFS dfs = new BaseDBModelFS(this.rootPath, new JacksonYamlSerializer());
@@ -85,6 +95,33 @@ public class BaseDBModelFSTest {
 
         assertEquals(view, serializedView);
 
+    }
+
+    /**
+     * Test the DBModelFS standard implementation for index serialization
+     * Tests:
+     *   - Index serialization to filesystem : {root path}/{TABLE SCHEMA}/Tables/Indexes/TABLE_{table name}_INDEX_{index name}.yaml
+     *   - Output path for table objects
+     *   - Object deserialization from filesystem
+     *
+     * @throws IOException
+     * @throws DBModelFSException
+     */
+    @Test
+    public void testSerializeIndex() throws IOException, DBModelFSException {
+        DBModelFS dfs = new BaseDBModelFS(this.rootPath, new JacksonYamlSerializer());
+        Index index = this.buildIndex();
+
+        dfs.save(index);
+
+        Path expectedṔath = Paths.get(this.rootPath, index.getSchema().toUpperCase(), "Tables/Indexes"
+                , "TABLE_" + index.getAssociateTableName() + "_INDEX_" + index.getName() + ".yaml");
+        File outputFile = expectedṔath.toFile();
+
+        assertTrue(outputFile.exists());
+
+        Index serializedIndex = dfs.loadFromFS(expectedṔath, Index.class);
+        assertEquals(index, serializedIndex);
     }
 
     private Table buildTable(){
@@ -147,5 +184,13 @@ public class BaseDBModelFSTest {
         view.addTable("SchemaD", "OtherTable2");
 
         return view;
+    }
+
+    private Index buildIndex(){
+        Index index = new Index("schemaA","PK_TableA", "schemaA", "TableA", "PRIMARY KEY", true);
+        index.addColumn(new IndexColumn("Column1",1, ColumnOrder.ASC));
+        index.addColumn(new IndexColumn("Column2",2, ColumnOrder.ASC));
+
+        return index;
     }
 }
