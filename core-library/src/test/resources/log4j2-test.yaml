@@ -12,7 +12,7 @@ Configuration:
     logger:
       -
         name: br.lassal.dbvcs.tatubola
-        level: info
+        level: debug
         additivity: false
         AppenderRef:
           ref: STDOUT
