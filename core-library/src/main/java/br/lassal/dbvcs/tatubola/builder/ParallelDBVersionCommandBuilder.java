@@ -40,6 +40,10 @@ public class ParallelDBVersionCommandBuilder {
         this.dbEnvironments = new ArrayList<>();
     }
 
+    public ParallelDBVersionCommandBuilder(DatabaseSerializerFactory factory){
+        this(factory, ParallelDBVersionCommand.DEFAULT_PARALLELISM);
+    }
+
     public ParallelDBVersionCommandBuilder setVCSRemoteInfo(String remoteUrl, String baseBranch
             , String username, String password) throws MalformedURLException {
         this.vcs = this.factory.createVCSController(remoteUrl, username, password, baseBranch);

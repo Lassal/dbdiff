@@ -112,8 +112,11 @@ public class ParallelDBVersionCommand {
             dbEnvs[envIndex] = envInfo;
 
             serializers.stream()
-                    .forEach(s -> threadPool.execute(
-                            new ParallelSerializer(s.setMetricsListener(envInfo.getSerializerCounter()), envInfo.getTaskSerializerLatch())));
+                    .forEach(s -> {
+                        s.setMetricsListener(envInfo.getSerializerCounter());
+                        threadPool.execute(
+                           new ParallelSerializer(s, envInfo.getTaskSerializerLatch()));
+                    });
 
             if (logger.isDebugEnabled()) {
                 logger.debug("(Step 3|" + envBuilder.getEnvironmentName() + ") Start serialization in parallel thread");
