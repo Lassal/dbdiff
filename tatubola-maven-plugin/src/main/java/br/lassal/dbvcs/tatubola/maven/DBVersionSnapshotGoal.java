@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.maven;
 
 import br.lassal.dbvcs.tatubola.ParallelDBVersionCommand;
 import br.lassal.dbvcs.tatubola.builder.ParallelDBVersionCommandBuilder;
+import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -53,7 +54,7 @@ public class DBVersionSnapshotGoal extends AbstractMojo {
         this.getLog().info(this.vcsInfo.getCredentials().getUsername());
 
         ParallelDBVersionCommandBuilder builder =
-                new ParallelDBVersionCommandBuilder(this.parallelismLevel)
+                new ParallelDBVersionCommandBuilder(RelationalDBVersionFactory.getInstance(), this.parallelismLevel)
                 .setVCSRemoteInfo(this.vcsInfo.getRemoteRepositoryUrl(), this.vcsInfo.getSourceBranch()
                         , this.vcsInfo.getCredentials().getUsername(), this.vcsInfo.getCredentials().getPassword())
                 .setWorkspaceInfo(workspacePath.toString(), tmpPath.toString())

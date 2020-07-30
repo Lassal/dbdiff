@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.RecursiveAction;
 
-public class RelationalDBVersionFactory {
+public class RelationalDBVersionFactory implements DatabaseSerializerFactory{
 
     private static RelationalDBVersionFactory instance = new RelationalDBVersionFactory();
 

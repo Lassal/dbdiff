@@ -4,6 +4,7 @@ package br.lassal.dbvcs.tatubola.integration;
 import br.lassal.dbvcs.tatubola.DBVersionCommand;
 import br.lassal.dbvcs.tatubola.ParallelDBVersionCommand;
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
+import br.lassal.dbvcs.tatubola.builder.DatabaseSerializerFactory;
 import br.lassal.dbvcs.tatubola.builder.ParallelDBVersionCommandBuilder;
 import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
@@ -66,7 +67,8 @@ public class DBVersionCommandTest {
         String repo_username = IntegrationTestInfo.getVCSRepositoryUsername();
         String repo_pwd = IntegrationTestInfo.getVCSRepositoryPassword();
 
-        VersionControlSystem vcsController = RelationalDBVersionFactory.getInstance()
+        DatabaseSerializerFactory factory = RelationalDBVersionFactory.getInstance();
+        VersionControlSystem vcsController = factory
                 .createVCSController(gitRemoteUrl, repo_username, repo_pwd, baseBranch);
 
         File repoOutputPath = this.getAbsolutePathRepository("singleDBOracle");
@@ -77,9 +79,9 @@ public class DBVersionCommandTest {
         logger.info("Output path: " + repoOutputPath);
 
         DBVersionCommand cmd = new DBVersionCommand(schemas, repoOutputPath.getAbsolutePath(), vcsController)
-                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-DEV", oraJdbcUrl, dbUser, dbPwd))
-                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-QA", oraJdbcUrl, dbUser, dbPwd))
-                .addDBEnvironment(new DBModelSerializerBuilder("Oracle-PROD", oraJdbcUrl, dbUser, dbPwd));
+                .addDBEnvironment(new DBModelSerializerBuilder(factory,"Oracle-DEV", oraJdbcUrl, dbUser, dbPwd))
+                .addDBEnvironment(new DBModelSerializerBuilder(factory, "Oracle-QA", oraJdbcUrl, dbUser, dbPwd))
+                .addDBEnvironment(new DBModelSerializerBuilder(factory, "Oracle-PROD", oraJdbcUrl, dbUser, dbPwd));
 
         //clean up local files
         boolean removeLocalRepositoryStatus = repoOutputPath.delete();
@@ -105,9 +107,10 @@ public class DBVersionCommandTest {
         String oraJdbcUrl = IntegrationTestInfo.ORACLE_JDBC_URL;
         String dbUser =  IntegrationTestInfo.getOracleUsername();
         String dbPwd = IntegrationTestInfo.getOraclePassword();
+        DatabaseSerializerFactory factory = RelationalDBVersionFactory.getInstance();
 
         ParallelDBVersionCommand cmd =
-                new ParallelDBVersionCommandBuilder(8)
+                new ParallelDBVersionCommandBuilder(factory,8)
                         .setVCSRemoteInfo(gitRemoteUrl, baseBranch, repo_username, repo_pwd)
                         .setWorkspaceInfo(repoOutputPath.getAbsolutePath(), "tmp/parallel")
                         .setDBSchemasToBeSerialized(this.getOracleTargetSchemas())

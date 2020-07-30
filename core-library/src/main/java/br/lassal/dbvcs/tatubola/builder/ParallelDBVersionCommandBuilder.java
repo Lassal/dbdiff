@@ -26,6 +26,7 @@ public class ParallelDBVersionCommandBuilder {
 
     private static Logger logger = LoggerFactory.getLogger(ParallelDBVersionCommandBuilder.class);
 
+    private DatabaseSerializerFactory factory;
     private int parallelismLevel = ParallelDBVersionCommand.DEFAULT_PARALLELISM;
     private VersionControlSystem vcs;
     private String workspacePath;
@@ -33,15 +34,15 @@ public class ParallelDBVersionCommandBuilder {
     private List<String> schemas;
     private List<DBModelSerializerBuilder> dbEnvironments;
 
-    public ParallelDBVersionCommandBuilder(int parallelismLevel){
+    public ParallelDBVersionCommandBuilder(DatabaseSerializerFactory factory, int parallelismLevel){
+        this.factory = factory;
         this.parallelismLevel = parallelismLevel;
         this.dbEnvironments = new ArrayList<>();
     }
 
     public ParallelDBVersionCommandBuilder setVCSRemoteInfo(String remoteUrl, String baseBranch
             , String username, String password) throws MalformedURLException {
-        this.vcs = RelationalDBVersionFactory.getInstance()
-                .createVCSController(remoteUrl, username, password, baseBranch);
+        this.vcs = this.factory.createVCSController(remoteUrl, username, password, baseBranch);
 
         return this;
     }
@@ -69,7 +70,7 @@ public class ParallelDBVersionCommandBuilder {
 
     public ParallelDBVersionCommandBuilder addDBEnvironment(String envName, String jdbcUrl, String username, String password){
         this.dbEnvironments
-                .add(new DBModelSerializerBuilder(envName, jdbcUrl, username, password));
+                .add(new DBModelSerializerBuilder(this.factory, envName, jdbcUrl, username, password));
 
         return this;
     }

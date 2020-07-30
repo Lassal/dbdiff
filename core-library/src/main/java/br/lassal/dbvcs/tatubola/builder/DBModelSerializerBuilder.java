@@ -13,25 +13,21 @@ public class DBModelSerializerBuilder {
 
 
 
+    private DatabaseSerializerFactory factory;
     private String environmentName;
     private DBModelFS outputFS;
     private final RelationalDBRepository repository;
     private String normalizedEnvironmentName = null;
     private String jdbcUrl = null;
 
-    public DBModelSerializerBuilder(String environmentName, String jdbcUrl, String username, String password) {
+    public DBModelSerializerBuilder(DatabaseSerializerFactory factory, String environmentName, String jdbcUrl, String username, String password) {
 
-        this(RelationalDBVersionFactory.getInstance()
-                        .createRDBRepository(jdbcUrl, username, password)
-                , environmentName, jdbcUrl);
-    }
-
-    public DBModelSerializerBuilder(RelationalDBRepository repository, String environmentName, String jdbcUrl) {
+        this.factory = factory;
         this.environmentName = environmentName;
-        this.repository = repository;
+        this.repository = this.factory.createRDBRepository(jdbcUrl, username, password);
         this.jdbcUrl = jdbcUrl;
-    }
 
+    }
 
     public String getEnvironmentName() {
         return this.environmentName;
@@ -67,7 +63,7 @@ public class DBModelSerializerBuilder {
                 ? this.generateEnvOutputPath(outputPath).toString()
                 : outputPath;
 
-        this.outputFS = RelationalDBVersionFactory.getInstance().createDBModelFS(outputEnvPath);
+        this.outputFS = this.factory.createDBModelFS(outputEnvPath);
         return this;
     }
 
@@ -89,7 +85,7 @@ public class DBModelSerializerBuilder {
     }
 
     public List<DBModelSerializer> getDBModelSerializers(String schema) {
-        return RelationalDBVersionFactory.getInstance()
+        return this.factory
                 .createDBObjectsSerializers(this.environmentName, schema, this.repository, this.outputFS);
     }
 

@@ -1,5 +1,6 @@
 package br.lassal.dbvcs.tatubola.integration.versioncontrol;
 
+import br.lassal.dbvcs.tatubola.builder.DatabaseSerializerFactory;
 import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
 import br.lassal.dbvcs.tatubola.integration.IntegrationTestInfo;
 import br.lassal.dbvcs.tatubola.integration.util.FileSystemUtil;
@@ -55,7 +56,7 @@ public class GitControllerTest {
                 String password = IntegrationTestInfo.getVCSRepositoryPassword();
                 String baseBranch = IntegrationTestInfo.REPO_BASE_BRANCH;
 
-                this.vcs = (GitController) RelationalDBVersionFactory.getInstance()
+                this.vcs = (GitController) this.getFactory()
                         .createVCSController(IntegrationTestInfo.REMOTE_REPO, username, password, baseBranch);
                 this.vcs.setWorkspacePath(this.rootWorkspace);
 
@@ -72,6 +73,10 @@ public class GitControllerTest {
         String currentGitHead = new String(Files.readAllBytes(Paths.get(this.rootWorkspace.getAbsolutePath(),".git/HEAD")));
 
         return currentGitHead.trim();
+    }
+
+    private DatabaseSerializerFactory getFactory(){
+        return RelationalDBVersionFactory.getInstance();
     }
 
     /**
@@ -138,7 +143,7 @@ public class GitControllerTest {
             String password = "nonono";
             String baseBranch = "DummyBranch";
 
-            vcs = (GitController) RelationalDBVersionFactory.getInstance()
+            vcs = (GitController) this.getFactory()
                     .createVCSController(IntegrationTestInfo.REMOTE_REPO, username, password, baseBranch);
             vcs.setWorkspacePath(this.rootWorkspace);
             vcs.setupRepositoryInitialState();
