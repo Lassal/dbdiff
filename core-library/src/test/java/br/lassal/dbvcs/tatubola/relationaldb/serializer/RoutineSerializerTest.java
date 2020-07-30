@@ -1,10 +1,10 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
 import br.lassal.dbvcs.tatubola.fs.InMemoryTestDBModelFS;
-import br.lassal.dbvcs.tatubola.relationaldb.model.*;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.OracleRepository;
+import br.lassal.dbvcs.tatubola.relationaldb.model.Routine;
+import br.lassal.dbvcs.tatubola.relationaldb.model.RoutineDummyBuilder;
+import br.lassal.dbvcs.tatubola.relationaldb.model.RoutineParameter;
 import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
-import com.github.vertical_blank.sqlformatter.SqlFormatter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RoutineSerializerTest extends BaseSerializerTest{

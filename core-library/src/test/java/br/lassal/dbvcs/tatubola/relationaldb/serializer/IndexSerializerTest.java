@@ -1,25 +1,16 @@
 package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
-import br.lassal.dbvcs.tatubola.fs.DBModelFS;
 import br.lassal.dbvcs.tatubola.fs.InMemoryTestDBModelFS;
-import br.lassal.dbvcs.tatubola.relationaldb.model.ColumnOrder;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Index;
-import br.lassal.dbvcs.tatubola.relationaldb.model.IndexColumn;
 import br.lassal.dbvcs.tatubola.relationaldb.model.IndexDummyBuilder;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
-import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)

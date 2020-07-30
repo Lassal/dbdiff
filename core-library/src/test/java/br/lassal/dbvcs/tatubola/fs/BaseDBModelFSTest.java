@@ -2,14 +2,13 @@ package br.lassal.dbvcs.tatubola.fs;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.*;
 import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
-import br.lassal.dbvcs.tatubola.text.TextDeserializer;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BaseDBModelFSTest {
 

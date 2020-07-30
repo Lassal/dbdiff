@@ -3,11 +3,8 @@ package br.lassal.dbvcs.tatubola.builder;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.BaseRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.MySQLRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.OracleRepository;
-import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
 
 public enum DatabaseRepositoryVendor {
     MYSQL,

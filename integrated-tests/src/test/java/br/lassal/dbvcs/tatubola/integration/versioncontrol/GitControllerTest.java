@@ -5,15 +5,10 @@ import br.lassal.dbvcs.tatubola.builder.RelationalDBVersionFactory;
 import br.lassal.dbvcs.tatubola.integration.IntegrationTestInfo;
 import br.lassal.dbvcs.tatubola.integration.util.FileSystemUtil;
 import br.lassal.dbvcs.tatubola.versioncontrol.GitController;
-import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystemException;
-import junit.framework.TestCase;
 import org.junit.FixMethodOrder;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runners.MethodSorters;
-import static org.junit.Assert.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +19,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.junit.Assert.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class GitControllerTest {
