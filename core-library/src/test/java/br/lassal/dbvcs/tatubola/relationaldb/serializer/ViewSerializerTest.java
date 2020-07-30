@@ -4,6 +4,7 @@ import br.lassal.dbvcs.tatubola.fs.InMemoryTestDBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Table;
 import br.lassal.dbvcs.tatubola.relationaldb.model.TableColumn;
 import br.lassal.dbvcs.tatubola.relationaldb.model.View;
+import br.lassal.dbvcs.tatubola.relationaldb.model.ViewDummyBuilder;
 import br.lassal.dbvcs.tatubola.text.SqlNormalizer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +34,15 @@ public class ViewSerializerTest extends BaseSerializerTest{
         String schema = "AAA";
         InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
         SqlNormalizer sqlNormalizer = SqlNormalizer.getInstance(this.repository);
+        ViewDummyBuilder viewBuilder = new ViewDummyBuilder();
 
         ViewSerializer serializer = new ViewSerializer(this.repository, dbModelFS, schema, env);
 
         List<View> sourceViews = new ArrayList<>();
-        sourceViews.add(this.createView(schema, "VIEW001", 1));
-        sourceViews.add(this.createView(schema, "VIEW002", 2));
-        sourceViews.add(this.createView(schema, "VIEW003", 3));
-        sourceViews.add(this.createView(schema, "VIEW004", 4));
+        sourceViews.add(viewBuilder.createView(schema, "VIEW001", 1));
+        sourceViews.add(viewBuilder.createView(schema, "VIEW002", 2));
+        sourceViews.add(viewBuilder.createView(schema, "VIEW003", 3));
+        sourceViews.add(viewBuilder.createView(schema, "VIEW004", 4));
 
         when(this.repository.loadViewDefinitions(schema)).thenReturn(this.extractViewDefinitionsOnly(sourceViews));
         when(this.repository.loadViewColumns(schema)).thenReturn(this.extractViewColumnsOnly(sourceViews));
@@ -76,11 +78,12 @@ public class ViewSerializerTest extends BaseSerializerTest{
         String schema = "AAA";
         InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
         SqlNormalizer sqlNormalizer = SqlNormalizer.getInstance(this.repository);
+        ViewDummyBuilder viewBuilder = new ViewDummyBuilder();
 
         ViewSerializer serializer = new ViewSerializer(this.repository, dbModelFS, schema, env);
 
         List<View> sourceViews = new ArrayList<>();
-        sourceViews.add(this.createView(schema, "VIEW001", 1));
+        sourceViews.add(viewBuilder.createView(schema, "VIEW001", 1));
 
         when(this.repository.loadViewDefinitions(schema)).thenReturn(this.extractViewDefinitionsOnly(sourceViews));
         when(this.repository.loadViewColumns(schema)).thenReturn(this.extractViewColumnsOnly(sourceViews));
@@ -143,45 +146,5 @@ public class ViewSerializerTest extends BaseSerializerTest{
         return refTables;
     }
 
-    private View createView(String schema, String viewName, int id){
-        View view = new View(schema, viewName);
-        view.setUpdatedAllowed(true);
-        view.setInsertAllowed(false);
-        view.setViewDefinition("CREATE OR REPLACE FUNCTION totalRecords ()RETURNS integer AS $total$declaretotal integer;BEGIN   SELECT count(*) into total FROM COMPANY;   RETURN total;END;$total$ LANGUAGE plpgsql;");
-        view.addTable(schema, "TableRef01_" + id);
-        view.addTable(schema, "TableRef02");
-
-        view.addColumn(this.createTextColumn(1, 50, false));
-        view.addColumn(this.createTextColumn(2, 30, false));
-        view.addColumn(this.createNumericColumn(3, 20, 6, false));
-        view.addColumn(this.createNumericColumn(4, 15, 3, true));
-
-        return view;
-    }
-
-    private TableColumn createTextColumn(int orderId, long maxLength, boolean isNullable){
-        TableColumn column = this.createTableColumn(orderId, "VARCHAR", isNullable);
-        column.setTextMaxLength(maxLength);
-        column.setDefaultValue("---<DEFAULT>---");
-
-        return column;
-    }
-
-    private TableColumn createNumericColumn(int orderId, int numericPrecison, int numericScale, boolean isNullable){
-        TableColumn column = this.createTableColumn(orderId, "NUMBER", isNullable);
-        column.setNumericPrecision(numericPrecison);
-        column.setNumericScale(numericScale);
-
-        return column;
-    }
-
-    private TableColumn createTableColumn(int orderId, String datatype, boolean isNullable){
-        TableColumn column = new TableColumn(String.format("COLUMN%02d", orderId));
-        column.setOrdinalPosition(orderId);
-        column.setDataType(datatype);
-        column.setNullable(isNullable);
-
-        return column;
-    }
 
 }

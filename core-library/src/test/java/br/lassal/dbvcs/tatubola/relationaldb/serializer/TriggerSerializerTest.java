@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.relationaldb.serializer;
 
 import br.lassal.dbvcs.tatubola.fs.InMemoryTestDBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.model.Trigger;
+import br.lassal.dbvcs.tatubola.relationaldb.model.TriggerDummyBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -32,14 +33,16 @@ public class TriggerSerializerTest extends BaseSerializerTest{
         String schema = "ABC";
 
         InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
+        TriggerDummyBuilder triggerBuilder = new TriggerDummyBuilder();
+
         TriggerSerializer serializer = new TriggerSerializer(this.repository, dbModelFS, schema, env);
 
         List<Trigger> sourceTriggers = new ArrayList<>();
-        sourceTriggers.add(this.createSampleTriggerA(5, schema, "TB_FIRST"));
-        sourceTriggers.add(this.createSampleTriggerC(1, schema, "TB_FIFTH"));
-        sourceTriggers.add(this.createSampleTriggerB(3, schema, "TB_THIRD"));
-        sourceTriggers.add(this.createSampleTriggerB(4, schema, "TB_FOURTH"));
-        sourceTriggers.add(this.createSampleTriggerA(2, schema, "TB_SECOND"));
+        sourceTriggers.add(triggerBuilder.createSampleTrigger(5, schema, "TB_FIRST"));
+        sourceTriggers.add(triggerBuilder.createSampleTrigger(1, schema, "TB_FIFTH"));
+        sourceTriggers.add(triggerBuilder.createSampleTrigger(3, schema, "TB_THIRD"));
+        sourceTriggers.add(triggerBuilder.createSampleTrigger(4, schema, "TB_FOURTH"));
+        sourceTriggers.add(triggerBuilder.createSampleTrigger(2, schema, "TB_SECOND"));
 
         when(this.repository.loadTriggers(schema)).thenReturn(sourceTriggers);
 
@@ -66,10 +69,11 @@ public class TriggerSerializerTest extends BaseSerializerTest{
         String schema = "ABC";
 
         InMemoryTestDBModelFS dbModelFS = this.createNewDBModelFS();
+        TriggerDummyBuilder triggerBuilder = new TriggerDummyBuilder();
         TriggerSerializer serializer = new TriggerSerializer(this.repository, dbModelFS, schema, env);
 
         List<Trigger> sourceTriggers = new ArrayList<>();
-        sourceTriggers.add(this.createSampleTriggerA(1, schema, "TB_FIRST"));
+        sourceTriggers.add(triggerBuilder.createSampleTrigger(1, schema, "TB_FIRST"));
 
         when(this.repository.loadTriggers(schema)).thenReturn(sourceTriggers);
         serializer.serialize();
@@ -85,51 +89,4 @@ public class TriggerSerializerTest extends BaseSerializerTest{
 
     }
 
-    /**
-     * Create sample trigger for the test.
-     * The trigger body is not formatted, it will be formatted during the test
-     * @param id
-     * @param schema
-     * @param targetObjectName
-     * @return
-     */
-    private Trigger createSampleTriggerA(int id, String schema, String targetObjectName){
-        Trigger trigger = new Trigger("TRIGGER_A_" + id);
-        trigger.setTargetObjectType("TABLE");
-        trigger.setTargetObjectSchema(schema);
-        trigger.setTargetObjectName(targetObjectName);
-        trigger.setExecutionOrder(id);
-        trigger.setEvent("UPDATE");
-        trigger.setEventTiming("AFTER EACH ROW");
-        trigger.setEventActionBody("  BEGIN add_job_history(:old.employee_id,:old.hire_date,sysdate,:old.job_id," +
-               ":old.department_id);END;");
-
-        return trigger;
-    }
-
-    private Trigger createSampleTriggerB(int id, String schema, String targetObjectName){
-        Trigger trigger = new Trigger("TRIGGER_B_" + id);
-        trigger.setTargetObjectType("TABLE");
-        trigger.setTargetObjectSchema(schema);
-        trigger.setTargetObjectName(targetObjectName);
-        trigger.setExecutionOrder(id);
-        trigger.setEvent("INSERT OR UPDATE OR DELETE");
-        trigger.setEventTiming("BEFORE STATEMENT");
-        trigger.setEventActionBody("  BEGIN secure_dml; END secure_employees;");
-
-        return trigger;
-    }
-
-    private Trigger createSampleTriggerC(int id, String schema, String targetObjectName){
-        Trigger trigger = new Trigger("TRIGGER_C_" + id);
-        trigger.setTargetObjectType("TABLE");
-        trigger.setTargetObjectSchema(schema);
-        trigger.setTargetObjectName(targetObjectName);
-        trigger.setExecutionOrder(id);
-        trigger.setEvent("INSERT on ROW");
-        trigger.setEventTiming("BEFORE");
-        trigger.setEventActionBody("BEGIN SET NEW.entryDate = NOW(); END");
-
-        return trigger;
-    }
 }

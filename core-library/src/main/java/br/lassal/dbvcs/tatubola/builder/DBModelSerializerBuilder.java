@@ -11,17 +11,27 @@ import java.util.List;
 
 public class DBModelSerializerBuilder {
 
+
+
     private String environmentName;
     private DBModelFS outputFS;
-    private RelationalDBRepository repository;
+    private final RelationalDBRepository repository;
     private String normalizedEnvironmentName = null;
     private String jdbcUrl = null;
 
     public DBModelSerializerBuilder(String environmentName, String jdbcUrl, String username, String password) {
+
+        this(RelationalDBVersionFactory.getInstance()
+                        .createRDBRepository(jdbcUrl, username, password)
+                , environmentName, jdbcUrl);
+    }
+
+    public DBModelSerializerBuilder(RelationalDBRepository repository, String environmentName, String jdbcUrl) {
         this.environmentName = environmentName;
-        this.repository = RelationalDBVersionFactory.getInstance().createRDBRepository(jdbcUrl, username, password);
+        this.repository = repository;
         this.jdbcUrl = jdbcUrl;
     }
+
 
     public String getEnvironmentName() {
         return this.environmentName;
