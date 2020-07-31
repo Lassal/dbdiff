@@ -11,8 +11,11 @@ import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.matchers.Any;
 import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atMostOnce;
 
 import java.util.List;
 
@@ -54,6 +57,12 @@ public class ParallelDBVersionCommandTest {
                 .build();
 
         cmd.takeDatabaseSchemaSnapshotVersion();
+
+        verify(this.vcs, atMostOnce()).setupRepositoryInitialState();
+        verify(this.vcs, atMostOnce()).checkout("DEV");
+        verify(this.vcs, atMostOnce()).checkout("QA");
+        verify(this.vcs, times(2)).commitAllChanges(anyString());
+        verify(this.vcs, atMostOnce()).syncChangesToServer();
 
         InMemoryTestDBModelFS outputFS = factory.getDBModelFS(tmpPath + "/DEV");
 
