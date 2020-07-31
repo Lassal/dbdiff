@@ -7,6 +7,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,14 +25,24 @@ public class TableSerializer extends DBModelSerializer<Table> {
 
     List<Table> assemble() {
 
-        for (TableConstraint constraint : this.tableConstraints) {
-            if (this.tables.containsKey(constraint.getTableID())) {
-                this.tables.get(constraint.getTableID()).addConstraint(constraint);
-            }
-        }
+        if(this.tables != null){
 
-        return this.tables.values().stream()
-                .collect(Collectors.toList());
+            if(this.tableConstraints != null){
+                for (TableConstraint constraint : this.tableConstraints) {
+                    if (this.tables.containsKey(constraint.getTableID())) {
+                        this.tables.get(constraint.getTableID()).addConstraint(constraint);
+                    }
+                }
+            }
+
+            return this.tables.values().stream()
+                    .collect(Collectors.toList());
+        }
+        else{
+            logger.warn(String.format("The repository return NULL for the tables in Environment: %s | Schema: %s",
+                    this.getEnvironmentName(), this.getSchema()));
+            return new ArrayList<>();
+        }
 
     }
 

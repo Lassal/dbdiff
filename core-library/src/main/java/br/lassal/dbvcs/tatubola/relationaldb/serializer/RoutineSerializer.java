@@ -7,6 +7,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,26 +28,37 @@ public class RoutineSerializer extends DBModelSerializer<Routine> {
 
     List<Routine> assemble() {
 
-        Map<String, Routine> routinesMap = this.routines.stream().collect(Collectors.toMap(Routine::getRoutineID, Function.identity()));
+        if(this.routines != null){
+            Map<String, Routine> routinesMap = this.routines.stream().collect(Collectors.toMap(Routine::getRoutineID, Function.identity()));
 
-        Routine currentRoutine = null;
-        for (RoutineParameter param : this.routinesParameters) {
+            if(this.routinesParameters != null){
+                Routine currentRoutine = null;
+                for (RoutineParameter param : this.routinesParameters) {
 
-            if (currentRoutine == null || !param.getRoutineID().equals(currentRoutine.getRoutineID())) {
-                currentRoutine = routinesMap.containsKey(param.getRoutineID()) ?
-                        routinesMap.get(param.getRoutineID()) : null;
-            }
+                    if (currentRoutine == null || !param.getRoutineID().equals(currentRoutine.getRoutineID())) {
+                        currentRoutine = routinesMap.containsKey(param.getRoutineID()) ?
+                                routinesMap.get(param.getRoutineID()) : null;
+                    }
 
-            if (currentRoutine != null) {
-                if (param.getOrdinalPosition() == 0) {
-                    currentRoutine.setReturnParamater(param);
-                } else {
-                    currentRoutine.addParameter(param);
+                    if (currentRoutine != null) {
+                        if (param.getOrdinalPosition() == 0) {
+                            currentRoutine.setReturnParamater(param);
+                        } else {
+                            currentRoutine.addParameter(param);
+                        }
+                    }
                 }
             }
-        }
 
-        return this.routines;
+            return this.routines;
+
+        }
+        else{
+            logger.warn(String.format("The repository return NULL for the routines in Environment: %s | Schema: %s",
+                    this.getEnvironmentName(), this.getSchema()));
+
+            return new ArrayList<>();
+        }
 
     }
 

@@ -6,6 +6,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TriggerSerializer extends DBModelSerializer<Trigger> {
@@ -20,7 +21,16 @@ public class TriggerSerializer extends DBModelSerializer<Trigger> {
 
 
     List<Trigger> assemble() {
-        return this.triggers;
+
+        if(this.triggers != null){
+            return this.triggers;
+        }
+        else{
+            logger.warn(String.format("The repository return NULL for the triggers in Environment: %s | Schema: %s",
+                    this.getEnvironmentName(), this.getSchema()));
+
+            return new ArrayList<>();
+        }
     }
 
     @Override

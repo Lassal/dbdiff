@@ -6,6 +6,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class IndexSerializer extends DBModelSerializer<Index> {
@@ -20,7 +21,16 @@ public class IndexSerializer extends DBModelSerializer<Index> {
 
 
     List<Index> assemble() {
-        return this.indexes;
+
+        if(this.indexes != null){
+            return this.indexes;
+        }
+        else{
+            logger.warn(String.format("The repository return NULL for the indexes in Environment: %s | Schema: %s",
+                    this.getEnvironmentName(), this.getSchema()));
+
+            return new ArrayList<>();
+        }
     }
 
     @Override

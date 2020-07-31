@@ -8,6 +8,7 @@ import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -28,28 +29,38 @@ public class ViewSerializer extends DBModelSerializer<View> {
 
     @Override
     List<View> assemble() {
-        Map<String, View> mapViews = this.views.stream().collect(Collectors.toMap(View::getViewID, Function.identity()));
 
-        for (Map.Entry<String, View> view : mapViews.entrySet()) {
+        if(this.views != null){
+            Map<String, View> mapViews = this.views.stream().collect(Collectors.toMap(View::getViewID, Function.identity()));
 
-            if (this.referencedTables.containsKey(view.getKey())) {
-                List<Table> viewTables = this.referencedTables.get(view.getKey());
+            for (Map.Entry<String, View> view : mapViews.entrySet()) {
 
-                if (!viewTables.isEmpty()) {
-                    view.getValue().setReferencedTables(viewTables);
+                if (this.referencedTables != null && this.referencedTables.containsKey(view.getKey())) {
+                    List<Table> viewTables = this.referencedTables.get(view.getKey());
+
+                    if (!viewTables.isEmpty()) {
+                        view.getValue().setReferencedTables(viewTables);
+                    }
+                }
+
+                if (this.viewsColumns != null && this.viewsColumns.containsKey(view.getKey())) {
+                    List<TableColumn> columns = this.viewsColumns.get(view.getKey());
+
+                    if (!columns.isEmpty()) {
+                        view.getValue().setColumns(columns);
+                    }
                 }
             }
 
-            if (this.viewsColumns.containsKey(view.getKey())) {
-                List<TableColumn> columns = this.viewsColumns.get(view.getKey());
+            return this.views;
 
-                if (!columns.isEmpty()) {
-                    view.getValue().setColumns(columns);
-                }
-            }
         }
+        else{
+            logger.warn(String.format("The repository return NULL for the views in Environment: %s | Schema: %s",
+                    this.getEnvironmentName(), this.getSchema()));
 
-        return this.views;
+            return new ArrayList<>();
+        }
     }
 
     @Override
