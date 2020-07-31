@@ -16,6 +16,7 @@ public class DBModelSerializerBuilder {
     private DatabaseSerializerFactory factory;
     private String environmentName;
     private DBModelFS outputFS;
+    private String outputPath;
     private final RelationalDBRepository repository;
     private String normalizedEnvironmentName = null;
     private String jdbcUrl = null;
@@ -33,7 +34,7 @@ public class DBModelSerializerBuilder {
         return this.environmentName;
     }
 
-    public String getNormalizedEnvironmentName() {
+    private String getNormalizedEnvironmentName() {
         if (this.normalizedEnvironmentName == null && this.environmentName != null) {
             this.normalizedEnvironmentName = this.normalizeEnvNameAsPath(this.environmentName);
         }
@@ -47,7 +48,7 @@ public class DBModelSerializerBuilder {
 
     /**
      * Setup the output path where the database objects will be serialized as text files.
-     * All files follow directory structure to represent the diferent object types, segregated
+     * All files follow directory structure to represent the different object types, segregated
      * by schema.
      * It is also possible to segregate the output by environment using the @segregateByEnvironment property
      *
@@ -59,12 +60,16 @@ public class DBModelSerializerBuilder {
      * @return builder
      */
     public DBModelSerializerBuilder setOutputPath(String outputPath, boolean segregateByEnvironment) {
-        String outputEnvPath = segregateByEnvironment
+        this.outputPath = segregateByEnvironment
                 ? this.generateEnvOutputPath(outputPath).toString()
                 : outputPath;
 
-        this.outputFS = this.factory.createDBModelFS(outputEnvPath);
+        this.outputFS = this.factory.createDBModelFS(this.outputPath);
         return this;
+    }
+
+    public String getOutputPath(){
+        return this.outputPath;
     }
 
     private Path generateEnvOutputPath(String rootPath) {

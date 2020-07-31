@@ -2,6 +2,7 @@ package br.lassal.dbvcs.tatubola.builder;
 
 import br.lassal.dbvcs.tatubola.fs.BaseDBModelFS;
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.fs.FSManager;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.BaseRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.*;
@@ -28,8 +29,10 @@ public class RelationalDBVersionFactory implements DatabaseSerializerFactory{
         return instance;
     }
 
-    private RelationalDBVersionFactory() {
+    private FSManager fsManager;
 
+    private RelationalDBVersionFactory() {
+        this.fsManager = new FSManager();
     }
 
     public DataSource createConnectionPool(String jdbcUrl, String username, String password
@@ -95,6 +98,11 @@ public class RelationalDBVersionFactory implements DatabaseSerializerFactory{
 
 
         return serializers;
+    }
+
+    @Override
+    public FSManager getFSManager() {
+        return this.fsManager;
     }
 
     public List<DBModelSerializer> createDBObjectsSerializers(String environmentName, String schema, String jdbcUrl

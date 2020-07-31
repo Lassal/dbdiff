@@ -1,6 +1,7 @@
 package br.lassal.dbvcs.tatubola;
 
 import br.lassal.dbvcs.tatubola.builder.DBModelSerializerBuilder;
+import br.lassal.dbvcs.tatubola.fs.FSManager;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.DBModelSerializer;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.ParallelSerializer;
 import br.lassal.dbvcs.tatubola.report.DBModelSerializationReport;
@@ -30,16 +31,18 @@ public class ParallelDBVersionCommand {
     private List<DBModelSerializerBuilder> environments;
     private ForkJoinPool threadPool;
     private VersionControlSystem vcsController;
+    private FSManager fsManager;
 
 
     public ParallelDBVersionCommand(List<String> schemas, String rootPathLocalVCRepository, String tmpPath
-            , VersionControlSystem vcsController, int parallelism) {
+            , VersionControlSystem vcsController, FSManager fsManager, int parallelism) {
         this.schemas = schemas;
         this.rootPathLocalVCRepository = rootPathLocalVCRepository;
         this.tmpPath = tmpPath;
         this.vcsController = vcsController;
         this.environments = new ArrayList<>();
         this.threadPool = new ForkJoinPool(parallelism);
+        this.fsManager = fsManager;
 
         if (this.vcsController != null) {
             this.vcsController.setWorkspacePath(new File(rootPathLocalVCRepository));
@@ -47,8 +50,8 @@ public class ParallelDBVersionCommand {
     }
 
     public ParallelDBVersionCommand(List<String> schemas, String rootPathLocalVCRepository, String tmpPath
-            , VersionControlSystem vcsController) {
-        this(schemas, rootPathLocalVCRepository, tmpPath, vcsController, ParallelDBVersionCommand.DEFAULT_PARALLELISM);
+            , VersionControlSystem vcsController, FSManager fsManager) {
+        this(schemas, rootPathLocalVCRepository, tmpPath, vcsController, fsManager, ParallelDBVersionCommand.DEFAULT_PARALLELISM);
     }
 
     public ParallelDBVersionCommand addDBEnvironment(DBModelSerializerBuilder serializerBuilder) {
@@ -57,6 +60,7 @@ public class ParallelDBVersionCommand {
         return this;
     }
 
+    /*
     private void copyFullFolderStructure(Path sourceDir, Path destinationDir) throws IOException {
 
         // Traverse the file tree and copy each file/directory.
@@ -74,7 +78,7 @@ public class ParallelDBVersionCommand {
                     }
                 });
     }
-
+*/
     public void takeDatabaseSchemaSnapshotVersion() throws Exception {
 
         EnvironmentInfo[] dbEnvs = new EnvironmentInfo[this.environments.size()];
@@ -171,14 +175,13 @@ public class ParallelDBVersionCommand {
      */
     private void moveDBSerializedObjectsToLocalRepository(EnvironmentInfo envInfo) throws IOException {
         File localRepoFolder = new File(this.rootPathLocalVCRepository);
-        File dbEnvFiles = new File(this.tmpPath, envInfo.getSourceFolder());
+        File dbEnvFiles = new File(envInfo.getOutputPath());
 
         if (logger.isDebugEnabled()) {
             logger.debug("(Step 5|" + envInfo.getEnvName() + ") About to copy files from " + dbEnvFiles + " to " + localRepoFolder);
         }
 
-        this.copyFullFolderStructure(dbEnvFiles.toPath(), localRepoFolder.toPath());
-
+        this.fsManager.copyFullFolderStructure(dbEnvFiles.toPath(), localRepoFolder.toPath());
     }
 
     /**

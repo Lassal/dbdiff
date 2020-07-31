@@ -1,6 +1,7 @@
 package br.lassal.dbvcs.tatubola.builder;
 
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.fs.FSManager;
 import br.lassal.dbvcs.tatubola.fs.InMemoryTestDBModelFS;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.DBModelSerializer;
@@ -8,6 +9,7 @@ import br.lassal.dbvcs.tatubola.text.JacksonYamlSerializer;
 import br.lassal.dbvcs.tatubola.text.TextSerializer;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
 
+import static org.mockito.Mockito.*;
 import java.net.MalformedURLException;
 import java.util.List;
 
@@ -53,6 +55,11 @@ public class MockDatabaseSerializerFactory implements DatabaseSerializerFactory{
     public List<DBModelSerializer> createDBObjectsSerializers(String environmentName, String schema, RelationalDBRepository repository, DBModelFS dbModelFS) {
         return RelationalDBVersionFactory.getInstance()
                 .createDBObjectsSerializers(environmentName, schema, repository, dbModelFS);
+    }
+
+    @Override
+    public FSManager getFSManager() {
+        return mock(FSManager.class);
     }
 
 }

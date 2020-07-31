@@ -25,8 +25,8 @@ public class EnvironmentInfo {
         return this.dbEnvironment.getEnvironmentName();
     }
 
-    public String getSourceFolder(){
-        return this.dbEnvironment.getNormalizedEnvironmentName();
+    public String getOutputPath(){
+        return this.dbEnvironment.getOutputPath();
     }
 
     public String getDBJdbcUrl(){

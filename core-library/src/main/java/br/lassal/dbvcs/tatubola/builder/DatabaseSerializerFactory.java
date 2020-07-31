@@ -1,6 +1,7 @@
 package br.lassal.dbvcs.tatubola.builder;
 
 import br.lassal.dbvcs.tatubola.fs.DBModelFS;
+import br.lassal.dbvcs.tatubola.fs.FSManager;
 import br.lassal.dbvcs.tatubola.relationaldb.repository.RelationalDBRepository;
 import br.lassal.dbvcs.tatubola.relationaldb.serializer.DBModelSerializer;
 import br.lassal.dbvcs.tatubola.versioncontrol.VersionControlSystem;
@@ -19,4 +20,6 @@ public interface DatabaseSerializerFactory {
 
     List<DBModelSerializer> createDBObjectsSerializers(
             String environmentName, String schema, RelationalDBRepository repository, DBModelFS dbModelFS);
+
+    FSManager getFSManager();
 }

@@ -100,7 +100,9 @@ public class ParallelDBVersionCommandBuilder {
             return null;
         }
 
-        ParallelDBVersionCommand command = new ParallelDBVersionCommand(this.schemas, this.workspacePath, this.tmpPath, this.vcs, this.parallelismLevel);
+        ParallelDBVersionCommand command =
+                new ParallelDBVersionCommand(this.schemas, this.workspacePath, this.tmpPath, this.vcs
+                        , this.factory.getFSManager(), this.parallelismLevel);
 
         for(DBModelSerializerBuilder dbEnv : this.dbEnvironments){
             command.addDBEnvironment(dbEnv);
