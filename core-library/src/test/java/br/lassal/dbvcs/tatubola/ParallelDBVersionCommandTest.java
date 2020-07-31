@@ -40,8 +40,8 @@ public class ParallelDBVersionCommandTest {
                 .setVCSRemoteInfo(remoteRepoUrl, baseBranch, username, password)
                 .setWorkspaceInfo(rootPath, tmpPath)
                 .setDBSchemasToBeSerialized(schemas)
-                .addDBEnvironment("DEV","", username, password)
-                .addDBEnvironment("QA","", username, password)
+                .addDBEnvironment("DEV","jdbc:dummy:dev", username, password)
+                .addDBEnvironment("QA","jdbc:dummy:qa", username, password)
                 .build();
 
         cmd.takeDatabaseSchemaSnapshotVersion();

@@ -1,10 +1,14 @@
 package br.lassal.dbvcs.tatubola.relationaldb.repository;
 
 import br.lassal.dbvcs.tatubola.relationaldb.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class InMemoryTestRepository implements RelationalDBRepository{
+
+    private static Logger logger = LoggerFactory.getLogger(InMemoryTestRepository.class);
 
     private class Schema{
         String name;
@@ -105,68 +109,262 @@ public class InMemoryTestRepository implements RelationalDBRepository{
         return routines;
     }
 
-    public Set<String> getSchemaNames(){
-        return this.schemas.keySet();
+    @Override
+    public Map<String, Table> loadTableColumns(String schemaName) {
+
+        Map<String, Table> tableColumns = new HashMap<>();
+
+        if(this.schemas.containsKey(schemaName)){
+            Schema schema = this.schemas.get(schemaName);
+
+            if(schema.tables != null){
+                for(Table table: schema.tables){
+                    Table copy = new Table(table.getSchema(), table.getName());
+                    List<TableColumn> columns = new ArrayList<>(table.getColumns());
+                    Collections.shuffle(columns);
+                    columns.stream().forEach(c -> copy.addColumn(c));
+
+                    tableColumns.put(copy.getTableID(), copy);
+                }
+            }
+        }
+
+        return tableColumns;
     }
 
     @Override
-    public Map<String, Table> loadTableColumns(String schema) {
-        return null;
+    public List<TableConstraint> loadUniqueConstraints(String schemaName) {
+
+        List<TableConstraint> constraints = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)){
+            Schema schema = this.schemas.get(schemaName);
+
+            if(schema.tables != null){
+
+                for(Table table: schema.tables){
+                    for(TableConstraint tc : table.getConstraints()){
+                        if(tc instanceof UniqueConstraint){
+                            try{
+                            UniqueConstraint original = (UniqueConstraint) tc;
+                            UniqueConstraint copy = (UniqueConstraint) original.clone();
+                            List<Column> columns = new ArrayList<>(original.getColumns());
+                            Collections.shuffle(columns);
+                            copy.setColumns(columns);
+
+                            constraints.add(copy);
+                            }
+                            catch (CloneNotSupportedException e) {
+                                logger.error("Error cloning UniqueConstraint", e);
+                            }
+
+                        }
+                    }
+                }
+                Collections.shuffle(constraints);
+            }
+        }
+
+        return constraints;
     }
 
     @Override
-    public List<TableConstraint> loadUniqueConstraints(String schema) {
-        return null;
+    public List<TableConstraint> loadReferentialConstraints(String schemaName) {
+        List<TableConstraint> constraints = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.tables != null) {
+                for(Table table: schema.tables){
+                    for(TableConstraint tc : table.getConstraints()){
+                        if(tc instanceof ForeignKeyConstraint){
+                            try{
+                                ForeignKeyConstraint original = (ForeignKeyConstraint) tc;
+                                ForeignKeyConstraint copy = (ForeignKeyConstraint) original.clone();
+                                List<ReferentialIntegrityColumn> columns = new ArrayList<>(original.getColumns());
+                                Collections.shuffle(columns);
+                                copy.setColumns(columns);
+
+                                constraints.add(copy);
+                            }
+                            catch (CloneNotSupportedException e) {
+                                logger.error("Error cloning ForeignKeyConstraint", e);
+                            }
+                        }
+                    }
+                }
+                Collections.shuffle(constraints);
+            }
+        }
+
+        return constraints;
     }
 
     @Override
-    public List<TableConstraint> loadReferentialConstraints(String schema) {
-        return null;
+    public List<TableConstraint> loadCheckConstraints(String schemaName) {
+        List<TableConstraint> constraints = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.tables != null) {
+                for(Table table: schema.tables){
+                    for(TableConstraint tc : table.getConstraints()){
+                        if(tc instanceof CheckConstraint){
+                            try{
+                                CheckConstraint original = (CheckConstraint) tc;
+                                CheckConstraint copy = (CheckConstraint) original.clone();
+                                constraints.add(copy);
+                            } catch (CloneNotSupportedException e) {
+                                logger.error("Error cloning CheckConstraint", e);
+                            }
+                        }
+                    }
+                }
+
+                Collections.shuffle(constraints);
+            }
+        }
+
+        return constraints;
     }
 
     @Override
-    public List<TableConstraint> loadCheckConstraints(String schema) {
-        return null;
+    public List<Index> loadIndexes(String schemaName) {
+        List<Index> indexes = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if(schema.indexes != null){
+                indexes = schema.indexes;
+            }
+        }
+
+        return indexes;
     }
 
     @Override
-    public List<Index> loadIndexes(String schema) {
-        return null;
+    public List<View> loadViewDefinitions(String schemaName) {
+        List<View> viewDefinitions = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.views != null) {
+                for (View original : schema.views) {
+                    View copy = new View(original.getSchema(), original.getName());
+                    copy.setInsertAllowed(original.isInsertAllowed());
+                    copy.setUpdatedAllowed(original.isUpdatedAllowed());
+                    copy.setViewDefinition(original.getViewDefinition());
+
+                    viewDefinitions.add(copy);
+                }
+                Collections.shuffle(viewDefinitions);
+            }
+        }
+        return viewDefinitions;
     }
 
     @Override
-    public List<View> loadViewDefinitions(String schema) {
-        return null;
+    public Map<String, List<Table>> loadViewTables(String schemaName) {
+        Map<String, List<Table>> refTables = new HashMap<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.views != null) {
+                for (View sourceView : schema.views) {
+                    List<Table> tables = new ArrayList<>(sourceView.getReferencedTables());
+                    Collections.shuffle(tables);
+
+                    refTables.put(sourceView.getViewID(), tables);
+                }
+            }
+        }
+        return refTables;
+
     }
 
     @Override
-    public Map<String, List<Table>> loadViewTables(String schema) {
-        return null;
+    public Map<String, List<TableColumn>> loadViewColumns(String schemaName) {
+        Map<String, List<TableColumn>> columns = new HashMap<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.views != null) {
+                for (View sourceView : schema.views) {
+                    List<TableColumn> tabCols = new ArrayList<>(sourceView.getColumns());
+                    Collections.shuffle(tabCols);
+                    columns.put(sourceView.getViewID(), tabCols);
+                }
+            }
+        }
+        return columns;
     }
 
     @Override
-    public Map<String, List<TableColumn>> loadViewColumns(String schema) {
-        return null;
+    public List<Trigger> loadTriggers(String schemaName) {
+        List<Trigger> triggers = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if(schema.indexes != null){
+                triggers = schema.triggers;
+            }
+        }
+
+        return triggers;
     }
 
     @Override
-    public List<Trigger> loadTriggers(String schema) {
-        return null;
+    public List<Routine> loadRoutineDefinition(String schemaName) {
+        List<Routine> routinesDefs = new ArrayList<>();
+
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.routines != null) {
+                for (Routine original : schema.routines) {
+                    Routine copy = new Routine(original.getSchema(), original.getName(), original.getRoutineType());
+                    copy.setReturnParamater(original.getReturnParamater());
+                    copy.setRoutineDefinition(original.getRoutineDefinition());
+
+                    routinesDefs.add(copy);
+                }
+
+                Collections.shuffle(routinesDefs);
+            }
+
+        }
+        return routinesDefs;
     }
 
     @Override
-    public List<Routine> loadRoutineDefinition(String schema) {
-        return null;
-    }
+    public List<RoutineParameter> loadRoutineParameters(String schemaName) {
+        List<RoutineParameter> parameters = new ArrayList<>();
 
-    @Override
-    public List<RoutineParameter> loadRoutineParameters(String schema) {
-        return null;
+        if(this.schemas.containsKey(schemaName)) {
+            Schema schema = this.schemas.get(schemaName);
+
+            if (schema.routines != null) {
+                for (Routine sourceRoutine : schema.routines) {
+                    parameters.addAll(sourceRoutine.getParameters());
+                }
+                Collections.shuffle(parameters);
+
+            }
+        }
+        return parameters;
+
     }
 
     @Override
     public List<String> listSchemas() {
-        return null;
+        return new ArrayList<>(this.schemas.keySet());
     }
 
 }
