@@ -367,4 +367,43 @@ public class InMemoryTestRepository implements RelationalDBRepository{
         return new ArrayList<>(this.schemas.keySet());
     }
 
+    public List<Table> getInnerTables(String schema){
+        if(this.schemas.containsKey(schema)){
+            return this.schemas.get(schema).tables;
+        }
+
+        return null;
+    }
+
+    public List<View> getInnerViews(String schema){
+        if(this.schemas.containsKey(schema)){
+            return this.schemas.get(schema).views;
+        }
+
+        return null;
+    }
+
+    public List<Index> getInnerIndexes(String schema){
+        if(this.schemas.containsKey(schema)){
+            return this.schemas.get(schema).indexes;
+        }
+
+        return null;
+    }
+
+    public List<Trigger> getInnerTriggers(String schema){
+        if(this.schemas.containsKey(schema)){
+            return this.schemas.get(schema).triggers;
+        }
+
+        return null;
+    }
+
+    public List<Routine> getInnerRoutines(String schema){
+        if(this.schemas.containsKey(schema)){
+            return this.schemas.get(schema).routines;
+        }
+
+        return null;
+    }
 }
