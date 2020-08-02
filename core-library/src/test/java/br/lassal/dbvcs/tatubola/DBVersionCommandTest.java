@@ -32,7 +32,7 @@ public class DBVersionCommandTest {
 
 
     @Test
-    public void takeDatabaseSchemaSnapshotVersion() throws Exception{
+    public void testTakeDatabaseSchemaSnapshotVersion() throws Exception{
         String remoteRepoUrl = "remoteVCSUrl";
         String baseBranch = "MAIN";
         String username = "user";
