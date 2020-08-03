@@ -24,12 +24,6 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
 
     @Override
     protected void compute() {
-        List<RecursiveAction> loadActions = new ArrayList<>();
-
-        List<LoadCommand> loadSteps = this.serializer.getLoadSteps();
-
-        for (LoadCommand loadStep : loadSteps)
-            loadActions.add(this.convertToRecursiveAction(loadStep));
 
         String logPrefix = null;
 
@@ -41,37 +35,58 @@ public class ParallelSerializer<S extends DBModelSerializer> extends RecursiveAc
             logger.debug(logPrefix + "(A) call load DB metadata actions");
 
         }
-        ForkJoinTask.invokeAll(loadActions);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(logPrefix + "(B) finished load DB metadata");
+        try{
+            List<RecursiveAction> loadActions = new ArrayList<>();
+
+            List<LoadCommand> loadSteps = this.serializer.getLoadSteps();
+
+            for (LoadCommand loadStep : loadSteps)
+                loadActions.add(this.convertToRecursiveAction(loadStep));
+
+            ForkJoinTask.invokeAll(loadActions);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(logPrefix + "(B) finished load DB metadata");
+            }
+
+
+            List<DatabaseModelEntity> dbEntities = this.serializer.assemble();
+
+            try {
+                this.serializer.serialize(dbEntities);
+            } catch (Exception e) {
+                logger.error("Error serializing db entities", e);
+            }
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(logPrefix + "(C) all objects serialized to filesystem");
+
+            }
+
+
+        }catch (Throwable ex){
+            this.completeExceptionally(ex);
+            logger.error(
+                    String.format("An error was encountered serializing the objects in ENV: %s | SCHEMA: %s"
+                            , this.serializer.getEnvironmentName()
+                            , this.serializer.getSchema()), ex);
+        }
+        finally {
+            this.allTaskCounter.countDown();
+            if (logger.isDebugEnabled()) {
+                logger.debug(logPrefix + "(C2) remaining tasks #" + this.allTaskCounter.getCount());
+
+            }
+
         }
 
-
-        List<DatabaseModelEntity> dbEntities = this.serializer.assemble();
-
-        try {
-            this.serializer.serialize(dbEntities);
-        } catch (Exception e) {
-            logger.error("Error serializing db entities", e);
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug(logPrefix + "(C) all objects serialized to filesystem");
-
-        }
-
-        this.allTaskCounter.countDown();
-        if (logger.isDebugEnabled()) {
-            logger.debug(logPrefix + "(C2) remaining tasks #" + this.allTaskCounter.getCount());
-
-        }
     }
 
     private RecursiveAction convertToRecursiveAction(LoadCommand command) {
         return new RecursiveAction() {
             @Override
-            protected void compute() {
+            protected void compute(){
                 command.execute();
             }
         };

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
-public class ParallelDBVersionCommand {
+public class ParallelDBVersionCommand implements Thread.UncaughtExceptionHandler{
 
     private static Logger logger = LoggerFactory.getLogger(ParallelDBVersionCommand.class);
 
@@ -41,7 +41,7 @@ public class ParallelDBVersionCommand {
         this.tmpPath = tmpPath;
         this.vcsController = vcsController;
         this.environments = new ArrayList<>();
-        this.threadPool = new ForkJoinPool(parallelism);
+        this.threadPool = this.createForkJoinPool(parallelism);
         this.fsManager = fsManager;
 
         if (this.vcsController != null) {
@@ -60,25 +60,10 @@ public class ParallelDBVersionCommand {
         return this;
     }
 
-    /*
-    private void copyFullFolderStructure(Path sourceDir, Path destinationDir) throws IOException {
-
-        // Traverse the file tree and copy each file/directory.
-        Files.walk(sourceDir)
-                .forEach(sourcePath -> {
-                    try {
-                        Path targetPath = destinationDir.resolve(sourceDir.relativize(sourcePath));
-
-                        if (logger.isTraceEnabled()) {
-                            //     logger.trace(String.format("Copying %s to %s", sourcePath, targetPath));
-                        }
-                        Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException ex) {
-                        // logger.warn(String.format("I/O error: %s%n", ex));
-                    }
-                });
+    private ForkJoinPool createForkJoinPool(int parallelism){
+        return new ForkJoinPool(parallelism, ForkJoinPool.defaultForkJoinWorkerThreadFactory, this, false);
     }
-*/
+
     public void takeDatabaseSchemaSnapshotVersion() throws Exception {
 
         EnvironmentInfo[] dbEnvs = new EnvironmentInfo[this.environments.size()];
@@ -119,7 +104,8 @@ public class ParallelDBVersionCommand {
                     .forEach(s -> {
                         s.setMetricsListener(envInfo.getSerializerCounter());
                         threadPool.execute(
-                           new ParallelSerializer(s, envInfo.getTaskSerializerLatch()));
+                           envInfo.addParallelSerializer(new ParallelSerializer(s, envInfo.getTaskSerializerLatch()))
+                        );
                     });
 
             if (logger.isDebugEnabled()) {
@@ -152,8 +138,14 @@ public class ParallelDBVersionCommand {
      * @throws InterruptedException
      * @throws VersionControlSystemException
      */
-    private void waitEndSerializationAndCheckEnvBranch(EnvironmentInfo envInfo) throws InterruptedException, VersionControlSystemException {
+    private void waitEndSerializationAndCheckEnvBranch(EnvironmentInfo envInfo) throws Exception {
         envInfo.getTaskSerializerLatch().await();
+
+        try {
+            envInfo.checkFailedSerializers();
+        } catch (Throwable sourceException) {
+            throw new Exception("Detected error during object serialization in parallel. Check inner exception.",sourceException);
+        }
 
         if (logger.isDebugEnabled()) {
             logger.debug("Branch : " + envInfo.getEnvName() + " | Remaining tasks: " + envInfo.getTaskSerializerLatch().getCount());
@@ -207,4 +199,8 @@ public class ParallelDBVersionCommand {
 
     }
 
+    @Override
+    public void uncaughtException(Thread thread, Throwable throwable) {
+        logger.error("Error in thread " + thread, throwable);
+    }
 }
