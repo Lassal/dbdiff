@@ -14,6 +14,7 @@ import java.util.Objects;
 public class RoutineParameter extends TypedColumn {
 
     public static final Comparator DEFAULT_SORT_ORDER = Comparator.comparing(RoutineParameter::getOrdinalPosition);
+    public static final String RETURN_PARAMETER_NAME = "(--return--)";
 
     private String routineSchema;
     private String routineName;

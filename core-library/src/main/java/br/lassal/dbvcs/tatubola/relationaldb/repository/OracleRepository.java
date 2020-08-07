@@ -18,7 +18,7 @@ public class OracleRepository extends BaseRepository {
 
     private static Logger logger = LoggerFactory.getLogger(OracleRepository.class);
 
-    public static final String RETURN_PARAMETER_NAME = "(--return--)";
+
 
     public List<String> listSchemas() {
         String sql = "SELECT USERNAME FROM SYS.ALL_USERS";
@@ -847,7 +847,7 @@ public class OracleRepository extends BaseRepository {
         overloadID = overloadID == null ? "" : "(" + overloadID + ")";
 
         if ((paramName == null || paramName.isEmpty()) && dataLevel == 0) {
-            paramName = OracleRepository.RETURN_PARAMETER_NAME;
+            paramName = RoutineParameter.RETURN_PARAMETER_NAME;
         }
 
         if (packageName != null && !packageName.isEmpty()) {

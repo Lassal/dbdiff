@@ -17,7 +17,7 @@ public class RoutineDummyBuilder {
 
     public Routine createFunction(String schema, String routineName, int id) {
         Routine routine = new Routine(schema, routineName + "_" + id, RoutineType.FUNCTION);
-        routine.setReturnParamater(new TypedColumn(OracleRepository.RETURN_PARAMETER_NAME, 0, "VARCHAR2"));
+        routine.setReturnParamater(new TypedColumn(RoutineParameter.RETURN_PARAMETER_NAME, 0, "VARCHAR2"));
         routine.addParameter(this.createRoutineParameter(schema, routine.getName(),"Param01", 1, "NUMBER", ParameterMode.IN));
         routine.addParameter(this.createRoutineParameter(schema, routine.getName(),"Param02", 2, "DATETIME", ParameterMode.IN));
 

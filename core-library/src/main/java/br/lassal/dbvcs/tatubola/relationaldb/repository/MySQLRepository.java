@@ -444,6 +444,10 @@ public class MySQLRepository extends BaseRepository {
         String paramModeLiteral = rs.getString("PARAMETER_MODE");
         ParameterMode paramMode = paramModeLiteral == null ? null : ParameterMode.valueOf(paramModeLiteral);
 
+        if ((paramName == null || paramName.isEmpty()) && paramPosition == 0 && paramModeLiteral == null) {
+            paramName = RoutineParameter.RETURN_PARAMETER_NAME;
+        }
+
         RoutineParameter param = new RoutineParameter(paramName, paramPosition, paramDataType, paramMode);
         param.setRoutineSchema(routineSchema);
         param.setRoutineName(routineName);
