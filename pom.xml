@@ -10,7 +10,7 @@
 
     <groupId>br.lassal.dbvcs.tatubola</groupId>
     <artifactId>db-vcs-tatubola</artifactId>
-    <version>0.2a2</version>
+    <version>0.2b1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
